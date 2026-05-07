@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SafeRide — School Bus Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="shared/styles.css">
+</head>
+<body class="bg-slate-50 min-h-screen">
+
+<!-- Top bar -->
+<header class="sr-gradient text-white">
+  <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+    <div class="sr-logo text-white text-xl">
+      <span class="sr-logo-mark">S</span>
+      <span data-i18n="brand">SafeRide</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="text-xs text-slate-300 hidden sm:inline" data-i18n="demoNote">Prototype — mock data</span>
+      <button onclick="toggleLang()" class="sr-btn sr-btn-yellow text-sm px-3 py-1.5">
+        <span id="langBtnText" data-i18n="languageSwitch">ລາວ</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="sr-gradient text-white">
+  <div class="max-w-6xl mx-auto px-6 pt-8 pb-20">
+    <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight max-w-3xl" data-i18n="landingTitle">
+      SafeRide School Bus Platform
+    </h1>
+    <p class="mt-4 text-lg sm:text-xl text-slate-200 max-w-2xl" data-i18n="landingSubtitle">
+      A safer, simpler way to run school transport across many schools.
+    </p>
+    <div class="mt-8 flex flex-wrap gap-3">
+      <a href="#apps" class="sr-btn sr-btn-yellow text-base">
+        📱 <span data-i18n="tryApps">Try the Apps</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Stats strip -->
+<section class="-mt-12">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="sr-card-elev p-6 grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div>
+        <div class="text-3xl font-extrabold sr-brand-text">3</div>
+        <div class="text-sm text-slate-500" data-i18n="schoolsServed">Schools served</div>
+      </div>
+      <div>
+        <div class="text-3xl font-extrabold sr-brand-text">6</div>
+        <div class="text-sm text-slate-500" data-i18n="buses">Buses</div>
+      </div>
+      <div>
+        <div class="text-3xl font-extrabold sr-brand-text">30</div>
+        <div class="text-sm text-slate-500" data-i18n="students">Students</div>
+      </div>
+      <div>
+        <div class="text-3xl font-extrabold text-emerald-600">98%</div>
+        <div class="text-sm text-slate-500" data-i18n="onTimeRate">On-time rate</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Apps -->
+<section id="apps" class="max-w-6xl mx-auto px-6 py-16">
+  <h2 class="text-2xl font-bold sr-brand-text mb-2" data-i18n="slideAppsTitle">Four apps, one platform</h2>
+  <p class="text-slate-500 mb-8" data-i18n="tagline">Safe school transport, end to end.</p>
+
+  <div class="grid sm:grid-cols-2 gap-5">
+    <!-- Operator -->
+    <a href="apps/operator.html" class="sr-card p-6 hover:shadow-lg transition-shadow group">
+      <div class="flex items-start gap-4">
+        <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center text-2xl">🛰️</div>
+        <div class="flex-1">
+          <h3 class="font-bold text-lg sr-brand-text" data-i18n="forOperator">For the Bus Company</h3>
+          <p class="text-sm text-slate-500 mt-1" data-i18n="forOperatorDesc">Live fleet view across every school you serve. One dashboard, total control.</p>
+          <div class="mt-3 inline-flex items-center text-sm font-semibold text-blue-700 group-hover:gap-2 transition-all gap-1">
+            <span data-i18n="openApp">Open</span> →
+          </div>
+        </div>
+      </div>
+    </a>
+
+    <!-- Driver -->
+    <a href="apps/driver.html" class="sr-card p-6 hover:shadow-lg transition-shadow group">
+      <div class="flex items-start gap-4">
+        <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center text-2xl">🚌</div>
+        <div class="flex-1">
+          <h3 class="font-bold text-lg sr-brand-text" data-i18n="forDriver">For Drivers</h3>
+          <p class="text-sm text-slate-500 mt-1" data-i18n="forDriverDesc">Tablet-first app: today's route, manifest, one-tap QR scan, end-of-route check.</p>
+          <div class="mt-3 inline-flex items-center text-sm font-semibold text-amber-700 group-hover:gap-2 transition-all gap-1">
+            <span data-i18n="openApp">Open</span> →
+          </div>
+        </div>
+      </div>
+    </a>
+
+    <!-- Parent -->
+    <a href="apps/parent.html" class="sr-card p-6 hover:shadow-lg transition-shadow group">
+      <div class="flex items-start gap-4">
+        <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-2xl">👨‍👩‍👧</div>
+        <div class="flex-1">
+          <h3 class="font-bold text-lg sr-brand-text" data-i18n="forParent">For Parents</h3>
+          <p class="text-sm text-slate-500 mt-1" data-i18n="forParentDesc">Live bus location, instant notifications when your child boards or arrives.</p>
+          <div class="mt-3 inline-flex items-center text-sm font-semibold text-emerald-700 group-hover:gap-2 transition-all gap-1">
+            <span data-i18n="openApp">Open</span> →
+          </div>
+        </div>
+      </div>
+    </a>
+
+    <!-- School -->
+    <a href="apps/school.html" class="sr-card p-6 hover:shadow-lg transition-shadow group">
+      <div class="flex items-start gap-4">
+        <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center text-2xl">🏫</div>
+        <div class="flex-1">
+          <h3 class="font-bold text-lg sr-brand-text" data-i18n="forSchool">For Schools</h3>
+          <p class="text-sm text-slate-500 mt-1" data-i18n="forSchoolDesc">See which buses arrived, who's on board, and reconcile attendance in seconds.</p>
+          <div class="mt-3 inline-flex items-center text-sm font-semibold text-purple-700 group-hover:gap-2 transition-all gap-1">
+            <span data-i18n="openApp">Open</span> →
+          </div>
+        </div>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="border-t border-slate-200 py-8 mt-12">
+  <div class="max-w-6xl mx-auto px-6 flex flex-wrap items-center justify-between gap-4 text-sm text-slate-500">
+    <div class="flex items-center gap-2">
+      <span class="sr-logo-mark" style="width:24px;height:24px;font-size:13px;">S</span>
+      <span class="font-semibold sr-brand-text" data-i18n="brand">SafeRide</span>
+      <span>·</span>
+      <span>Vientiane, Laos</span>
+    </div>
+    <span data-i18n="demoNote">Prototype — mock data</span>
+  </div>
+</footer>
+
+<script src="shared/i18n.js"></script>
+<script src="shared/data.js"></script>
+</body>
+</html>

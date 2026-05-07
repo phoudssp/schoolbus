@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SafeRide — Operator Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../shared/styles.css">
+</head>
+<body class="bg-slate-100 min-h-screen">
+
+<!-- Top bar -->
+<header class="sr-gradient text-white sticky top-0 z-30">
+  <div class="px-5 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <a href="../index.html" class="sr-logo text-white">
+        <span class="sr-logo-mark">S</span>
+        <span data-i18n="brand">SafeRide</span>
+      </a>
+      <span class="hidden sm:inline text-slate-300">|</span>
+      <span class="hidden sm:inline text-sm text-slate-200" data-i18n="operatorApp">Operator Dashboard</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="hidden md:flex items-center gap-2 text-sm text-slate-200">
+        <span class="sr-live-dot"></span>
+        <span id="liveTimeLabel">07:05</span>
+      </span>
+      <span class="hidden md:inline text-sm text-slate-300">·</span>
+      <span class="hidden md:inline text-sm">👤 Souvanh (Dispatcher)</span>
+      <button onclick="toggleLang()" class="sr-btn sr-btn-yellow text-sm px-3 py-1.5">
+        <span data-i18n="languageSwitch">ລາວ</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Stats strip -->
+<section class="bg-white border-b border-slate-200">
+  <div class="px-5 py-3 grid grid-cols-2 md:grid-cols-5 gap-4">
+    <div>
+      <div class="text-2xl font-extrabold sr-brand-text" id="stat-active">5</div>
+      <div class="text-xs text-slate-500" data-i18n="activeBuses">Active buses</div>
+    </div>
+    <div>
+      <div class="text-2xl font-extrabold sr-brand-text" id="stat-students">13</div>
+      <div class="text-xs text-slate-500" data-i18n="studentsTransported">Students transported today</div>
+    </div>
+    <div>
+      <div class="text-2xl font-extrabold sr-brand-text" id="stat-events">13</div>
+      <div class="text-xs text-slate-500" data-i18n="eventsToday">Events today</div>
+    </div>
+    <div>
+      <div class="text-2xl font-extrabold text-emerald-600">96%</div>
+      <div class="text-xs text-slate-500" data-i18n="onTimeRate">On-time rate</div>
+    </div>
+    <div>
+      <div class="text-2xl font-extrabold sr-brand-text">3</div>
+      <div class="text-xs text-slate-500" data-i18n="schoolsServed">Schools served</div>
+    </div>
+  </div>
+</section>
+
+<!-- Main grid -->
+<main class="px-5 py-4 grid grid-cols-12 gap-4" style="min-height: calc(100vh - 140px);">
+  <!-- LEFT: bus list -->
+  <aside class="col-span-12 md:col-span-3 sr-card p-3 sr-scroll overflow-auto" style="max-height: calc(100vh - 160px);">
+    <div class="flex items-center justify-between mb-2">
+      <h2 class="font-bold sr-brand-text" data-i18n="busList">Bus List</h2>
+    </div>
+    <div class="mb-3">
+      <label class="text-xs text-slate-500" data-i18n="filterBySchool">Filter by school</label>
+      <select id="schoolFilter" class="w-full mt-1 border border-slate-200 rounded-md px-2 py-1.5 text-sm">
+        <option value="" data-i18n="allSchools">All schools</option>
+      </select>
+    </div>
+    <div id="busList" class="space-y-2"></div>
+  </aside>
+
+  <!-- CENTER: map + selected bus details -->
+  <section class="col-span-12 md:col-span-6 flex flex-col gap-3">
+    <div class="sr-card overflow-hidden" style="height: 480px;">
+      <div class="px-4 py-2 border-b border-slate-200 flex items-center justify-between bg-white">
+        <h2 class="font-bold sr-brand-text" data-i18n="liveMap">Live Fleet Map</h2>
+        <div class="flex items-center gap-2 text-xs text-slate-500">
+          <span class="sr-live-dot"></span><span data-i18n="inTransit">In transit</span>
+        </div>
+      </div>
+      <div id="map" style="height: calc(100% - 41px);"></div>
+    </div>
+
+    <!-- Selected bus detail -->
+    <div id="busDetail" class="sr-card p-4 hidden"></div>
+  </section>
+
+  <!-- RIGHT: alerts -->
+  <aside class="col-span-12 md:col-span-3 flex flex-col gap-3">
+    <div class="sr-card p-3 sr-scroll overflow-auto" style="max-height: 360px;">
+      <h2 class="font-bold sr-brand-text mb-2" data-i18n="alerts">Alerts</h2>
+      <div id="alertList" class="space-y-2"></div>
+    </div>
+    <div class="sr-card p-3 sr-scroll overflow-auto flex-1" style="max-height: calc(100vh - 540px);">
+      <h2 class="font-bold sr-brand-text mb-2" data-i18n="todaySchedule">Today's schedule</h2>
+      <div id="scheduleList" class="space-y-2 text-sm"></div>
+    </div>
+  </aside>
+</main>
+
+<script src="../shared/i18n.js"></script>
+<script src="../shared/data.js"></script>
+<script>
+// ---------- Map setup ----------
+const map = L.map('map', { zoomControl: true, attributionControl: false })
+  .setView(APP_DATA.operator.center, 13);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19, attribution: '© OpenStreetMap'
+}).addTo(map);
+
+// School markers (static)
+const schoolMarkers = {};
+APP_DATA.schools.forEach(s => {
+  const icon = L.divIcon({
+    className: '',
+    html: `<div class="sr-school-marker" style="border-color:${s.color}; color:${s.color}">🏫 ${s.shortName}</div>`,
+    iconSize: [120, 28], iconAnchor: [60, 14]
+  });
+  const m = L.marker(s.coords, { icon }).addTo(map);
+  m.bindPopup(`<b>${s.name}</b><br>${s.address}<br>Bell: ${s.bellAm} / ${s.bellPm}`);
+  schoolMarkers[s.id] = m;
+});
+
+// Bus markers (live)
+const busMarkers = {};
+function busIcon(bus, lp) {
+  const cls = lp.status;
+  return L.divIcon({
+    className: '',
+    html: `<div class="sr-bus-marker">🚌 ${bus.id}</div>`,
+    iconSize: [80, 28], iconAnchor: [40, 14]
+  });
+}
+APP_DATA.buses.forEach(b => {
+  const lp = APP_DATA.livePositions[b.id];
+  if (!lp) return;
+  const m = L.marker(lp.coords, { icon: busIcon(b, lp) }).addTo(map);
+  m.on('click', () => selectBus(b.id));
+  busMarkers[b.id] = m;
+});
+
+// ---------- Sidebar: school filter ----------
+const sf = document.getElementById('schoolFilter');
+APP_DATA.schools.forEach(s => {
+  const opt = document.createElement('option');
+  opt.value = s.id;
+  opt.textContent = s.name;
+  sf.appendChild(opt);
+});
+sf.addEventListener('change', renderBusList);
+
+// ---------- Bus list ----------
+function statusPill(status) {
+  const label = t(status === 'in_transit' ? 'inTransit'
+              : status === 'at_stop'    ? 'atStop'
+              : status === 'starting'   ? 'starting'
+              : status === 'idle'       ? 'idle' : status);
+  return `<span class="sr-pill ${status}"><span class="dot"></span>${label}</span>`;
+}
+
+let selectedBusId = null;
+
+function renderBusList() {
+  const filter = sf.value;
+  const wrap = document.getElementById('busList');
+  wrap.innerHTML = '';
+  APP_DATA.buses.forEach(b => {
+    const lp = APP_DATA.livePositions[b.id];
+    const cur = currentRunForBus(b.id);
+    const sId = cur ? cur.run.schoolId : null;
+    if (filter && sId !== filter && lp.status !== 'idle') return;
+    if (filter && lp.status === 'idle') return;
+    const school = sId ? APP_DATA.byId.school[sId] : null;
+    const driver = APP_DATA.byId.driver[APP_DATA.byId.route[`R-${b.id.split('-')[1]}`]?.driverId] || null;
+
+    const card = document.createElement('div');
+    card.className = `sr-card p-3 cursor-pointer hover:bg-slate-50 ${selectedBusId === b.id ? 'ring-2 ring-yellow-400' : ''}`;
+    card.onclick = () => selectBus(b.id);
+    card.innerHTML = `
+      <div class="flex items-center justify-between">
+        <div class="font-bold sr-brand-text">${b.id}</div>
+        ${statusPill(lp.status)}
+      </div>
+      <div class="text-xs text-slate-500 mt-0.5">${b.plate}</div>
+      ${school ? `<div class="text-xs mt-1">→ <span class="font-semibold" style="color:${school.color}">${school.shortName}</span></div>` : ''}
+      ${driver ? `<div class="text-xs text-slate-500">${driver.avatar} ${driver.name}</div>` : ''}
+      ${lp.etaMin != null ? `<div class="text-xs text-slate-500 mt-1">${t('nextStop')}: ${lp.etaMin} ${t('minutes')}</div>` : ''}
+    `;
+    wrap.appendChild(card);
+  });
+}
+
+// ---------- Bus detail panel ----------
+function selectBus(busId) {
+  selectedBusId = busId;
+  const b = APP_DATA.byId.bus[busId];
+  const lp = APP_DATA.livePositions[busId];
+  const cur = currentRunForBus(busId);
+  const route = APP_DATA.byId.route[`R-${busId.split('-')[1]}`];
+  const driver = route ? APP_DATA.byId.driver[route.driverId] : null;
+
+  // Pan map
+  map.setView(lp.coords, 14, { animate: true });
+  busMarkers[busId]?.openPopup?.();
+
+  const panel = document.getElementById('busDetail');
+  panel.classList.remove('hidden');
+
+  if (!cur) {
+    panel.innerHTML = `
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="font-bold text-lg sr-brand-text">${b.id} · ${b.plate}</div>
+          <div class="text-sm text-slate-500">${t('idle')}</div>
+        </div>
+        ${statusPill(lp.status)}
+      </div>
+    `;
+    renderBusList();
+    return;
+  }
+
+  const school = APP_DATA.byId.school[cur.run.schoolId];
+  const stopsHtml = cur.run.stops.map((s, i) => {
+    const stop = APP_DATA.byId.stop[s.stopId];
+    const evs = eventsForRun(cur.run.id).filter(e => e.stopId === s.stopId);
+    const expected = s.studentIds.length;
+    const scanned = evs.length;
+    const isSchoolStop = !!s.isSchool;
+    const isCurrent = lp.nextStopId === s.stopId;
+    const isDone = !isCurrent && cur.run.stops.findIndex(x => x.stopId === lp.nextStopId) > i;
+    const cls = isDone ? 'done' : (isCurrent ? 'current' : '');
+    return `
+      <div class="sr-stop-item ${cls}">
+        <div class="sr-stop-dot"></div>
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="font-semibold text-sm">${isSchoolStop ? '🏫 ' : ''}${stop.name}</div>
+            <div class="text-xs text-slate-500">${s.time}${isSchoolStop ? '' : ` · ${expected} ${t('expected').toLowerCase()}`}</div>
+          </div>
+          ${!isSchoolStop ? `<div class="text-xs font-bold">${scanned}/${expected}</div>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  panel.innerHTML = `
+    <div class="flex items-center justify-between mb-3">
+      <div>
+        <div class="font-bold text-lg sr-brand-text">${b.id} · ${b.plate}</div>
+        <div class="text-sm">
+          ${driver ? `${driver.avatar} ${driver.name} · ` : ''}
+          → <span style="color:${school.color}" class="font-semibold">${school.shortName}</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        ${statusPill(lp.status)}
+        <button class="sr-btn sr-btn-ghost text-xs py-1 px-2" data-i18n="callDriver">Call driver</button>
+      </div>
+    </div>
+    <div class="text-xs uppercase tracking-wide text-slate-400 mb-1">${t('runDetails')}</div>
+    <div class="text-sm font-mono text-slate-600 mb-3">${cur.run.id}</div>
+    <div class="grid grid-cols-3 gap-2 mb-3 text-center">
+      <div class="bg-slate-50 rounded p-2">
+        <div class="text-xs text-slate-500">${t('expected')}</div>
+        <div class="font-bold text-lg">${cur.run.stops.reduce((a, s) => a + s.studentIds.length, 0)}</div>
+      </div>
+      <div class="bg-slate-50 rounded p-2">
+        <div class="text-xs text-slate-500">${t('boardingCount')}</div>
+        <div class="font-bold text-lg text-emerald-700">${eventsForRun(cur.run.id).filter(e => e.type === 'BOARD').length}</div>
+      </div>
+      <div class="bg-slate-50 rounded p-2">
+        <div class="text-xs text-slate-500">${t('eta')}</div>
+        <div class="font-bold text-lg">${lp.etaMin != null ? `${lp.etaMin}m` : '—'}</div>
+      </div>
+    </div>
+    <div class="space-y-1 sr-scroll" style="max-height: 200px; overflow:auto;">${stopsHtml}</div>
+  `;
+
+  renderBusList();
+}
+
+// ---------- Alerts ----------
+function renderAlerts() {
+  const wrap = document.getElementById('alertList');
+  wrap.innerHTML = '';
+  APP_DATA.alerts.slice().reverse().forEach(a => {
+    const sevClass = a.severity === 'warning' ? 'warning'
+                   : a.severity === 'error'   ? 'warning'
+                   : 'info';
+    const text = APP_LANG === 'lo' ? a.messageLo : a.message;
+    const card = document.createElement('div');
+    card.className = `sr-notif ${sevClass}`;
+    card.innerHTML = `
+      <div class="flex items-start justify-between">
+        <div class="font-semibold text-sm">${a.busId}</div>
+        <div class="text-[10px] text-slate-400">${fmtTime(a.ts)}</div>
+      </div>
+      <div class="text-xs text-slate-600 mt-0.5">${text}</div>
+    `;
+    wrap.appendChild(card);
+  });
+}
+
+// ---------- Today's schedule ----------
+function renderSchedule() {
+  const wrap = document.getElementById('scheduleList');
+  wrap.innerHTML = '';
+  APP_DATA.routes.forEach(r => {
+    const b = APP_DATA.byId.bus[r.busId];
+    const d = APP_DATA.byId.driver[r.driverId];
+    r.runs.forEach(run => {
+      const school = APP_DATA.byId.school[run.schoolId];
+      const evs = eventsForRun(run.id);
+      const expectedTotal = run.stops.reduce((a, s) => a + s.studentIds.length, 0);
+      const scanned = evs.filter(e => e.type === 'BOARD').length;
+      const card = document.createElement('div');
+      card.className = 'p-2 rounded border border-slate-200 hover:bg-slate-50 cursor-pointer';
+      card.onclick = () => selectBus(r.busId);
+      card.innerHTML = `
+        <div class="flex items-center justify-between">
+          <div class="font-mono text-xs text-slate-500">${run.start}</div>
+          <span class="text-xs font-semibold" style="color:${school.color}">${school.shortName}</span>
+        </div>
+        <div class="font-semibold text-sm">${r.busId} · ${d.name.split(' ')[0]}</div>
+        <div class="text-xs text-slate-500 mt-0.5">${scanned}/${expectedTotal} ${t('boardingCount').toLowerCase()}</div>
+      `;
+      wrap.appendChild(card);
+    });
+  });
+}
+
+// ---------- Live simulation ----------
+let liveTime = new Date(APP_NOW);
+function updateClock() {
+  liveTime = new Date(liveTime.getTime() + 30 * 1000);  // +30s every tick
+  document.getElementById('liveTimeLabel').textContent = fmtTime(liveTime);
+}
+function jiggleBuses() {
+  Object.entries(APP_DATA.livePositions).forEach(([busId, lp]) => {
+    if (lp.status === 'idle') return;
+    // small random jitter to feel "live"
+    const dLat = (Math.random() - 0.5) * 0.0008;
+    const dLng = (Math.random() - 0.5) * 0.0008;
+    lp.coords = [lp.coords[0] + dLat, lp.coords[1] + dLng];
+    busMarkers[busId]?.setLatLng(lp.coords);
+  });
+}
+
+// ---------- Initial render ----------
+renderBusList();
+renderAlerts();
+renderSchedule();
+
+// Pre-select bus 101
+selectBus('B-101');
+
+setInterval(() => { updateClock(); jiggleBuses(); }, 4000);
+
+// Re-render strings on language change
+window.addEventListener('langchange', () => {
+  renderBusList();
+  renderAlerts();
+  renderSchedule();
+  if (selectedBusId) selectBus(selectedBusId);
+  // Also refresh school filter labels
+  sf.options[0].textContent = t('allSchools');
+});
+</script>
+
+</body>
+</html>

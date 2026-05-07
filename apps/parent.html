@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SafeRide — Parent App</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../shared/styles.css">
+  <style>
+    body { background: linear-gradient(135deg, #0F1E3D 0%, #182B57 100%); }
+    .leaflet-control-attribution { display: none !important; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-start py-6 px-4">
+
+<!-- Top header strip -->
+<div class="w-full max-w-3xl flex items-center justify-between text-white mb-4">
+  <a href="../index.html" class="sr-logo text-white">
+    <span class="sr-logo-mark">S</span>
+    <span data-i18n="brand">SafeRide</span>
+    <span class="text-slate-300 ml-2 text-sm font-normal" data-i18n="parentApp">Parent App</span>
+  </a>
+  <div class="flex items-center gap-3">
+    <span class="text-xs text-slate-300" data-i18n="demoNote">Prototype — mock data</span>
+    <button onclick="toggleLang()" class="sr-btn sr-btn-yellow text-sm px-3 py-1.5">
+      <span data-i18n="languageSwitch">ລາວ</span>
+    </button>
+  </div>
+</div>
+
+<!-- Phone frame -->
+<div class="sr-phone-frame">
+  <div class="sr-phone-notch"></div>
+  <div class="sr-phone-screen flex flex-col" id="phoneScreen">
+
+    <!-- Status bar -->
+    <div class="px-5 pt-8 pb-2 flex items-center justify-between text-xs text-slate-700">
+      <span id="phoneTime" class="font-semibold">07:05</span>
+      <span>📶 4G · 🔋 87%</span>
+    </div>
+
+    <!-- App header -->
+    <header class="px-5 pt-2 pb-3 bg-white">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="text-xs text-slate-500" data-i18n="today">Today</div>
+          <div class="font-extrabold text-lg sr-brand-text" id="dateLabel">Thursday, May 7</div>
+        </div>
+        <div class="relative">
+          <button class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-xl">🔔</button>
+          <span class="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full ring-2 ring-white"></span>
+        </div>
+      </div>
+
+      <!-- Multi-child switcher -->
+      <div class="mt-3 flex gap-2 overflow-x-auto sr-scroll" id="childSwitcher"></div>
+    </header>
+
+    <!-- Scrollable content -->
+    <main class="flex-1 overflow-y-auto sr-scroll pb-20">
+      <!-- Hero status card -->
+      <section class="px-5 pt-3">
+        <div class="sr-card-elev p-4" id="statusCard">
+          <!-- filled by JS -->
+        </div>
+      </section>
+
+      <!-- Mini live map -->
+      <section class="px-5 pt-3">
+        <div class="sr-card overflow-hidden">
+          <div id="parentMap" style="height: 200px;"></div>
+        </div>
+      </section>
+
+      <!-- Timeline -->
+      <section class="px-5 pt-4">
+        <h3 class="font-bold sr-brand-text mb-2" data-i18n="timeline">Timeline</h3>
+        <div id="timeline" class="bg-white rounded-xl p-3 border border-slate-200"></div>
+      </section>
+
+      <!-- Notifications -->
+      <section class="px-5 pt-4">
+        <h3 class="font-bold sr-brand-text mb-2" data-i18n="notifications">Notifications</h3>
+        <div id="notifList"></div>
+      </section>
+
+      <!-- Quick actions -->
+      <section class="px-5 pt-4 grid grid-cols-2 gap-2">
+        <button class="sr-btn sr-btn-ghost text-sm">📞 <span data-i18n="callOperator">Call bus company</span></button>
+        <button class="sr-btn sr-btn-ghost text-sm">🏫 <span data-i18n="callSchool">Call school</span></button>
+      </section>
+    </main>
+
+    <!-- Bottom nav -->
+    <nav class="border-t border-slate-200 bg-white grid grid-cols-4 py-2">
+      <button class="flex flex-col items-center gap-1 text-xs sr-brand-text font-semibold">
+        <span class="text-lg">🏠</span><span data-i18n="home">Home</span>
+      </button>
+      <button class="flex flex-col items-center gap-1 text-xs text-slate-400">
+        <span class="text-lg">🗺️</span><span data-i18n="liveMap">Map</span>
+      </button>
+      <button class="flex flex-col items-center gap-1 text-xs text-slate-400">
+        <span class="text-lg">🔔</span><span data-i18n="notifications">Alerts</span>
+      </button>
+      <button class="flex flex-col items-center gap-1 text-xs text-slate-400">
+        <span class="text-lg">⚙️</span><span data-i18n="settings">Settings</span>
+      </button>
+    </nav>
+  </div>
+</div>
+
+<script src="../shared/i18n.js"></script>
+<script src="../shared/data.js"></script>
+<script>
+// ==================================
+// We log in as guardian G-001 (Mr. Chanthavong) with kids Noi (S-1001) at VIS
+// and Pat (S-2001) at Sengsavanh.
+// ==================================
+const guardian = APP_DATA.byId.guardian['G-001'];
+const children = guardian.studentIds.map(id => APP_DATA.byId.student[id]);
+let selectedChildId = children[0].id;
+
+// ---------- Child switcher ----------
+function renderChildSwitcher() {
+  const wrap = document.getElementById('childSwitcher');
+  wrap.innerHTML = '';
+  children.forEach(c => {
+    const school = APP_DATA.byId.school[c.schoolId];
+    const isSel = c.id === selectedChildId;
+    const btn = document.createElement('button');
+    btn.className = `flex items-center gap-2 px-3 py-2 rounded-full whitespace-nowrap border transition-all ${
+      isSel ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-700 border-slate-200'
+    }`;
+    btn.onclick = () => { selectedChildId = c.id; renderAll(); };
+    btn.innerHTML = `
+      <div class="w-7 h-7 rounded-full ${isSel ? 'bg-yellow-400 text-slate-900' : 'bg-slate-200'} flex items-center justify-center text-xs font-bold">
+        ${c.name.split(' ')[0][0]}
+      </div>
+      <div class="text-left">
+        <div class="text-sm font-bold">${c.name.split(' ')[0]}</div>
+        <div class="text-[10px] ${isSel ? 'text-slate-300' : 'text-slate-500'}">
+          <span style="color:${isSel ? school.color : school.color}; font-weight:600">${school.shortName}</span>
+        </div>
+      </div>
+    `;
+    wrap.appendChild(btn);
+  });
+}
+
+// ---------- Status card ----------
+function getChildStatus(child) {
+  const events = eventsForStudent(child.id);
+  const school = APP_DATA.byId.school[child.schoolId];
+
+  // Find which bus is supposed to carry this child today
+  let busId = null;
+  let runId = null;
+  for (const r of APP_DATA.routes) {
+    for (const run of r.runs) {
+      if (run.schoolId !== child.schoolId) continue;
+      const carries = run.stops.some(s => s.studentIds.includes(child.id));
+      if (carries) { busId = r.busId; runId = run.id; break; }
+    }
+    if (busId) break;
+  }
+
+  const lp = busId ? APP_DATA.livePositions[busId] : null;
+  const onBus = events.some(e => e.type === 'BOARD' && e.runId === runId);
+  return { events, school, busId, runId, lp, onBus };
+}
+
+function renderStatusCard() {
+  const child = APP_DATA.byId.student[selectedChildId];
+  const { school, busId, runId, lp, onBus, events } = getChildStatus(child);
+  const card = document.getElementById('statusCard');
+
+  let stateLabel, stateColor, primaryText, subText;
+
+  if (onBus && lp && lp.status !== 'idle') {
+    stateLabel = t('onBus');
+    stateColor = '#10B981';
+    primaryText = `${child.name.split(' ')[0]} ${t('boarded').toLowerCase()} ${t('bus')} ${busId}`;
+    subText = `${t('arrived')} ${t('eta').toLowerCase()} ${lp.etaMin || '—'} ${t('minutes')}`;
+  } else if (busId && lp && lp.status !== 'idle') {
+    stateLabel = t('waitingAtHome');
+    stateColor = '#F59E0B';
+    primaryText = `${t('bus')} ${busId} ${t('eta').toLowerCase()} ~${lp.etaMin || 30} ${t('minutes')}`;
+    subText = `${t('inTransit')}`;
+  } else {
+    stateLabel = t('atHome');
+    stateColor = '#64748B';
+    primaryText = child.name;
+    subText = '—';
+  }
+
+  card.innerHTML = `
+    <div class="flex items-center justify-between mb-3">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-700 text-lg">
+          ${child.name.split(' ').map(p => p[0]).slice(0,2).join('')}
+        </div>
+        <div>
+          <div class="font-extrabold text-base">${child.name}</div>
+          <div class="text-xs text-slate-500">${child.grade} · <span style="color:${school.color}" class="font-semibold">${school.shortName}</span></div>
+        </div>
+      </div>
+      <span class="sr-pill" style="background:${stateColor}20; color:${stateColor}">
+        <span class="dot" style="background:${stateColor}"></span>${stateLabel}
+      </span>
+    </div>
+    <div class="bg-slate-50 rounded-lg p-3">
+      <div class="font-bold text-sm">${primaryText}</div>
+      <div class="text-xs text-slate-500 mt-0.5">${subText}</div>
+    </div>
+    <div class="grid grid-cols-3 gap-2 mt-3 text-center">
+      <div class="bg-slate-50 rounded p-2">
+        <div class="text-[10px] text-slate-500 uppercase">${t('bus')}</div>
+        <div class="font-bold text-sm">${busId || '—'}</div>
+      </div>
+      <div class="bg-slate-50 rounded p-2">
+        <div class="text-[10px] text-slate-500 uppercase">${t('driver')}</div>
+        <div class="font-bold text-sm">${busId ? APP_DATA.byId.driver[APP_DATA.byId.route[`R-${busId.split('-')[1]}`].driverId].name.split(' ')[0] : '—'}</div>
+      </div>
+      <div class="bg-slate-50 rounded p-2">
+        <div class="text-[10px] text-slate-500 uppercase">${t('eta')}</div>
+        <div class="font-bold text-sm">${lp && lp.etaMin != null ? `${lp.etaMin}m` : '—'}</div>
+      </div>
+    </div>
+  `;
+}
+
+// ---------- Mini map ----------
+let pmap = null;
+let pmapBus = null;
+let pmapHome = null;
+let pmapSchool = null;
+function renderMiniMap() {
+  const child = APP_DATA.byId.student[selectedChildId];
+  const { busId, lp, school } = getChildStatus(child);
+  const homeStop = APP_DATA.byId.stop[child.stopId];
+
+  if (!pmap) {
+    pmap = L.map('parentMap', {
+      zoomControl: false, attributionControl: false, dragging: true
+    }).setView(school.coords, 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(pmap);
+  }
+
+  // Clear previous overlays
+  if (pmapBus) pmap.removeLayer(pmapBus);
+  if (pmapHome) pmap.removeLayer(pmapHome);
+  if (pmapSchool) pmap.removeLayer(pmapSchool);
+
+  pmapHome = L.marker(homeStop.coords, {
+    icon: L.divIcon({ className: '', html: `<div class="sr-school-marker">🏠</div>`, iconSize: [40, 28], iconAnchor: [20, 14] })
+  }).addTo(pmap);
+
+  pmapSchool = L.marker(school.coords, {
+    icon: L.divIcon({ className: '', html: `<div class="sr-school-marker" style="border-color:${school.color}; color:${school.color}">🏫 ${school.shortName}</div>`, iconSize: [120, 28], iconAnchor: [60, 14] })
+  }).addTo(pmap);
+
+  if (busId && lp && lp.status !== 'idle') {
+    pmapBus = L.marker(lp.coords, {
+      icon: L.divIcon({ className: '', html: `<div class="sr-bus-marker">🚌 ${busId}</div>`, iconSize: [80, 28], iconAnchor: [40, 14] })
+    }).addTo(pmap);
+    pmap.fitBounds([homeStop.coords, school.coords, lp.coords], { padding: [30, 30] });
+  } else {
+    pmap.fitBounds([homeStop.coords, school.coords], { padding: [40, 40] });
+  }
+}
+
+// ---------- Timeline ----------
+function renderTimeline() {
+  const child = APP_DATA.byId.student[selectedChildId];
+  const { events } = getChildStatus(child);
+  const wrap = document.getElementById('timeline');
+
+  // 4 expected events
+  const expected = [
+    { id: 'evt-1', label: t('childBoarded'), icon: '🚌', happened: events.some(e => e.type === 'BOARD' && e.direction === 'AM') },
+    { id: 'evt-2', label: t('childArrivedSchool'), icon: '🏫', happened: false },
+    { id: 'evt-3', label: t('childBoardedReturn'), icon: '🚌', happened: false },
+    { id: 'evt-4', label: t('childDroppedOff'), icon: '🏠', happened: false }
+  ];
+
+  wrap.innerHTML = expected.map((e, i) => {
+    const ev = events[i];
+    return `
+      <div class="sr-stop-item ${e.happened ? 'done' : ''}" style="padding-left: 28px;">
+        <div class="sr-stop-dot"></div>
+        <div class="flex items-center justify-between py-1">
+          <div class="flex items-center gap-2">
+            <span class="${e.happened ? '' : 'opacity-40'}">${e.icon}</span>
+            <span class="text-sm ${e.happened ? 'font-semibold' : 'text-slate-400'}">${e.label}</span>
+          </div>
+          <span class="text-xs ${e.happened ? 'text-emerald-600 font-semibold' : 'text-slate-300'}">${e.happened && ev ? fmtTime(ev.timestamp) : '—'}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ---------- Notifications ----------
+function renderNotifs() {
+  const child = APP_DATA.byId.student[selectedChildId];
+  const { events, busId } = getChildStatus(child);
+  const wrap = document.getElementById('notifList');
+
+  const items = [];
+
+  // Show events as completed notifications
+  events.forEach(e => {
+    if (e.type === 'BOARD') {
+      items.push({
+        cls: 'success',
+        icon: '✅',
+        title: `${child.name.split(' ')[0]} ${t('boarded').toLowerCase()}`,
+        body: `${t('bus')} ${e.busId}`,
+        time: fmtTime(e.timestamp)
+      });
+    }
+  });
+
+  // If still waiting, add an upcoming "approaching stop"-style alert
+  if (events.length === 0 && busId) {
+    items.push({
+      cls: 'info', icon: '🛰️',
+      title: t('busApproachingStop'),
+      body: `${t('bus')} ${busId}`,
+      time: fmtTime(APP_NOW)
+    });
+  }
+
+  if (items.length === 0) {
+    wrap.innerHTML = `<div class="text-sm text-slate-400 text-center py-4">—</div>`;
+    return;
+  }
+
+  wrap.innerHTML = items.reverse().map(n => `
+    <div class="sr-notif ${n.cls}">
+      <div class="flex items-start justify-between">
+        <div class="flex-1">
+          <div class="font-semibold text-sm">${n.icon} ${n.title}</div>
+          <div class="text-xs text-slate-500 mt-0.5">${n.body}</div>
+        </div>
+        <div class="text-[10px] text-slate-400">${n.time}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ---------- Master render ----------
+function renderAll() {
+  renderChildSwitcher();
+  renderStatusCard();
+  renderMiniMap();
+  renderTimeline();
+  renderNotifs();
+}
+
+// Date label
+const dateOptions = { weekday: 'long', month: 'long', day: 'numeric' };
+document.getElementById('dateLabel').textContent =
+  APP_NOW.toLocaleDateString(APP_LANG === 'lo' ? 'lo-LA' : 'en-US', dateOptions);
+
+// Clock tick
+let clk = new Date(APP_NOW);
+setInterval(() => {
+  clk = new Date(clk.getTime() + 30 * 1000);
+  document.getElementById('phoneTime').textContent = fmtTime(clk);
+}, 4000);
+
+// Initial
+renderAll();
+
+window.addEventListener('langchange', () => {
+  document.getElementById('dateLabel').textContent =
+    APP_NOW.toLocaleDateString(APP_LANG === 'lo' ? 'lo-LA' : 'en-US', dateOptions);
+  renderAll();
+});
+</script>
+
+</body>
+</html>
