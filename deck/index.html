@@ -1,0 +1,616 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SafeRide — Presentation Deck</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* ============================================
+       Designed at 1280×720 (16:9 widescreen).
+       This is exactly the PowerPoint widescreen size
+       (13.333" × 7.5" at 96 DPI). Each slide is a
+       self-contained .slide block — print to PDF and
+       each slide becomes one PDF page; import that
+       PDF into PowerPoint.
+       ============================================ */
+
+    :root {
+      --navy: #0F1E3D;
+      --navy-2: #182B57;
+      --yellow: #FFD60A;
+      --yellow-dark: #E5BC00;
+      --green: #10B981;
+      --amber: #F59E0B;
+      --red: #EF4444;
+      --slate-50: #F8FAFC;
+      --slate-100: #F1F5F9;
+      --slate-200: #E2E8F0;
+      --slate-400: #94A3B8;
+      --slate-500: #64748B;
+      --slate-700: #334155;
+      --slate-900: #0F172A;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0;
+      background: #1F2937;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      color: var(--slate-900);
+    }
+
+    /* On-screen viewer: stack slides centered with shadow */
+    body {
+      padding: 40px 0;
+      display: flex; flex-direction: column; align-items: center; gap: 24px;
+    }
+
+    .slide {
+      width: 1280px;
+      height: 720px;
+      background: white;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+      position: relative;
+      overflow: hidden;
+      page-break-after: always;
+      break-after: page;
+      flex-shrink: 0;
+    }
+
+    /* Print: one slide per PDF page, exactly the slide size, no margins */
+    @page { size: 13.333in 7.5in; margin: 0; }
+    @media print {
+      html, body { background: white; padding: 0; gap: 0; }
+      .slide {
+        box-shadow: none;
+        margin: 0;
+        page-break-after: always;
+      }
+      .toolbar { display: none !important; }
+    }
+
+    /* ---- Brand bits ---- */
+    .brand-bg { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 100%); color: white; }
+    .brand-bg h1, .brand-bg h2, .brand-bg h3, .brand-bg h4 { color: white; }
+
+    .logo-mark {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 48px; height: 48px; background: var(--yellow);
+      border-radius: 12px; color: var(--navy);
+      font-size: 26px; font-weight: 900;
+      box-shadow: 0 6px 16px rgba(255,214,10,0.25);
+    }
+    .logo-row {
+      display: inline-flex; align-items: center; gap: 14px;
+      font-size: 28px; font-weight: 900; letter-spacing: -0.02em;
+    }
+
+    .pill {
+      display: inline-flex; align-items: center;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 12px; font-weight: 800;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      background: rgba(255,214,10,0.18); color: var(--yellow);
+    }
+    .pill-light { background: rgba(15,30,61,0.08); color: var(--navy); }
+    .pill-num { background: var(--yellow); color: var(--navy); padding: 4px 12px; font-size: 14px; }
+
+    /* ---- Common content padding ---- */
+    .pad { padding: 48px 56px; height: 100%; display: flex; flex-direction: column; }
+    .pad h1 { font-size: 56px; font-weight: 900; letter-spacing: -0.025em; line-height: 1; margin: 0 0 12px; color: var(--navy); }
+    .pad h2 { font-size: 40px; font-weight: 800; letter-spacing: -0.022em; line-height: 1.1; margin: 0 0 14px; color: var(--navy); }
+    .pad h3 { font-size: 22px; font-weight: 700; margin: 0 0 6px; color: var(--navy); }
+    .pad p  { font-size: 17px; line-height: 1.5; color: var(--slate-700); margin: 0 0 12px; }
+    .pad .lede { font-size: 22px; line-height: 1.45; color: var(--slate-700); max-width: 900px; }
+    .brand-bg .pad h1, .brand-bg .pad h2, .brand-bg .pad h3 { color: white; }
+    .brand-bg .pad p, .brand-bg .pad .lede { color: rgba(255,255,255,0.88); }
+
+    /* Slide number footer */
+    .slide-no {
+      position: absolute; bottom: 18px; right: 24px;
+      font-size: 11px; color: var(--slate-400);
+      font-weight: 600; letter-spacing: 0.08em;
+    }
+    .brand-bg .slide-no { color: rgba(255,255,255,0.35); }
+
+    /* ---- Cards ---- */
+    .cards-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; flex: 1; }
+    .cards-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; flex: 1; }
+    .cards-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; flex: 1; }
+
+    .card {
+      background: white; border: 1.5px solid var(--slate-200);
+      border-radius: 14px; padding: 22px;
+    }
+    .card.dark { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.15); color: white; }
+    .card.dark h3 { color: white; }
+    .card.dark p { color: rgba(255,255,255,0.85); }
+
+    .icon-box {
+      width: 56px; height: 56px;
+      border-radius: 14px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 28px; margin-bottom: 14px;
+    }
+    .icon-blue   { background: #DBEAFE; color: #1E40AF; }
+    .icon-amber  { background: #FEF3C7; color: #92400E; }
+    .icon-green  { background: #D1FAE5; color: #065F46; }
+    .icon-purple { background: #EDE9FE; color: #5B21B6; }
+    .icon-red    { background: #FEE2E2; color: #991B1B; }
+
+    /* ---- Two-column slide (text + screenshot) ---- */
+    .two-col {
+      display: grid;
+      gap: 36px;
+      flex: 1;
+      align-items: center;
+    }
+    .two-col.left-img { grid-template-columns: 1.3fr 1fr; }
+    .two-col.right-img { grid-template-columns: 1fr 1.3fr; }
+    .two-col.right-narrow { grid-template-columns: 1.6fr 0.9fr; }
+
+    .screenshot {
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 16px 36px rgba(15,30,61,0.18);
+      border: 1px solid var(--slate-200);
+      display: block;
+    }
+    .device-shell { display: flex; justify-content: center; align-items: center; }
+
+    .feat-list { list-style: none; padding: 0; margin: 14px 0 0; }
+    .feat-list li {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 8px 0; font-size: 16px; line-height: 1.4;
+      color: var(--slate-700);
+    }
+    .feat-list li::before {
+      content: '✓';
+      color: var(--yellow-dark); background: var(--yellow);
+      width: 22px; height: 22px; flex-shrink: 0;
+      border-radius: 999px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 900;
+      margin-top: 2px;
+    }
+    .brand-bg .feat-list li { color: rgba(255,255,255,0.92); }
+
+    /* ---- 4-Event flow diagram ---- */
+    .events-flow {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      flex-wrap: nowrap; margin: 24px 0;
+    }
+    .event-card {
+      flex: 1;
+      background: white; border: 2px solid var(--slate-200);
+      border-radius: 14px; padding: 18px 12px;
+      text-align: center;
+    }
+    .event-card .num { font-size: 11px; color: var(--slate-400); font-weight: 700; letter-spacing: 0.1em; }
+    .event-card .icon { font-size: 38px; line-height: 1; margin: 6px 0; }
+    .event-card .title { font-weight: 800; font-size: 14px; color: var(--navy); margin-top: 4px; }
+    .event-card .when { font-size: 11px; color: var(--slate-500); margin-top: 3px; }
+    .event-arrow { font-size: 28px; color: var(--yellow-dark); font-weight: 900; }
+
+    /* ---- Role mini-grid (slide 5) ---- */
+    .role-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; flex: 1;
+    }
+    .role-card {
+      background: white; border: 1.5px solid var(--slate-200);
+      border-radius: 14px; padding: 18px;
+      display: flex; flex-direction: column;
+    }
+    .role-card .role-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 24px; margin-bottom: 10px;
+    }
+    .role-card h3 { font-size: 17px; font-weight: 800; margin: 0 0 4px; color: var(--navy); }
+    .role-card p  { font-size: 13px; line-height: 1.4; color: var(--slate-600); margin: 0; }
+
+    /* ---- Stats row ---- */
+    .stat-row { display: flex; gap: 32px; margin-top: 30px; }
+    .stat-big { font-size: 56px; font-weight: 900; line-height: 1; color: var(--yellow); }
+    .stat-label { font-size: 12px; color: rgba(255,255,255,0.85); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 6px; }
+    .stat-light .stat-big { color: var(--navy); }
+    .stat-light .stat-label { color: var(--slate-500); }
+
+    /* ---- Toolbar (on-screen only) ---- */
+    .toolbar {
+      position: fixed; top: 12px; right: 12px;
+      background: rgba(255,255,255,0.95);
+      padding: 8px 14px; border-radius: 999px;
+      display: flex; align-items: center; gap: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 1000; font-size: 13px;
+    }
+    .toolbar button {
+      border: none; background: var(--navy); color: white;
+      padding: 6px 12px; border-radius: 999px;
+      cursor: pointer; font-weight: 700; font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="toolbar">
+  <span style="color: var(--slate-500);">11 slides · 1280×720</span>
+  <button onclick="window.print()">Save as PDF</button>
+</div>
+
+<!-- ============================================================
+     SLIDE 1 — TITLE
+     ============================================================ -->
+<section class="slide brand-bg">
+  <div class="pad" style="justify-content: center;">
+    <div class="logo-row" style="margin-bottom: 32px;">
+      <span class="logo-mark">S</span>
+      <span style="color: white;">SafeRide</span>
+    </div>
+    <h1 style="font-size: 88px; line-height: 0.95;">SafeRide</h1>
+    <p class="lede" style="font-size: 26px; max-width: 880px; margin-top: 16px;">
+      A modern school bus platform for bus companies serving many schools.
+    </p>
+    <div style="margin-top: 60px;">
+      <span class="pill">Prototype · 2026</span>
+    </div>
+  </div>
+  <div class="slide-no">1 / 11</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 2 — WHAT IS SAFERIDE
+     ============================================================ -->
+<section class="slide">
+  <div class="pad">
+    <span class="pill pill-light">01 · Overview</span>
+    <h2 style="margin-top: 12px;">What is SafeRide?</h2>
+    <p class="lede" style="max-width: 1100px;">
+      SafeRide is a complete school bus tracking system, built for a bus company that
+      operates across many schools. One platform, four apps, one simple promise: every parent
+      knows where their child is, every minute of the school commute.
+    </p>
+
+    <div class="cards-3" style="margin-top: 28px;">
+      <div class="card">
+        <div class="icon-box icon-blue">🚌</div>
+        <h3>One operator, many schools</h3>
+        <p style="font-size: 14px;">Run your entire fleet across every school you serve from one dashboard. Schools, buses, drivers, routes — all in one place.</p>
+      </div>
+      <div class="card">
+        <div class="icon-box icon-amber">📷</div>
+        <h3>QR check-in</h3>
+        <p style="font-size: 14px;">Each student has a QR code on their school ID. The driver scans it as they board and exit. No expensive hardware, no batteries, no per-student fees.</p>
+      </div>
+      <div class="card">
+        <div class="icon-box icon-green">🛰️</div>
+        <h3>Live + verified</h3>
+        <p style="font-size: 14px;">Every scan is timestamped, GPS-tagged, and pushed to parents in seconds. Phone calls to the school office go away.</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-no">2 / 11</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 3 — THE PROBLEM
+     ============================================================ -->
+<section class="slide">
+  <div class="pad">
+    <span class="pill pill-light">02 · The problem</span>
+    <h2 style="margin-top: 12px;">Why this matters</h2>
+    <p class="lede" style="max-width: 1100px;">
+      Today, parents, schools, and bus companies all operate without real visibility.
+      Mistakes happen — sometimes serious ones — and trust is hard to rebuild.
+    </p>
+
+    <div class="cards-4" style="margin-top: 24px;">
+      <div class="card">
+        <div class="icon-box icon-red">😟</div>
+        <h3>No visibility for parents</h3>
+        <p style="font-size: 14px;">"Did my child get on the bus?" "Why is it late?" Endless calls to the school. No real answers.</p>
+      </div>
+      <div class="card">
+        <div class="icon-box icon-amber">🚌</div>
+        <h3>Wrong-bus mistakes</h3>
+        <p style="font-size: 14px;">Especially with young students. Drivers can't memorize 40 students × multiple schools. One mistake makes the news.</p>
+      </div>
+      <div class="card">
+        <div class="icon-box icon-amber">📋</div>
+        <h3>Paper attendance</h3>
+        <p style="font-size: 14px;">Drivers tick names by hand. Schools and the bus company reconcile by phone. Hours wasted every single day.</p>
+      </div>
+      <div class="card">
+        <div class="icon-box icon-red">⚠️</div>
+        <h3>Children left on buses</h3>
+        <p style="font-size: 14px;">Real, recurring incidents. Once it happens, the operator's reputation never fully recovers.</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-no">3 / 11</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 4 — HOW IT WORKS (4-EVENT FLOW)
+     ============================================================ -->
+<section class="slide">
+  <div class="pad">
+    <span class="pill pill-light">03 · How it works</span>
+    <h2 style="margin-top: 12px;">Four scans a day. That's it.</h2>
+    <p class="lede" style="max-width: 1100px;">
+      Every school day, every student. Each scan creates one verified event — and triggers one parent notification.
+    </p>
+
+    <div class="events-flow">
+      <div class="event-card">
+        <div class="num">EVENT 1</div>
+        <div class="icon">🏠</div>
+        <div class="title">Boarded at home</div>
+        <div class="when">Morning</div>
+      </div>
+      <div class="event-arrow">→</div>
+      <div class="event-card">
+        <div class="num">EVENT 2</div>
+        <div class="icon">🏫</div>
+        <div class="title">Arrived at school</div>
+        <div class="when">Morning</div>
+      </div>
+      <div class="event-arrow">→</div>
+      <div class="event-card">
+        <div class="num">EVENT 3</div>
+        <div class="icon">🚌</div>
+        <div class="title">Boarded for home</div>
+        <div class="when">Afternoon</div>
+      </div>
+      <div class="event-arrow">→</div>
+      <div class="event-card">
+        <div class="num">EVENT 4</div>
+        <div class="icon">🏠</div>
+        <div class="title">Dropped off at home</div>
+        <div class="when">Afternoon</div>
+      </div>
+    </div>
+
+    <div style="margin-top: 30px; padding: 16px 22px; background: var(--slate-50); border-radius: 12px; border-left: 4px solid var(--yellow);">
+      <p style="margin: 0; font-size: 15px;"><b>Each event records:</b> student · bus · stop · timestamp · GPS · driver. Every report, every alert, every notification builds on this single source of truth.</p>
+    </div>
+  </div>
+  <div class="slide-no">4 / 11</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 5 — FOUR ROLES, FOUR APPS
+     ============================================================ -->
+<section class="slide">
+  <div class="pad">
+    <span class="pill pill-light">04 · The four roles</span>
+    <h2 style="margin-top: 12px;">Four roles, four apps, one platform</h2>
+    <p class="lede" style="max-width: 1100px;">
+      Everyone who matters in the school commute gets a tool designed for their job.
+    </p>
+
+    <div class="role-grid" style="margin-top: 22px;">
+      <div class="role-card">
+        <div class="role-icon icon-blue">🛰️</div>
+        <h3>Bus Company</h3>
+        <p>Live fleet view across every school. Dispatchers see every bus, every run, every alert in one place.</p>
+      </div>
+      <div class="role-card">
+        <div class="role-icon icon-amber">🚌</div>
+        <h3>Driver</h3>
+        <p>Tablet-first app. Today's route, manifest at every stop, one-tap QR scan, end-of-route check.</p>
+      </div>
+      <div class="role-card">
+        <div class="role-icon icon-green">👨‍👩‍👧</div>
+        <h3>Parent</h3>
+        <p>Live bus location, instant notifications when their child boards or arrives. Multi-child support.</p>
+      </div>
+      <div class="role-card">
+        <div class="role-icon icon-purple">🏫</div>
+        <h3>School</h3>
+        <p>Per-school view. See incoming buses, attendance, and reconcile against classroom in seconds.</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-no">5 / 11</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 6 — OPERATOR DASHBOARD
+     ============================================================ -->
+<section class="slide">
+  <div class="pad">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+      <div>
+        <span class="pill pill-light">05 · Bus Company</span>
+        <h2 style="margin-top: 8px;">The dispatcher dashboard</h2>
+      </div>
+    </div>
+
+    <div class="two-col left-img">
+      <div>
+        <img class="screenshot" src="screenshots/operator.png" alt="Operator dashboard">
+      </div>
+      <div>
+        <p style="font-size: 16px;">One screen runs the whole operation, across every school.</p>
+        <ul class="feat-list">
+          <li>Live map of every bus in the fleet, color-coded by school</li>
+          <li>Click any bus to see its current run, manifest, ETA, and stop progress</li>
+          <li>Real-time alerts: late starts, traffic, off-route, completed runs</li>
+          <li>Today's schedule across every route, filterable by school</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="slide-no">6 / 11</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 7 — DRIVER APP
+     ============================================================ -->
+<section class="slide">
+  <div class="pad">
+    <span class="pill pill-light">06 · Driver</span>
+    <h2 style="margin-top: 8px;">The driver tablet</h2>
+
+    <div class="two-col right-img">
+      <div>
+        <p style="font-size: 16px;">A tablet mounted in the bus shows the driver everything they need — and nothing they don't.</p>
+        <ul class="feat-list">
+          <li>Today's stops in order, current stop highlighted</li>
+          <li>Manifest at every stop: who's expected, who has scanned</li>
+          <li>One huge "Tap to scan" button — one second per student</li>
+          <li>Wrong-bus alert if a student scans onto the wrong bus</li>
+          <li><b>"Walk the bus"</b> forced confirmation at end of route</li>
+          <li>Manual override for forgotten cards — bus never stops moving</li>
+        </ul>
+      </div>
+      <div>
+        <img class="screenshot" src="screenshots/driver.png" alt="Driver tablet app">
+      </div>
+    </div>
+  </div>
+  <div class="slide-no">7 / 11</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 8 — PARENT APP
+     ============================================================ -->
+<section class="slide">
+  <div class="pad">
+    <span class="pill pill-light">07 · Parent</span>
+    <h2 style="margin-top: 8px;">The parent phone app</h2>
+
+    <div class="two-col right-narrow">
+      <div>
+        <p style="font-size: 16px;">Parents see exactly one thing: where their child is, right now.</p>
+        <ul class="feat-list">
+          <li>Live bus location on a map, with ETA to the home stop</li>
+          <li>Push notification on each of the 4 events — boarded, arrived, returned, home</li>
+          <li>One account for the whole family. Switch between siblings — even if they go to different schools</li>
+          <li>Today's timeline of events with timestamps</li>
+          <li>Bilingual Lao + English — one tap to switch</li>
+          <li>One-tap call to driver, school, or bus company</li>
+        </ul>
+      </div>
+      <div class="device-shell">
+        <img class="screenshot" src="screenshots/parent.png" alt="Parent phone app" style="max-width: 100%; max-height: 540px; width: auto;">
+      </div>
+    </div>
+  </div>
+  <div class="slide-no">8 / 11</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 9 — SCHOOL DASHBOARD
+     ============================================================ -->
+<section class="slide">
+  <div class="pad">
+    <span class="pill pill-light">08 · School</span>
+    <h2 style="margin-top: 8px;">The school dashboard</h2>
+
+    <div class="two-col left-img">
+      <div>
+        <img class="screenshot" src="screenshots/school.png" alt="School admin dashboard">
+      </div>
+      <div>
+        <p style="font-size: 16px;">School admins answer parent calls in seconds, not in twenty-minute phone tag.</p>
+        <ul class="feat-list">
+          <li>Today's incoming buses with live progress bars</li>
+          <li>Per-student lookup — answer "did Sofia board?" in &lt;10 seconds</li>
+          <li>Reconcile bus attendance against classroom attendance</li>
+          <li>Discrepancy flags: scanned in, but marked absent in homeroom?</li>
+          <li>Per-school scoping — admins only see their own students</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="slide-no">9 / 11</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 10 — SAFETY
+     ============================================================ -->
+<section class="slide brand-bg">
+  <div class="pad">
+    <span class="pill">09 · Safety</span>
+    <h2 style="margin-top: 8px;">Safety built in, not bolted on</h2>
+    <p class="lede" style="max-width: 1000px; opacity: 0.85;">
+      The system actively refuses to let safety-critical mistakes happen.
+    </p>
+
+    <div class="cards-2" style="margin-top: 24px;">
+      <div class="card dark">
+        <div class="icon-box" style="background: rgba(239,68,68,0.2); color: #FCA5A5;">🚫</div>
+        <h3>Wrong-bus alert</h3>
+        <p style="font-size: 15px;">If a student scans onto a bus they're not assigned to, the driver tablet flashes red. Doors don't close until resolved.</p>
+      </div>
+      <div class="card dark">
+        <div class="icon-box" style="background: rgba(255,214,10,0.2); color: var(--yellow);">👀</div>
+        <h3>Walk-the-bus check</h3>
+        <p style="font-size: 15px;">End of every run, the driver must confirm "I have walked the bus" before the run can be closed. No child left behind.</p>
+      </div>
+      <div class="card dark">
+        <div class="icon-box" style="background: rgba(16,185,129,0.2); color: #6EE7B7;">👤</div>
+        <h3>Authorized pickup</h3>
+        <p style="font-size: 15px;">For young children, the driver sees the list of approved adults at the home stop. No recognized adult — no drop-off.</p>
+      </div>
+      <div class="card dark">
+        <div class="icon-box" style="background: rgba(99,102,241,0.2); color: #A5B4FC;">🔒</div>
+        <h3>Custody-aware</h3>
+        <p style="font-size: 15px;">Per-parent visibility. Court-restricted parents do not see live location data. The system protects, not enables.</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-no">10 / 11</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 11 — THE ASK
+     ============================================================ -->
+<section class="slide brand-bg">
+  <div class="pad" style="justify-content: center;">
+    <span class="pill">10 · Next steps</span>
+    <h1 style="font-size: 64px; margin-top: 16px;">Let's pilot it.</h1>
+    <p class="lede" style="font-size: 22px; max-width: 900px; margin-top: 16px;">
+      Pick <b style="color: var(--yellow);">2 buses</b> and <b style="color: var(--yellow);">1 school</b> for a 30-day pilot.
+      We bring the system, train your drivers, onboard the first parents.
+      You bring the buses and the relationships.
+      After 30 days we review the results together — and decide if we scale.
+    </p>
+
+    <div class="stat-row">
+      <div>
+        <div class="stat-big">30</div>
+        <div class="stat-label">Days</div>
+      </div>
+      <div>
+        <div class="stat-big">2</div>
+        <div class="stat-label">Buses</div>
+      </div>
+      <div>
+        <div class="stat-big">1</div>
+        <div class="stat-label">School</div>
+      </div>
+      <div>
+        <div class="stat-big">0</div>
+        <div class="stat-label">Hardware to buy</div>
+      </div>
+    </div>
+
+    <div style="margin-top: 60px; display: flex; align-items: center; gap: 14px;">
+      <span class="logo-mark" style="width: 38px; height: 38px; font-size: 20px;">S</span>
+      <div>
+        <div style="font-weight: 800; font-size: 18px;">SafeRide</div>
+        <div style="font-size: 13px; opacity: 0.7;">ops@saferide.la · +856 21 555 0100 · phoudssp.github.io/schoolbus</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-no">11 / 11</div>
+</section>
+
+</body>
+</html>
