@@ -9,20 +9,20 @@ window.APP_DATA = {
     id: 'OP-1',
     name: 'SafeRide Bus Co.',
     nameLo: 'ບໍລິສັດ SafeRide ຂົນສົ່ງນັກຮຽນ',
-    city: 'Vientiane',
-    cityLo: 'ນະຄອນຫຼວງວຽງຈັນ',
-    center: [17.9700, 102.6150],
-    contact: { phone: '+856 21 555 0100', email: 'ops@saferide.la' }
+    city: 'Houayxay, Bokeo',
+    cityLo: 'ຫ້ວຍຊາຍ, ບໍ່ແກ້ວ',
+    center: [20.2700, 100.4140],
+    contact: { phone: '+856 84 555 0100', email: 'ops@saferide.la' }
   },
 
   schools: [
     {
       id: 'vis',
-      name: 'Vientiane International School',
-      nameLo: 'ໂຮງຮຽນສາກົນວຽງຈັນ',
-      shortName: 'VIS',
-      address: 'Tha Ngon Road, Saysettha',
-      coords: [17.9650, 102.6020],
+      name: 'Houayxay International School',
+      nameLo: 'ໂຮງຮຽນສາກົນຫ້ວຍຊາຍ',
+      shortName: 'HIS',
+      address: 'Houayxay City Centre, Bokeo',
+      coords: [20.2700, 100.4150],
       bellAm: '07:30',
       bellPm: '14:30',
       color: '#2563EB',  // blue
@@ -30,11 +30,11 @@ window.APP_DATA = {
     },
     {
       id: 'sgs',
-      name: 'Sengsavanh Primary School',
-      nameLo: 'ໂຮງຮຽນປະຖົມເຊັງສະຫວັນ',
-      shortName: 'Sengsavanh',
-      address: 'Sisattanak District',
-      coords: [17.9580, 102.6280],
+      name: 'Bokeo Primary School',
+      nameLo: 'ໂຮງຮຽນປະຖົມບໍ່ແກ້ວ',
+      shortName: 'BPS',
+      address: 'Ban Phadeng, Houayxay',
+      coords: [20.2680, 100.4250],
       bellAm: '08:00',
       bellPm: '15:00',
       color: '#059669',  // green
@@ -42,11 +42,11 @@ window.APP_DATA = {
     },
     {
       id: 'pty',
-      name: 'Panyathip International School',
-      nameLo: 'ໂຮງຮຽນສາກົນປັນຍາທິບ',
-      shortName: 'Panyathip',
-      address: 'Saysettha District',
-      coords: [17.9740, 102.6480],
+      name: 'Houayxay Secondary School',
+      nameLo: 'ໂຮງຮຽນມັດທະຍົມຫ້ວຍຊາຍ',
+      shortName: 'HSS',
+      address: 'Ban Donphung, Houayxay',
+      coords: [20.2780, 100.4350],
       bellAm: '08:30',
       bellPm: '15:30',
       color: '#D97706',  // amber
@@ -55,12 +55,12 @@ window.APP_DATA = {
   ],
 
   buses: [
-    { id: 'B-101', plate: 'ດທ-1234', capacity: 40, status: 'active' },
-    { id: 'B-102', plate: 'ດທ-1567', capacity: 40, status: 'active' },
-    { id: 'B-103', plate: 'ດທ-1890', capacity: 30, status: 'active' },
-    { id: 'B-104', plate: 'ດທ-2134', capacity: 40, status: 'active' },
-    { id: 'B-105', plate: 'ດທ-2456', capacity: 22, status: 'active', notes: 'Special needs / wheelchair-equipped' },
-    { id: 'B-106', plate: 'ດທ-2789', capacity: 40, status: 'idle', notes: 'Backup bus' }
+    { id: 'B-101', plate: 'ບກ-1234', capacity: 40, status: 'active' },
+    { id: 'B-102', plate: 'ບກ-1567', capacity: 40, status: 'active' },
+    { id: 'B-103', plate: 'ບກ-1890', capacity: 30, status: 'active' },
+    { id: 'B-104', plate: 'ບກ-2134', capacity: 40, status: 'active' },
+    { id: 'B-105', plate: 'ບກ-2456', capacity: 22, status: 'active', notes: 'Special needs / wheelchair-equipped' },
+    { id: 'B-106', plate: 'ບກ-2789', capacity: 40, status: 'idle', notes: 'Backup bus' }
   ],
 
   drivers: [
@@ -123,34 +123,34 @@ window.APP_DATA = {
     { id: 'S-4002', name: 'Mali Sayyalath',      grade: 'Grade 4', schoolId: 'sgs', guardianId: 'G-007', stopId: 'STOP-E2', specialNeeds: true, notes: 'Seizure protocol; meds in red bag' }
   ],
 
-  // Stops with coordinates around Vientiane neighborhoods
+  // Stops with coordinates around Houayxay (Bokeo Province)
   stops: {
-    // Cluster A — Sisattanak / central
-    'STOP-A1': { coords: [17.9460, 102.5950], name: 'Saylom Junction',           nameLo: 'ສາມແຍກໄຊລົມ' },
-    'STOP-A2': { coords: [17.9520, 102.6010], name: 'Wat Sisaket Stop',          nameLo: 'ປ້າຍວັດສີສະເກດ' },
-    'STOP-A3': { coords: [17.9590, 102.5920], name: 'Hong Kham Village',         nameLo: 'ບ້ານຫົງຄຳ' },
-    'STOP-A4': { coords: [17.9430, 102.5870], name: 'Mekong Riverside',          nameLo: 'ແຄມຂອງ' },
-    'STOP-A5': { coords: [17.9480, 102.6030], name: 'Talat Sao Junction',        nameLo: 'ສາມແຍກຕະຫຼາດເຊົ້າ' },
-    // Cluster B — Sikhottabong / west
-    'STOP-B1': { coords: [17.9710, 102.5800], name: 'Sikhottabong Market',       nameLo: 'ຕະຫຼາດສີໂຄດຕະບອງ' },
-    'STOP-B2': { coords: [17.9810, 102.5760], name: 'Phonsinuan Village',        nameLo: 'ບ້ານໂພນສີນວນ' },
-    'STOP-B3': { coords: [17.9690, 102.5850], name: 'Wattay Junction',           nameLo: 'ສາມແຍກວັດໄຕ' },
-    // Cluster C — Hadxaifong / east-south
-    'STOP-C1': { coords: [17.9410, 102.6520], name: 'Hadxaifong Bridge',         nameLo: 'ຂົວຫາດຊາຍຟອງ' },
-    'STOP-C2': { coords: [17.9380, 102.6620], name: 'Dong Dok Village',          nameLo: 'ບ້ານດົງໂດກ' },
-    'STOP-C3': { coords: [17.9450, 102.6700], name: 'Salakham Junction',         nameLo: 'ສາມແຍກສາລາຄຳ' },
-    // Cluster D — Saysettha / east
-    'STOP-D1': { coords: [17.9820, 102.6390], name: 'Saysettha Mall',            nameLo: 'ສູນການຄ້າໄຊເສດຖາ' },
-    'STOP-D2': { coords: [17.9760, 102.6510], name: 'Phonpapao Junction',        nameLo: 'ສາມແຍກໂພນປະເພົາ' },
-    'STOP-D3': { coords: [17.9880, 102.6420], name: 'That Luang Square',         nameLo: 'ຫໍພະທາດຫຼວງ' },
-    'STOP-D4': { coords: [17.9700, 102.6540], name: 'Saphanthong Tai',           nameLo: 'ສະພານທອງໃຕ້' },
+    // Cluster A — central Houayxay
+    'STOP-A1': { coords: [20.2620, 100.4080], name: 'Ban Houayxai Junction',     nameLo: 'ສາມແຍກບ້ານຫ້ວຍຊາຍ' },
+    'STOP-A2': { coords: [20.2680, 100.4140], name: 'Ban Phadeng Market',        nameLo: 'ຕະຫຼາດບ້ານຜາແດງ' },
+    'STOP-A3': { coords: [20.2750, 100.4050], name: 'Ban Donphung Village',      nameLo: 'ບ້ານດອນຜຸ້ງ' },
+    'STOP-A4': { coords: [20.2580, 100.4000], name: 'Mekong Port',               nameLo: 'ທ່າເຮືອແມ່ນໍ້າຂອງ' },
+    'STOP-A5': { coords: [20.2640, 100.4160], name: 'Houayxay Bridge',           nameLo: 'ຂົວຫ້ວຍຊາຍ' },
+    // Cluster B — west / Houayxoua side
+    'STOP-B1': { coords: [20.2870, 100.3920], name: 'Ban Houayxoua Market',      nameLo: 'ຕະຫຼາດບ້ານຫ້ວຍຊົວ' },
+    'STOP-B2': { coords: [20.2970, 100.3880], name: 'Ban Donsai Village',        nameLo: 'ບ້ານດອນຊາຍ' },
+    'STOP-B3': { coords: [20.2850, 100.3970], name: 'Pakkhing Junction',         nameLo: 'ສາມແຍກປາກຄິງ' },
+    // Cluster C — south-east toward Tonpheung
+    'STOP-C1': { coords: [20.2570, 100.4380], name: 'Tonpheung Bridge',          nameLo: 'ຂົວຕົ້ນເຜິ້ງ' },
+    'STOP-C2': { coords: [20.2540, 100.4480], name: 'Ban Donmak Village',        nameLo: 'ບ້ານດອນຫມາກ' },
+    'STOP-C3': { coords: [20.2610, 100.4560], name: 'Pakkha Junction',           nameLo: 'ສາມແຍກປາກຄ້າ' },
+    // Cluster D — east / Donthong side
+    'STOP-D1': { coords: [20.2820, 100.4250], name: 'Houayxay Mall',             nameLo: 'ສູນການຄ້າຫ້ວຍຊາຍ' },
+    'STOP-D2': { coords: [20.2760, 100.4400], name: 'Ban Donthong Junction',     nameLo: 'ສາມແຍກບ້ານດອນທອງ' },
+    'STOP-D3': { coords: [20.2880, 100.4280], name: 'Wat Phra Kaew',             nameLo: 'ວັດພະແກ້ວ' },
+    'STOP-D4': { coords: [20.2700, 100.4400], name: 'South Bridge',              nameLo: 'ຂົວໃຕ້' },
     // Cluster E — Special needs route
-    'STOP-E1': { coords: [17.9560, 102.6080], name: 'Khounta Village',           nameLo: 'ບ້ານຄູນຕາ' },
-    'STOP-E2': { coords: [17.9620, 102.6320], name: 'Dongpalan Junction',        nameLo: 'ສາມແຍກດົງປາລານ' },
+    'STOP-E1': { coords: [20.2660, 100.4180], name: 'Ban Khounta Village',       nameLo: 'ບ້ານຄູນຕາ' },
+    'STOP-E2': { coords: [20.2720, 100.4220], name: 'Ban Donglan Junction',      nameLo: 'ສາມແຍກບ້ານດົງລານ' },
     // School stops
-    'STOP-VIS':       { coords: [17.9650, 102.6020], name: 'Vientiane International School', nameLo: 'ໂຮງຮຽນສາກົນວຽງຈັນ', isSchool: 'vis' },
-    'STOP-SGS':       { coords: [17.9580, 102.6280], name: 'Sengsavanh School',              nameLo: 'ໂຮງຮຽນເຊັງສະຫວັນ', isSchool: 'sgs' },
-    'STOP-PTY':       { coords: [17.9740, 102.6480], name: 'Panyathip School',               nameLo: 'ໂຮງຮຽນປັນຍາທິບ', isSchool: 'pty' }
+    'STOP-VIS': { coords: [20.2700, 100.4150], name: 'Houayxay International School', nameLo: 'ໂຮງຮຽນສາກົນຫ້ວຍຊາຍ', isSchool: 'vis' },
+    'STOP-SGS': { coords: [20.2680, 100.4250], name: 'Bokeo Primary School',         nameLo: 'ໂຮງຮຽນປະຖົມບໍ່ແກ້ວ',  isSchool: 'sgs' },
+    'STOP-PTY': { coords: [20.2780, 100.4350], name: 'Houayxay Secondary School',    nameLo: 'ໂຮງຮຽນມັດທະຍົມຫ້ວຍຊາຍ', isSchool: 'pty' }
   },
 
   // Routes — each bus's day. Each route has multiple runs.
@@ -288,20 +288,20 @@ window.APP_DATA = {
 
   // Live bus positions at APP_NOW (07:05). Used for the operator/parent maps.
   livePositions: {
-    'B-101': { coords: [17.9555, 102.5970], heading: 45,  status: 'in_transit', currentRunId: 'RUN-101-AM-VIS', nextStopId: 'STOP-A4', etaMin: 3 },
-    'B-102': { coords: [17.9790, 102.6440], heading: 90,  status: 'in_transit', currentRunId: 'RUN-102-AM-PTY', nextStopId: 'STOP-D2', etaMin: 11 },
-    'B-103': { coords: [17.9750, 102.5780], heading: 270, status: 'at_stop',    currentRunId: 'RUN-103-AM-VIS', nextStopId: 'STOP-B2', etaMin: 0 },
-    'B-104': { coords: [17.9420, 102.6500], heading: 30,  status: 'starting',   currentRunId: 'RUN-104-AM-SGS', nextStopId: 'STOP-C1', etaMin: 5 },
-    'B-105': { coords: [17.9590, 102.6090], heading: 60,  status: 'in_transit', currentRunId: 'RUN-105-AM-MIXED', nextStopId: 'STOP-VIS', etaMin: 18 },
-    'B-106': { coords: [17.9700, 102.6150], heading: 0,   status: 'idle',       currentRunId: null, nextStopId: null, etaMin: null }
+    'B-101': { coords: [20.2640, 100.4030], heading: 45,  status: 'in_transit', currentRunId: 'RUN-101-AM-VIS', nextStopId: 'STOP-A4', etaMin: 3 },
+    'B-102': { coords: [20.2790, 100.4320], heading: 90,  status: 'in_transit', currentRunId: 'RUN-102-AM-PTY', nextStopId: 'STOP-D2', etaMin: 11 },
+    'B-103': { coords: [20.2960, 100.3890], heading: 270, status: 'at_stop',    currentRunId: 'RUN-103-AM-VIS', nextStopId: 'STOP-B2', etaMin: 0 },
+    'B-104': { coords: [20.2580, 100.4400], heading: 30,  status: 'starting',   currentRunId: 'RUN-104-AM-SGS', nextStopId: 'STOP-C1', etaMin: 5 },
+    'B-105': { coords: [20.2680, 100.4170], heading: 60,  status: 'in_transit', currentRunId: 'RUN-105-AM-MIXED', nextStopId: 'STOP-VIS', etaMin: 18 },
+    'B-106': { coords: [20.2700, 100.4140], heading: 0,   status: 'idle',       currentRunId: null, nextStopId: null, etaMin: null }
   },
 
   // Simulated alerts visible on the operator dashboard
   alerts: [
-    { id: 'A-1', severity: 'info',    busId: 'B-101', message: 'Run RUN-101-AM-VIS on schedule',     messageLo: 'ເສັ້ນທາງ RUN-101-AM-VIS ຕາມເວລາ',                  ts: '2026-05-07T06:55:00+07:00' },
-    { id: 'A-2', severity: 'warning', busId: 'B-104', message: 'Bus 104 starting 5 min late',        messageLo: 'ລົດ 104 ອອກຊ້າ 5 ນາທີ',                          ts: '2026-05-07T07:01:00+07:00' },
-    { id: 'A-3', severity: 'info',    busId: 'B-105', message: 'Special needs student S-4001 boarded', messageLo: 'ນັກຮຽນພິເສດ S-4001 ຂຶ້ນລົດແລ້ວ',                ts: '2026-05-07T06:55:14+07:00' },
-    { id: 'A-4', severity: 'warning', busId: 'B-102', message: 'Light traffic on Phonpapao Rd',      messageLo: 'ລົດແອອັດເລັກນ້ອຍຖະໜົນໂພນປະເພົາ',                  ts: '2026-05-07T07:03:00+07:00' }
+    { id: 'A-1', severity: 'info',    busId: 'B-101', message: 'Run RUN-101-AM-VIS on schedule',       messageLo: 'ເສັ້ນທາງ RUN-101-AM-VIS ຕາມເວລາ',                  ts: '2026-05-07T06:55:00+07:00' },
+    { id: 'A-2', severity: 'warning', busId: 'B-104', message: 'Bus 104 starting 5 min late',          messageLo: 'ລົດ 104 ອອກຊ້າ 5 ນາທີ',                            ts: '2026-05-07T07:01:00+07:00' },
+    { id: 'A-3', severity: 'info',    busId: 'B-105', message: 'Special needs student S-4001 boarded', messageLo: 'ນັກຮຽນພິເສດ S-4001 ຂຶ້ນລົດແລ້ວ',                  ts: '2026-05-07T06:55:14+07:00' },
+    { id: 'A-4', severity: 'warning', busId: 'B-102', message: 'Light traffic near Tonpheung Rd',      messageLo: 'ລົດແອອັດເລັກນ້ອຍແຖວທາງຕົ້ນເຜິ້ງ',                ts: '2026-05-07T07:03:00+07:00' }
   ],
 
   // ========== Billing & subscriptions ==========
