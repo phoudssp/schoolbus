@@ -1,0 +1,668 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SafeRide — How a tap works</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="shared/styles.css">
+  <style>
+    /* ==========================================================
+       3D-perspective stage: a school bus on the right, a student
+       walking up from the left, taps the reader, the server pings
+       a parent phone and dispatcher dashboard.
+       Animation loops on a 12s timeline driven by step-N body class.
+       ========================================================== */
+
+    body { background: linear-gradient(180deg, #E0F2FE 0%, #F8FAFC 50%, #F1F5F9 100%); }
+
+    .stage-wrap {
+      position: relative;
+      width: 100%;
+      height: 580px;
+      overflow: hidden;
+      perspective: 1400px;
+      perspective-origin: 50% 65%;
+    }
+    .stage {
+      position: absolute; inset: 0;
+      transform-style: preserve-3d;
+    }
+
+    /* Ground / road */
+    .ground {
+      position: absolute; left: 0; right: 0; bottom: 0;
+      height: 32%;
+      background: linear-gradient(180deg, #CBD5E1 0%, #94A3B8 100%);
+      transform: rotateX(60deg) translateZ(-40px);
+      transform-origin: bottom;
+    }
+    .ground::before {
+      content: ''; position: absolute; left: 6%; right: 6%; top: 38%;
+      height: 6px; background: white;
+      background: repeating-linear-gradient(90deg, white 0 32px, transparent 32px 64px);
+    }
+
+    /* Sky cloud accents */
+    .skyCloud {
+      position: absolute; top: 6%; opacity: 0.55;
+      width: 80px; height: 30px;
+      background: white; border-radius: 999px;
+      box-shadow: 30px -8px 0 0 white, -22px -4px 0 0 white;
+    }
+    .skyCloud.s1 { left: 10%; }
+    .skyCloud.s2 { left: 40%; top: 14%; transform: scale(0.7); }
+    .skyCloud.s3 { right: 22%; top: 10%; transform: scale(0.85); }
+
+    /* ====== BUS ====== */
+    .bus {
+      position: absolute; right: 4%; bottom: 12%;
+      width: 480px; height: 240px;
+      transform: rotateY(-12deg) translateZ(20px);
+      transform-style: preserve-3d;
+      filter: drop-shadow(0 20px 30px rgba(15,30,61,0.25));
+    }
+    .bus svg { width: 100%; height: 100%; }
+
+    /* Reader on the bus (where student taps) */
+    .reader {
+      position: absolute;
+      right: 8%;
+      top: 52%;
+      width: 56px; height: 72px;
+      background: #0F1E3D;
+      border-radius: 8px;
+      border: 2px solid #1E293B;
+      display: flex; align-items: center; justify-content: center;
+      transform: translateZ(60px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+    .reader-screen {
+      width: 40px; height: 40px;
+      border-radius: 6px;
+      background: #1F2937;
+      display: flex; align-items: center; justify-content: center;
+      color: #6B7280;
+      font-size: 22px;
+      transition: background 0.2s, color 0.2s;
+    }
+    /* When step=3 (tap confirmed), screen flashes green */
+    body.step-3 .reader-screen,
+    body.step-4 .reader-screen,
+    body.step-5 .reader-screen { background: #10B981; color: white; box-shadow: 0 0 18px rgba(16, 185, 129, 0.7); }
+
+    /* Reader pulse (sound waves) */
+    .reader-pulse {
+      position: absolute;
+      width: 100%; height: 100%;
+      border-radius: 12px;
+      pointer-events: none;
+      opacity: 0;
+    }
+    body.step-3 .reader-pulse {
+      animation: pulse 1s ease-out;
+    }
+    @keyframes pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); opacity: 1; }
+      100% { box-shadow: 0 0 0 60px rgba(16, 185, 129, 0); opacity: 0; }
+    }
+
+    /* ====== STUDENT ====== */
+    .student {
+      position: absolute;
+      left: 6%;
+      bottom: 18%;
+      width: 130px; height: 200px;
+      transform-origin: bottom center;
+      transition: transform 1.2s cubic-bezier(0.45, 0, 0.55, 1);
+      transform: translateX(0) translateZ(80px);
+    }
+    body.step-2 .student,
+    body.step-3 .student,
+    body.step-4 .student,
+    body.step-5 .student {
+      transform: translateX(280px) translateZ(80px);
+    }
+
+    /* Subtle walking bob */
+    .student.walking { animation: walk 0.5s ease-in-out infinite; }
+    body.step-1 .student { animation: walk 0.5s ease-in-out infinite; }
+    @keyframes walk {
+      0%, 100% { transform: translateX(var(--x, 0)) translateZ(80px) translateY(0); }
+      50%      { transform: translateX(var(--x, 0)) translateZ(80px) translateY(-3px); }
+    }
+    body.step-2 .student { --x: 280px; animation: tap 1.2s ease-in-out; }
+    @keyframes tap {
+      0%   { transform: translateX(280px) translateZ(80px); }
+      40%  { transform: translateX(280px) translateZ(80px) rotate(-2deg); }
+      60%  { transform: translateX(280px) translateZ(80px) rotate(-2deg); }
+      100% { transform: translateX(280px) translateZ(80px); }
+    }
+
+    .student svg { width: 100%; height: 100%; }
+
+    /* Card in student's hand */
+    .card-anim {
+      position: absolute;
+      right: -10px;
+      top: 36%;
+      width: 70px; height: 44px;
+      background: linear-gradient(135deg, #0F1E3D 0%, #182B57 100%);
+      border-radius: 5px;
+      border: 1.5px solid #FFD60A;
+      display: flex; align-items: center; justify-content: center;
+      transform: translateZ(20px);
+      transition: transform 0.6s cubic-bezier(.5,1.6,.5,1);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    .card-anim::after {
+      content: 'S'; color: #FFD60A; font-weight: 900; font-size: 16px;
+    }
+    body.step-2 .card-anim,
+    body.step-3 .card-anim {
+      transform: translateZ(20px) translateX(34px) rotate(-12deg);
+    }
+
+    /* ====== Cloud / server ====== */
+    .cloud {
+      position: absolute;
+      left: 50%; top: 18%;
+      width: 110px; height: 70px;
+      transform: translateX(-50%) translateZ(180px);
+      filter: drop-shadow(0 10px 20px rgba(15,30,61,0.15));
+    }
+    .cloud svg { width: 100%; height: 100%; }
+    .cloud-glow {
+      position: absolute; inset: 0;
+      border-radius: 50%;
+      opacity: 0;
+      transition: opacity 0.3s;
+      background: radial-gradient(circle, rgba(255,214,10,0.4) 0%, transparent 70%);
+    }
+    body.step-4 .cloud-glow { opacity: 1; animation: cloudPulse 1s ease-out; }
+    @keyframes cloudPulse {
+      0%   { transform: scale(0.7); opacity: 0; }
+      50%  { transform: scale(1.4); opacity: 1; }
+      100% { transform: scale(1.6); opacity: 0; }
+    }
+
+    /* ====== Data flow lines ====== */
+    .flows {
+      position: absolute; inset: 0;
+      pointer-events: none;
+      transform: translateZ(40px);
+    }
+    .flow-path {
+      stroke: #0F1E3D;
+      stroke-width: 2;
+      fill: none;
+      stroke-dasharray: 4 6;
+      opacity: 0.0;
+      transition: opacity 0.3s;
+    }
+    body.step-3 .flow-card-to-cloud,
+    body.step-4 .flow-card-to-cloud { opacity: 0.5; stroke: #FFD60A; }
+
+    body.step-4 .flow-cloud-phone,
+    body.step-4 .flow-cloud-dash,
+    body.step-5 .flow-cloud-phone,
+    body.step-5 .flow-cloud-dash { opacity: 0.5; stroke: #10B981; }
+
+    .flow-pkt {
+      fill: #FFD60A;
+      r: 5;
+      filter: drop-shadow(0 0 6px rgba(255,214,10,0.6));
+      opacity: 0;
+    }
+    body.step-3 .flow-pkt-up,
+    body.step-4 .flow-pkt-up { opacity: 1; animation: pktUp 0.9s ease-in forwards; }
+    @keyframes pktUp { to { offset-distance: 100%; } }
+
+    body.step-4 .flow-pkt-phone,
+    body.step-5 .flow-pkt-phone { opacity: 1; animation: pktDownPhone 0.9s ease-out forwards; fill: #10B981; }
+    body.step-4 .flow-pkt-dash,
+    body.step-5 .flow-pkt-dash { opacity: 1; animation: pktDownDash 0.9s ease-out forwards; fill: #10B981; }
+    @keyframes pktDownPhone { to { offset-distance: 100%; } }
+    @keyframes pktDownDash  { to { offset-distance: 100%; } }
+
+    /* ====== Parent phone ====== */
+    .phone {
+      position: absolute;
+      right: 5%; top: 8%;
+      width: 130px; height: 240px;
+      background: #1A1A1A;
+      border-radius: 18px;
+      padding: 6px;
+      transform: rotateY(-18deg) rotateZ(-3deg) translateZ(140px);
+      box-shadow: 0 18px 36px rgba(15,30,61,0.25);
+    }
+    .phone-screen {
+      width: 100%; height: 100%;
+      background: white;
+      border-radius: 12px;
+      padding: 14px 8px 8px;
+      position: relative;
+      overflow: hidden;
+    }
+    .phone-time {
+      font-size: 9px; font-weight: 700; color: #475569;
+      text-align: center; margin-bottom: 6px;
+    }
+    .phone-app-name {
+      font-size: 9px; color: #94A3B8; text-align: center;
+      margin-top: 36px;
+    }
+    .phone-notif {
+      position: absolute;
+      left: 4px; right: 4px; top: 24px;
+      background: white;
+      border: 1px solid #E2E8F0;
+      border-radius: 8px;
+      padding: 6px 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transform: translateY(-80px);
+      opacity: 0;
+      transition: transform 0.4s cubic-bezier(.5,1.4,.5,1), opacity 0.3s;
+    }
+    body.step-4 .phone-notif,
+    body.step-5 .phone-notif { transform: translateY(0); opacity: 1; }
+
+    .phone-notif .head { display: flex; align-items: center; gap: 4px; font-size: 9px; color: #64748B; }
+    .phone-notif .head .dot { width: 5px; height: 5px; border-radius: 999px; background: #10B981; }
+    .phone-notif .body { font-size: 10px; font-weight: 700; color: #0F1E3D; margin-top: 1px; line-height: 1.2; }
+    .phone-notif .meta { font-size: 8px; color: #94A3B8; margin-top: 2px; }
+
+    /* ====== Dispatcher monitor ====== */
+    .dash {
+      position: absolute;
+      right: 3%; bottom: 18%;
+      width: 220px; height: 130px;
+      background: #0F1E3D;
+      border-radius: 8px;
+      padding: 6px;
+      transform: rotateY(-22deg) translateZ(120px);
+      box-shadow: 0 18px 36px rgba(15,30,61,0.3);
+    }
+    .dash-screen {
+      width: 100%; height: 100%;
+      background: white;
+      border-radius: 5px;
+      padding: 6px 7px;
+      font-size: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+    .dash-screen .header {
+      font-weight: 800; font-size: 9px; color: #0F1E3D;
+      padding-bottom: 3px; border-bottom: 1px solid #E2E8F0;
+      display: flex; align-items: center; gap: 3px;
+    }
+    .dash-screen .header .live-dot {
+      width: 5px; height: 5px; border-radius: 999px; background: #10B981;
+      animation: blink 1.6s ease-in-out infinite;
+    }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .dash-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 3px 0;
+      border-bottom: 1px solid #F1F5F9;
+      font-size: 8px;
+      color: #475569;
+    }
+    .dash-row .name { font-weight: 700; color: #0F1E3D; }
+    .dash-event {
+      transform: translateX(-110%);
+      opacity: 0;
+      transition: transform 0.4s cubic-bezier(.5,1.4,.5,1), opacity 0.3s;
+      background: #FEF9C3; padding: 3px 5px; border-radius: 4px; margin: 4px 0;
+    }
+    body.step-4 .dash-event,
+    body.step-5 .dash-event { transform: translateX(0); opacity: 1; }
+
+    /* ====== Step UI ====== */
+    .steps {
+      display: flex; gap: 8px; align-items: center; justify-content: center;
+      margin-top: 8px;
+    }
+    .step-pill {
+      width: 12px; height: 12px; border-radius: 999px;
+      background: #CBD5E1;
+      transition: width 0.3s, background 0.3s;
+      cursor: pointer;
+    }
+    body.step-1 .step-pill[data-s="1"] { background: #FFD60A; width: 36px; }
+    body.step-2 .step-pill[data-s="2"] { background: #FFD60A; width: 36px; }
+    body.step-3 .step-pill[data-s="3"] { background: #FFD60A; width: 36px; }
+    body.step-4 .step-pill[data-s="4"] { background: #FFD60A; width: 36px; }
+    body.step-5 .step-pill[data-s="5"] { background: #FFD60A; width: 36px; }
+
+    .step-text {
+      text-align: center; padding: 16px;
+      transition: opacity 0.3s;
+    }
+    .step-text > div { display: none; }
+    body.step-1 .step-text > .s1,
+    body.step-2 .step-text > .s2,
+    body.step-3 .step-text > .s3,
+    body.step-4 .step-text > .s4,
+    body.step-5 .step-text > .s5 { display: block; }
+
+    /* Pause/play button */
+    .ctrls { display: flex; align-items: center; gap: 8px; justify-content: center; margin-top: 8px; }
+    .ctrls button {
+      background: white; border: 1px solid #E2E8F0; padding: 6px 14px;
+      border-radius: 999px; font-size: 13px; font-weight: 600; cursor: pointer;
+    }
+    .ctrls button:hover { background: #F8FAFC; }
+  </style>
+</head>
+<body class="step-1">
+
+<header class="sr-gradient text-white">
+  <div class="max-w-6xl mx-auto px-5 py-3 flex items-center justify-between">
+    <a href="index.html" class="sr-logo text-white">
+      <span class="sr-logo-mark">S</span>
+      <span data-i18n="brand">SafeRide</span>
+    </a>
+    <div class="flex items-center gap-3 text-sm">
+      <a href="index.html" class="text-slate-200 hover:text-white">← <span data-i18n="home">Home</span></a>
+      <button onclick="toggleLang()" class="sr-btn sr-btn-yellow text-sm px-3 py-1.5">
+        <span data-i18n="languageSwitch">ລາວ</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-6xl mx-auto px-5 py-6">
+
+  <div class="text-center mb-4">
+    <h1 class="text-3xl font-extrabold sr-brand-text" id="pageTitle">How a tap works</h1>
+    <p class="text-slate-500 mt-1" id="pageSub">From card tap to parent notification — end to end.</p>
+  </div>
+
+  <!-- 3D Stage -->
+  <div class="sr-card-elev overflow-hidden">
+    <div class="stage-wrap">
+      <div class="stage">
+
+        <!-- Sky -->
+        <div class="skyCloud s1"></div>
+        <div class="skyCloud s2"></div>
+        <div class="skyCloud s3"></div>
+
+        <!-- Cloud / server -->
+        <div class="cloud">
+          <div class="cloud-glow"></div>
+          <svg viewBox="0 0 100 60">
+            <defs>
+              <linearGradient id="cl" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#FFFFFF"/>
+                <stop offset="100%" stop-color="#E2E8F0"/>
+              </linearGradient>
+            </defs>
+            <path d="M 26 50 Q 12 50 12 38 Q 12 26 26 26 Q 28 12 44 14 Q 50 4 62 8 Q 78 8 78 24 Q 92 26 92 38 Q 92 50 76 50 Z"
+              fill="url(#cl)" stroke="#0F1E3D" stroke-width="1.5"/>
+            <text x="50" y="42" font-family="Inter" font-weight="800" font-size="11" fill="#0F1E3D" text-anchor="middle">SafeRide</text>
+          </svg>
+        </div>
+
+        <!-- Bus -->
+        <div class="bus">
+          <svg viewBox="0 0 480 240">
+            <defs>
+              <linearGradient id="busBody" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#FFE45A"/>
+                <stop offset="100%" stop-color="#FFC107"/>
+              </linearGradient>
+            </defs>
+            <!-- Body -->
+            <rect x="20" y="60" width="420" height="120" rx="12" fill="url(#busBody)" stroke="#0F1E3D" stroke-width="3"/>
+            <!-- Roof highlight -->
+            <rect x="30" y="65" width="400" height="6" fill="rgba(255,255,255,0.6)" rx="3"/>
+            <!-- Windows -->
+            <rect x="35"  y="80" width="55" height="40" rx="4" fill="#A0D8F0" stroke="#0F1E3D" stroke-width="1.5"/>
+            <rect x="100" y="80" width="55" height="40" rx="4" fill="#A0D8F0" stroke="#0F1E3D" stroke-width="1.5"/>
+            <rect x="165" y="80" width="55" height="40" rx="4" fill="#A0D8F0" stroke="#0F1E3D" stroke-width="1.5"/>
+            <rect x="230" y="80" width="55" height="40" rx="4" fill="#A0D8F0" stroke="#0F1E3D" stroke-width="1.5"/>
+            <rect x="295" y="80" width="55" height="40" rx="4" fill="#A0D8F0" stroke="#0F1E3D" stroke-width="1.5"/>
+            <!-- Door (right side, where reader is) -->
+            <rect x="365" y="80" width="50" height="80" rx="4" fill="#0F1E3D"/>
+            <rect x="370" y="86" width="40" height="36" rx="3" fill="#A0D8F0" stroke="#FFD60A" stroke-width="1"/>
+            <rect x="370" y="124" width="40" height="32" fill="#1F2937"/>
+            <line x1="390" y1="86" x2="390" y2="156" stroke="#FFD60A" stroke-width="1.5"/>
+            <!-- Stripe -->
+            <rect x="20" y="135" width="420" height="14" fill="#0F1E3D"/>
+            <text x="160" y="148" font-family="Inter" font-weight="900" font-size="13" fill="#FFD60A">SAFERIDE · B-101</text>
+            <!-- Wheels -->
+            <circle cx="100" cy="180" r="22" fill="#1F2937" stroke="#0F1E3D" stroke-width="3"/>
+            <circle cx="100" cy="180" r="9" fill="#94A3B8"/>
+            <circle cx="350" cy="180" r="22" fill="#1F2937" stroke="#0F1E3D" stroke-width="3"/>
+            <circle cx="350" cy="180" r="9" fill="#94A3B8"/>
+            <!-- Mirrors -->
+            <rect x="438" y="80" width="6" height="14" rx="2" fill="#0F1E3D"/>
+          </svg>
+
+          <!-- Card reader (over the bus, near the door) -->
+          <div class="reader">
+            <div class="reader-pulse"></div>
+            <div class="reader-screen" id="readerScreen">📡</div>
+          </div>
+        </div>
+
+        <!-- Student -->
+        <div class="student">
+          <svg viewBox="0 0 130 200" style="overflow: visible;">
+            <!-- Backpack -->
+            <rect x="22" y="68" width="32" height="44" rx="6" fill="#DC2626" stroke="#7F1D1D" stroke-width="2"/>
+            <rect x="28" y="76" width="20" height="2" fill="#7F1D1D"/>
+            <!-- Body / shirt -->
+            <path d="M 42 70 L 86 70 Q 92 70 92 76 L 92 124 Q 92 130 86 130 L 42 130 Q 36 130 36 124 L 36 76 Q 36 70 42 70 Z"
+                  fill="#3B82F6" stroke="#1E40AF" stroke-width="2"/>
+            <!-- Pants -->
+            <rect x="40" y="128" width="20" height="44" rx="3" fill="#1E3A8A" stroke="#0F1E3D" stroke-width="1.5"/>
+            <rect x="68" y="128" width="20" height="44" rx="3" fill="#1E3A8A" stroke="#0F1E3D" stroke-width="1.5"/>
+            <!-- Shoes -->
+            <ellipse cx="50" cy="178" rx="13" ry="6" fill="#0F1E3D"/>
+            <ellipse cx="78" cy="178" rx="13" ry="6" fill="#0F1E3D"/>
+            <!-- Head -->
+            <circle cx="64" cy="42" r="22" fill="#FBBF24" stroke="#92400E" stroke-width="2"/>
+            <!-- Hair -->
+            <path d="M 44 32 Q 50 22 64 22 Q 78 22 84 32 L 84 42 Q 76 38 64 38 Q 52 38 44 42 Z" fill="#1F2937"/>
+            <!-- Eyes -->
+            <circle cx="58" cy="44" r="2" fill="#0F1E3D"/>
+            <circle cx="70" cy="44" r="2" fill="#0F1E3D"/>
+            <!-- Smile -->
+            <path d="M 56 52 Q 64 56 72 52" stroke="#0F1E3D" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <!-- Arm extending toward reader -->
+            <path d="M 88 80 Q 110 90 120 100" stroke="#FBBF24" stroke-width="10" stroke-linecap="round" fill="none"/>
+            <path d="M 88 80 Q 110 90 120 100" stroke="#92400E" stroke-width="2" stroke-linecap="round" fill="none"/>
+          </svg>
+          <div class="card-anim"></div>
+        </div>
+
+        <!-- Data flow lines (SVG overlay) -->
+        <svg class="flows" viewBox="0 0 1200 580" preserveAspectRatio="none">
+          <!-- Card → Cloud (yellow, going up) -->
+          <path id="path-up" class="flow-path flow-card-to-cloud" d="M 850 350 Q 700 250 600 130" />
+          <!-- Cloud → Phone -->
+          <path id="path-phone" class="flow-path flow-cloud-phone" d="M 600 130 Q 800 80 1080 110" />
+          <!-- Cloud → Dashboard -->
+          <path id="path-dash" class="flow-path flow-cloud-dash" d="M 600 130 Q 800 250 1050 380" />
+
+          <!-- Animated packets traveling along paths -->
+          <circle class="flow-pkt flow-pkt-up"    style="offset-path: path('M 850 350 Q 700 250 600 130'); offset-distance: 0%;"/>
+          <circle class="flow-pkt flow-pkt-phone" style="offset-path: path('M 600 130 Q 800 80 1080 110');  offset-distance: 0%;"/>
+          <circle class="flow-pkt flow-pkt-dash"  style="offset-path: path('M 600 130 Q 800 250 1050 380'); offset-distance: 0%;"/>
+        </svg>
+
+        <!-- Parent phone -->
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="phone-time">07:08 · SafeRide</div>
+            <div class="phone-notif">
+              <div class="head"><span class="dot"></span><span>SafeRide · now</span></div>
+              <div class="body">✓ Noi boarded Bus B-101</div>
+              <div class="meta">Saylom Junction · 07:08</div>
+            </div>
+            <div class="phone-app-name">📱 Parent App</div>
+          </div>
+        </div>
+
+        <!-- Dispatcher screen -->
+        <div class="dash">
+          <div class="dash-screen">
+            <div class="header"><span class="live-dot"></span> Live · B-101 manifest</div>
+            <div class="dash-row"><span class="name">S-1003 Tom</span><span>✓ 06:30</span></div>
+            <div class="dash-row"><span class="name">S-1004 Lily</span><span>✓ 06:31</span></div>
+            <div class="dash-event"><span style="font-weight:700;">S-1001 Noi</span> · ✓ now</div>
+            <div class="dash-row"><span class="name">S-1002 Maly</span><span class="text-slate-400">expected</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Step pills -->
+  <div class="steps mt-5">
+    <span class="step-pill" data-s="1"></span>
+    <span class="step-pill" data-s="2"></span>
+    <span class="step-pill" data-s="3"></span>
+    <span class="step-pill" data-s="4"></span>
+    <span class="step-pill" data-s="5"></span>
+  </div>
+
+  <!-- Step text -->
+  <div class="step-text">
+    <div class="s1">
+      <h3 class="text-xl font-bold sr-brand-text" id="t1">1 · Student approaches the bus</h3>
+      <p class="text-slate-600 mt-1" id="d1">Noi walks up to her assigned bus at her home stop. Her SafeRide ID card is in her hand.</p>
+    </div>
+    <div class="s2">
+      <h3 class="text-xl font-bold sr-brand-text" id="t2">2 · Tap or scan</h3>
+      <p class="text-slate-600 mt-1" id="d2">She offers her card to the reader. NFC tap or QR scan — both work. The driver sees her name on the tablet.</p>
+    </div>
+    <div class="s3">
+      <h3 class="text-xl font-bold sr-brand-text" id="t3">3 · Reader confirms</h3>
+      <p class="text-slate-600 mt-1" id="d3">Green flash + beep. The boarding event is captured: student, bus, stop, GPS, timestamp.</p>
+    </div>
+    <div class="s4">
+      <h3 class="text-xl font-bold sr-brand-text" id="t4">4 · Event reaches the cloud</h3>
+      <p class="text-slate-600 mt-1" id="d4">The driver's tablet sends the event to SafeRide. If there's no cell signal, it queues locally and syncs later.</p>
+    </div>
+    <div class="s5">
+      <h3 class="text-xl font-bold sr-brand-text" id="t5">5 · Parent + dispatcher notified</h3>
+      <p class="text-slate-600 mt-1" id="d5">Mom gets a push notification on the parent app. The dispatcher's live manifest updates in real time.</p>
+    </div>
+  </div>
+
+  <div class="ctrls">
+    <button id="prevBtn">← Prev</button>
+    <button id="playBtn">Pause</button>
+    <button id="nextBtn">Next →</button>
+  </div>
+
+</main>
+
+<footer class="border-t border-slate-200 mt-12 py-6">
+  <div class="max-w-6xl mx-auto px-5 text-center text-sm text-slate-500">
+    <span class="sr-logo-mark inline-flex" style="width:22px;height:22px;font-size:12px;">S</span>
+    <span class="ml-2 font-bold sr-brand-text">SafeRide</span>
+    <span class="mx-2">·</span>
+    <span data-i18n="demoNote">Prototype — mock data</span>
+  </div>
+</footer>
+
+<script src="shared/i18n.js"></script>
+<script>
+// Bilingual page-level strings
+const COPY = {
+  en: {
+    pageTitle: 'How a tap works',
+    pageSub: 'From card tap to parent notification — end to end.',
+    s1Title: '1 · Student approaches the bus',
+    s1Desc: 'Noi walks up to her assigned bus at her home stop. Her SafeRide ID card is in her hand.',
+    s2Title: '2 · Tap or scan',
+    s2Desc: 'She offers her card to the reader. NFC tap or QR scan — both work. The driver sees her name on the tablet.',
+    s3Title: '3 · Reader confirms',
+    s3Desc: 'Green flash + beep. The boarding event is captured: student, bus, stop, GPS, timestamp.',
+    s4Title: '4 · Event reaches the cloud',
+    s4Desc: "The driver's tablet sends the event to SafeRide. If there's no cell signal, it queues locally and syncs later.",
+    s5Title: '5 · Parent + dispatcher notified',
+    s5Desc: "Mom gets a push notification on the parent app. The dispatcher's live manifest updates in real time.",
+    pause: 'Pause', play: 'Play', prev: '← Prev', next: 'Next →'
+  },
+  lo: {
+    pageTitle: 'ການແຕະບັດເຮັດວຽກແນວໃດ',
+    pageSub: 'ຈາກການແຕະບັດ ຫາການແຈ້ງເຕືອນຜູ້ປົກຄອງ — ຄົບຖ້ວນ.',
+    s1Title: '1 · ນັກຮຽນເຂົ້າມາໃກ້ລົດ',
+    s1Desc: 'ນ້ອຍໄດ້ຍ່າງມາທີ່ລົດທີ່ຕົນໄດ້ຮັບມອບໝາຍຢູ່ປ້າຍບ້ານ. ບັດ SafeRide ຢູ່ໃນມື.',
+    s2Title: '2 · ແຕະ ຫຼື ສະແກນ',
+    s2Desc: 'ນັກຮຽນຈ່ໍ່ບັດທີ່ເຄື່ອງອ່ານ. ແຕະ NFC ຫຼື ສະແກນ QR — ໃຊ້ໄດ້ທັງສອງ. ຄົນຂັບເຫັນຊື່ຢູ່ແທັບເລັດ.',
+    s3Title: '3 · ເຄື່ອງອ່ານຢືນຢັນ',
+    s3Desc: 'ໄຟຂຽວ + ສຽງປິບ. ບັນທຶກເຫດການ: ນັກຮຽນ, ລົດ, ປ້າຍຈອດ, GPS, ເວລາ.',
+    s4Title: '4 · ສົ່ງຂໍ້ມູນຂຶ້ນເຊີບເວີ',
+    s4Desc: 'ແທັບເລັດສົ່ງຂໍ້ມູນໄປ SafeRide. ຖ້າບໍ່ມີສັນຍານ ຂໍ້ມູນຈະຄິວໄວ້ ແລະ ສົ່ງຕາມຫຼັງ.',
+    s5Title: '5 · ແຈ້ງຜູ້ປົກຄອງ + ຜູ້ຄວບຄຸມ',
+    s5Desc: 'ແມ່ໄດ້ຮັບການແຈ້ງເຕືອນຢູ່ແອັບ. ໜ້າຄວບຄຸມຂອງຜູ້ຄວບຄຸມອັບເດດທັນທີ.',
+    pause: 'ຢຸດ', play: 'ຫຼິ້ນ', prev: '← ຫຼັງ', next: 'ຕໍ່ →'
+  }
+};
+function applyCopy() {
+  const c = COPY[APP_LANG] || COPY.en;
+  document.getElementById('pageTitle').textContent = c.pageTitle;
+  document.getElementById('pageSub').textContent   = c.pageSub;
+  for (let i = 1; i <= 5; i++) {
+    document.getElementById('t' + i).textContent = c['s' + i + 'Title'];
+    document.getElementById('d' + i).textContent = c['s' + i + 'Desc'];
+  }
+  playBtn.textContent = paused ? c.play : c.pause;
+  prevBtn.textContent = c.prev;
+  nextBtn.textContent = c.next;
+}
+
+// ======== Step machine ========
+const STEPS = 5;
+const STEP_DURATIONS = [2200, 2200, 1800, 1800, 2200];   // ms per step
+let step = 1;
+let timer = null;
+let paused = false;
+
+function setStep(n) {
+  step = ((n - 1 + STEPS) % STEPS) + 1;
+  document.body.className = 'step-' + step;
+}
+function autoAdvance() {
+  if (paused) return;
+  setStep(step % STEPS + 1);
+  timer = setTimeout(autoAdvance, STEP_DURATIONS[step - 1]);
+}
+function start() {
+  clearTimeout(timer);
+  paused = false;
+  timer = setTimeout(autoAdvance, STEP_DURATIONS[step - 1]);
+  applyCopy();
+}
+function pause() { paused = true; clearTimeout(timer); applyCopy(); }
+
+const playBtn = document.getElementById('playBtn');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+playBtn.addEventListener('click', () => { paused ? start() : pause(); });
+prevBtn.addEventListener('click', () => { pause(); setStep(step - 1); });
+nextBtn.addEventListener('click', () => { pause(); setStep(step + 1); });
+
+document.querySelectorAll('.step-pill').forEach(p => {
+  p.addEventListener('click', () => { pause(); setStep(parseInt(p.getAttribute('data-s'))); });
+});
+
+setStep(1);
+applyCopy();
+start();
+
+window.addEventListener('langchange', applyCopy);
+</script>
+
+</body>
+</html>
