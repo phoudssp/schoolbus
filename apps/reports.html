@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SafeRide — Reports</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="../shared/styles.css">
+</head>
+<body class="bg-slate-100 min-h-screen">
+
+<header class="sr-gradient text-white sticky top-0 z-30">
+  <div class="px-5 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-6">
+      <a href="../index.html" class="sr-logo text-white">
+        <span class="sr-logo-mark">S</span>
+        <span data-i18n="brand">SafeRide</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-1 text-sm">
+        <a href="operator.html" class="px-3 py-1.5 rounded-md text-slate-200 hover:bg-white/10" data-i18n="nav.dashboard">Dashboard</a>
+        <a href="billing.html"  class="px-3 py-1.5 rounded-md text-slate-200 hover:bg-white/10" data-i18n="nav.billing">Billing</a>
+        <a href="reports.html"  class="px-3 py-1.5 rounded-md bg-white/15 font-semibold" data-i18n="nav.reports">Reports</a>
+      </nav>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="hidden md:inline text-sm">👤 Souvanh (Dispatcher)</span>
+      <button onclick="toggleLang()" class="sr-btn sr-btn-yellow text-sm px-3 py-1.5">
+        <span data-i18n="languageSwitch">ລາວ</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="px-5 py-5 max-w-7xl mx-auto">
+
+  <!-- Header -->
+  <div class="mb-5">
+    <h1 class="text-2xl font-extrabold sr-brand-text" data-i18n="reports.title">Reports</h1>
+    <p class="text-sm text-slate-500 mt-1" data-i18n="reports.subtitle">Generate and export operational, safety, and financial reports.</p>
+  </div>
+
+  <!-- KPI strip -->
+  <section class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+    <div class="sr-card p-4">
+      <div class="text-xs text-slate-500 uppercase tracking-wide" data-i18n="reports.eventsToday">Events today</div>
+      <div class="text-3xl font-extrabold sr-brand-text mt-1" id="kpi-events">—</div>
+    </div>
+    <div class="sr-card p-4">
+      <div class="text-xs text-slate-500 uppercase tracking-wide" data-i18n="reports.transportedToday">Students transported today</div>
+      <div class="text-3xl font-extrabold sr-brand-text mt-1" id="kpi-transported">—</div>
+    </div>
+    <div class="sr-card p-4">
+      <div class="text-xs text-slate-500 uppercase tracking-wide" data-i18n="reports.onTimePerf">On-time this week</div>
+      <div class="text-3xl font-extrabold text-emerald-600 mt-1" id="kpi-ontime">—</div>
+    </div>
+    <div class="sr-card p-4">
+      <div class="text-xs text-slate-500 uppercase tracking-wide" data-i18n="reports.incidentsMonth">Incidents this month</div>
+      <div class="text-3xl font-extrabold text-amber-600 mt-1" id="kpi-incidents">—</div>
+    </div>
+  </section>
+
+  <!-- Preview chart -->
+  <section class="sr-card p-4 mb-5">
+    <div class="flex items-center justify-between mb-2">
+      <h2 class="font-bold sr-brand-text" data-i18n="reports.previewTitle">This week — daily ridership</h2>
+      <span class="text-xs text-slate-400" data-i18n="reports.preview">Preview</span>
+    </div>
+    <canvas id="ridershipChart" height="80"></canvas>
+  </section>
+
+  <!-- Report category cards -->
+  <section class="space-y-5">
+    <div>
+      <div class="flex items-center gap-2 mb-2">
+        <span class="text-xs uppercase tracking-wide text-slate-500 font-bold" data-i18n="reports.catOps">Operations</span>
+        <div class="flex-1 h-px bg-slate-200"></div>
+      </div>
+      <div id="cat-operations" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3"></div>
+    </div>
+
+    <div>
+      <div class="flex items-center gap-2 mb-2">
+        <span class="text-xs uppercase tracking-wide text-slate-500 font-bold" data-i18n="reports.catSafety">Safety</span>
+        <div class="flex-1 h-px bg-slate-200"></div>
+      </div>
+      <div id="cat-safety" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3"></div>
+    </div>
+
+    <div>
+      <div class="flex items-center gap-2 mb-2">
+        <span class="text-xs uppercase tracking-wide text-slate-500 font-bold" data-i18n="reports.catFinance">Finance</span>
+        <div class="flex-1 h-px bg-slate-200"></div>
+      </div>
+      <div id="cat-finance" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3"></div>
+    </div>
+
+    <div>
+      <div class="flex items-center gap-2 mb-2">
+        <span class="text-xs uppercase tracking-wide text-slate-500 font-bold" data-i18n="reports.catSchool">School-specific</span>
+        <div class="flex-1 h-px bg-slate-200"></div>
+      </div>
+      <div id="cat-school" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3"></div>
+    </div>
+  </section>
+
+</main>
+
+<div id="toastWrap"></div>
+
+<script src="../shared/i18n.js"></script>
+<script src="../shared/data.js"></script>
+<script>
+const fmtDate = (iso) =>
+  new Date(iso).toLocaleDateString(APP_LANG === 'lo' ? 'lo-LA' : 'en-US', { month: 'short', day: 'numeric' });
+
+// KPIs
+function renderKpis() {
+  document.getElementById('kpi-events').textContent = APP_DATA.events.length.toLocaleString();
+  const transported = new Set(APP_DATA.events.filter(e => e.type === 'BOARD').map(e => e.studentId)).size;
+  document.getElementById('kpi-transported').textContent = transported.toLocaleString();
+  document.getElementById('kpi-ontime').textContent = '96%';
+  document.getElementById('kpi-incidents').textContent = '2';
+}
+
+// Ridership chart
+let chart = null;
+function renderChart() {
+  const data = APP_DATA.dailyRidershipPreview;
+  const ctx = document.getElementById('ridershipChart');
+  if (chart) chart.destroy();
+  chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: data.map(d => fmtDate(d.date)),
+      datasets: [
+        { label: t('reports.boarded'), data: data.map(d => d.boarded), backgroundColor: '#0F1E3D', borderRadius: 6, maxBarThickness: 40 },
+        { label: t('reports.exited'),  data: data.map(d => d.exited),  backgroundColor: '#FFD60A', borderRadius: 6, maxBarThickness: 40 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8 } } },
+      scales: { x: { grid: { display: false } }, y: { beginAtZero: true, grid: { color: '#F1F5F9' } } }
+    }
+  });
+}
+
+// Report cards
+function renderReports() {
+  const groups = { operations: [], safety: [], finance: [], school: [] };
+  APP_DATA.reportTypes.forEach(r => groups[r.category].push(r));
+
+  ['operations', 'safety', 'finance', 'school'].forEach(cat => {
+    const wrap = document.getElementById('cat-' + cat);
+    if (!wrap) return;
+    wrap.innerHTML = groups[cat].map(r => `
+      <div class="sr-card p-4 hover:shadow-lg transition-shadow flex flex-col">
+        <div class="flex items-start justify-between mb-2">
+          <div class="text-3xl">${r.icon}</div>
+          <span class="text-[10px] text-slate-400">${t('reports.lastRun')}: 2d ago</span>
+        </div>
+        <h3 class="font-bold sr-brand-text leading-tight">${APP_LANG === 'lo' ? r.nameLo : r.name}</h3>
+        <p class="text-xs text-slate-500 mt-1 flex-1">${APP_LANG === 'lo' ? r.descLo : r.desc}</p>
+        <div class="mt-3 flex items-center gap-1 text-xs">
+          <button onclick="generate('${r.id}', 'PDF')"  class="sr-btn sr-btn-primary text-xs py-1 px-2 flex-1">${t('reports.generate')}</button>
+          <button onclick="generate('${r.id}', 'CSV')"  class="sr-btn sr-btn-ghost text-xs py-1 px-2">CSV</button>
+          <button onclick="generate('${r.id}', 'XLSX')" class="sr-btn sr-btn-ghost text-xs py-1 px-2">XLSX</button>
+        </div>
+      </div>
+    `).join('');
+  });
+}
+
+function generate(reportId, format) {
+  toast(`✓ ${t('reports.generated')} — ${reportId}.${format.toLowerCase()}`);
+}
+
+function toast(msg) {
+  const el = document.createElement('div');
+  el.className = 'sr-toast';
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2200);
+}
+
+function renderAll() {
+  renderKpis();
+  renderChart();
+  renderReports();
+}
+
+renderAll();
+window.addEventListener('langchange', renderAll);
+</script>
+
+</body>
+</html>

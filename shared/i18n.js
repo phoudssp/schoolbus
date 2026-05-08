@@ -187,7 +187,83 @@ window.APP_I18N = {
     appReady: 'App ready',
     demoNote: 'Prototype — mock data',
     mins: 'min',
-    seconds: 'sec'
+    seconds: 'sec',
+
+    // Top nav (operator app sections)
+    nav: {
+      dashboard: 'Dashboard',
+      billing: 'Billing',
+      reports: 'Reports'
+    },
+
+    // Billing
+    billing: {
+      title: 'Billing & Subscriptions',
+      mrr: 'Monthly recurring revenue',
+      activeSubs: 'Active subscriptions',
+      outstanding: 'Outstanding',
+      studentsBilled: 'Students billed',
+      revenueTrend: 'Revenue — last 6 months',
+      subscriptions: 'School subscriptions',
+      school: 'School',
+      plan: 'Plan',
+      students: 'Students',
+      perStudent: 'per student',
+      monthly: 'Monthly',
+      status: 'Status',
+      renewsOn: 'Renews on',
+      manage: 'Manage',
+      invoices: 'Recent invoices',
+      invoiceNo: 'Invoice #',
+      period: 'Period',
+      amount: 'Amount',
+      issued: 'Issued',
+      due: 'Due',
+      paidOn: 'Paid',
+      action: 'Action',
+      view: 'View',
+      download: 'Download',
+      paid: 'Paid',
+      pending: 'Pending',
+      overdue: 'Overdue',
+      active: 'Active',
+      trial: 'Trial',
+      expired: 'Expired',
+      autoRenew: 'Auto-renew',
+      upcomingRenewals: 'Upcoming renewals',
+      noRenewals: 'No renewals in the next 30 days',
+      newSchool: 'Add school',
+      planStandard: 'Standard',
+      planPremium: 'Premium',
+      planEnterprise: 'Enterprise'
+    },
+
+    // Reports
+    reports: {
+      title: 'Reports',
+      subtitle: 'Generate and export operational, safety, and financial reports.',
+      catOps: 'Operations',
+      catSafety: 'Safety',
+      catFinance: 'Finance',
+      catSchool: 'School-specific',
+      generate: 'Generate',
+      preview: 'Preview',
+      eventsToday: 'Events today',
+      transportedToday: 'Students transported today',
+      onTimePerf: 'On-time this week',
+      incidentsMonth: 'Incidents this month',
+      previewTitle: 'This week — daily ridership',
+      date: 'Date',
+      boarded: 'Boarded',
+      exited: 'Exited',
+      ontimePct: 'On-time %',
+      lastRun: 'Last generated',
+      never: 'Never',
+      formatPdf: 'PDF',
+      formatCsv: 'CSV',
+      formatXlsx: 'XLSX',
+      generated: 'Report generated'
+    }
   },
 
   lo: {
@@ -365,7 +441,83 @@ window.APP_I18N = {
     appReady: 'ແອັບພ້ອມໃຊ້ງານ',
     demoNote: 'ຕົວຢ່າງ — ຂໍ້ມູນຈຳລອງ',
     mins: 'ນາທີ',
-    seconds: 'ວິ'
+    seconds: 'ວິ',
+
+    // Top nav
+    nav: {
+      dashboard: 'ໜ້າຄວບຄຸມ',
+      billing: 'ການເງິນ',
+      reports: 'ລາຍງານ'
+    },
+
+    // Billing
+    billing: {
+      title: 'ການເງິນ ແລະ ການສະໝັກໃຊ້ງານ',
+      mrr: 'ລາຍຮັບປະຈຳເດືອນ',
+      activeSubs: 'ການສະໝັກໃຊ້ງານ',
+      outstanding: 'ຄ້າງຊຳລະ',
+      studentsBilled: 'ນັກຮຽນທີ່ຄິດຄ່າ',
+      revenueTrend: 'ລາຍຮັບ — 6 ເດືອນທີ່ຜ່ານມາ',
+      subscriptions: 'ການສະໝັກໃຊ້ງານຂອງໂຮງຮຽນ',
+      school: 'ໂຮງຮຽນ',
+      plan: 'ແພັກເກັດ',
+      students: 'ນັກຮຽນ',
+      perStudent: 'ຕໍ່ນັກຮຽນ',
+      monthly: 'ຕໍ່ເດືອນ',
+      status: 'ສະຖານະ',
+      renewsOn: 'ຕໍ່ອາຍຸວັນທີ',
+      manage: 'ຈັດການ',
+      invoices: 'ໃບເກັບເງິນຫຼ້າສຸດ',
+      invoiceNo: 'ເລກໃບເກັບເງິນ',
+      period: 'ໄລຍະ',
+      amount: 'ຈຳນວນ',
+      issued: 'ອອກໃບ',
+      due: 'ກຳນົດ',
+      paidOn: 'ຊຳລະ',
+      action: 'ການກະທຳ',
+      view: 'ເບິ່ງ',
+      download: 'ດາວໂຫຼດ',
+      paid: 'ຊຳລະແລ້ວ',
+      pending: 'ກຳລັງລໍ',
+      overdue: 'ເກີນກຳນົດ',
+      active: 'ໃຊ້ງານ',
+      trial: 'ທົດລອງ',
+      expired: 'ໝົດອາຍຸ',
+      autoRenew: 'ຕໍ່ອາຍຸອັດຕະໂນມັດ',
+      upcomingRenewals: 'ການຕໍ່ອາຍຸທີ່ຈະມາເຖິງ',
+      noRenewals: 'ບໍ່ມີການຕໍ່ອາຍຸໃນ 30 ວັນຕໍ່ໄປ',
+      newSchool: 'ເພີ່ມໂຮງຮຽນ',
+      planStandard: 'ມາດຕະຖານ',
+      planPremium: 'ພຣີມຽມ',
+      planEnterprise: 'ອົງກອນ'
+    },
+
+    // Reports
+    reports: {
+      title: 'ລາຍງານ',
+      subtitle: 'ສ້າງ ແລະ ສົ່ງອອກລາຍງານການດຳເນີນງານ, ຄວາມປອດໄພ ແລະ ການເງິນ.',
+      catOps: 'ການດຳເນີນງານ',
+      catSafety: 'ຄວາມປອດໄພ',
+      catFinance: 'ການເງິນ',
+      catSchool: 'ສະເພາະໂຮງຮຽນ',
+      generate: 'ສ້າງ',
+      preview: 'ເບິ່ງຕົວຢ່າງ',
+      eventsToday: 'ເຫດການມື້ນີ້',
+      transportedToday: 'ນັກຮຽນທີ່ຮັບສົ່ງມື້ນີ້',
+      onTimePerf: 'ມາຕາມເວລາ ອາທິດນີ້',
+      incidentsMonth: 'ເຫດການເດືອນນີ້',
+      previewTitle: 'ອາທິດນີ້ — ການເດີນທາງປະຈຳວັນ',
+      date: 'ວັນທີ',
+      boarded: 'ຂຶ້ນລົດ',
+      exited: 'ລົງລົດ',
+      ontimePct: '% ມາຕາມເວລາ',
+      lastRun: 'ສ້າງລ່າສຸດ',
+      never: 'ບໍ່ເຄີຍ',
+      formatPdf: 'PDF',
+      formatCsv: 'CSV',
+      formatXlsx: 'XLSX',
+      generated: 'ສ້າງລາຍງານແລ້ວ'
+    }
   }
 };
 

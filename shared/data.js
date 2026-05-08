@@ -304,6 +304,88 @@ window.APP_DATA = {
     { id: 'A-4', severity: 'warning', busId: 'B-102', message: 'Light traffic on Phonpapao Rd',      messageLo: 'ລົດແອອັດເລັກນ້ອຍຖະໜົນໂພນປະເພົາ',                  ts: '2026-05-07T07:03:00+07:00' }
   ],
 
+  // ========== Billing & subscriptions ==========
+  // Pricing model: per-student per month, with plan tiers.
+  plans: {
+    standard:   { id: 'standard',   name: 'Standard',   nameLo: 'ມາດຕະຖານ', perStudent: 5,  features: ['live_tracking', 'parent_app'] },
+    premium:    { id: 'premium',    name: 'Premium',    nameLo: 'ພຣີມຽມ',     perStudent: 8,  features: ['live_tracking', 'parent_app', 'reports', 'sms_fallback'] },
+    enterprise: { id: 'enterprise', name: 'Enterprise', nameLo: 'ອົງກອນ',     perStudent: 10, features: ['live_tracking', 'parent_app', 'reports', 'sms_fallback', 'priority_support', 'custom_branding'] }
+  },
+
+  // One subscription per school
+  subscriptions: [
+    { id: 'SUB-VIS', schoolId: 'vis', planId: 'premium',    studentsBilled: 320, status: 'active',  startedAt: '2025-09-01', renewsAt: '2026-09-01', autoRenew: true,  monthlyAmount: 2560, currency: 'USD' },
+    { id: 'SUB-SGS', schoolId: 'sgs', planId: 'standard',   studentsBilled: 180, status: 'active',  startedAt: '2025-11-15', renewsAt: '2026-11-15', autoRenew: true,  monthlyAmount: 900,  currency: 'USD' },
+    { id: 'SUB-PTY', schoolId: 'pty', planId: 'premium',    studentsBilled: 240, status: 'active',  startedAt: '2026-01-08', renewsAt: '2027-01-08', autoRenew: true,  monthlyAmount: 1920, currency: 'USD' }
+  ],
+
+  // Recent invoices — last 4 months across schools
+  invoices: [
+    { id: 'INV-2026-05-VIS', schoolId: 'vis', period: '2026-05', issuedAt: '2026-05-01', dueAt: '2026-05-15', amount: 2560, status: 'pending' },
+    { id: 'INV-2026-05-SGS', schoolId: 'sgs', period: '2026-05', issuedAt: '2026-05-01', dueAt: '2026-05-15', amount: 900,  status: 'paid',    paidAt: '2026-05-04' },
+    { id: 'INV-2026-05-PTY', schoolId: 'pty', period: '2026-05', issuedAt: '2026-05-01', dueAt: '2026-05-15', amount: 1920, status: 'pending' },
+    { id: 'INV-2026-04-VIS', schoolId: 'vis', period: '2026-04', issuedAt: '2026-04-01', dueAt: '2026-04-15', amount: 2560, status: 'paid',    paidAt: '2026-04-08' },
+    { id: 'INV-2026-04-SGS', schoolId: 'sgs', period: '2026-04', issuedAt: '2026-04-01', dueAt: '2026-04-15', amount: 880,  status: 'paid',    paidAt: '2026-04-05' },
+    { id: 'INV-2026-04-PTY', schoolId: 'pty', period: '2026-04', issuedAt: '2026-04-01', dueAt: '2026-04-15', amount: 1920, status: 'paid',    paidAt: '2026-04-09' },
+    { id: 'INV-2026-03-VIS', schoolId: 'vis', period: '2026-03', issuedAt: '2026-03-01', dueAt: '2026-03-15', amount: 2480, status: 'paid',    paidAt: '2026-03-12' },
+    { id: 'INV-2026-03-SGS', schoolId: 'sgs', period: '2026-03', issuedAt: '2026-03-01', dueAt: '2026-03-15', amount: 880,  status: 'paid',    paidAt: '2026-03-05' },
+    { id: 'INV-2026-03-PTY', schoolId: 'pty', period: '2026-03', issuedAt: '2026-03-01', dueAt: '2026-03-15', amount: 1840, status: 'overdue' },
+    { id: 'INV-2026-02-VIS', schoolId: 'vis', period: '2026-02', issuedAt: '2026-02-01', dueAt: '2026-02-15', amount: 2480, status: 'paid',    paidAt: '2026-02-09' },
+    { id: 'INV-2026-02-SGS', schoolId: 'sgs', period: '2026-02', issuedAt: '2026-02-01', dueAt: '2026-02-15', amount: 875,  status: 'paid',    paidAt: '2026-02-04' },
+    { id: 'INV-2026-02-PTY', schoolId: 'pty', period: '2026-02', issuedAt: '2026-02-01', dueAt: '2026-02-15', amount: 1840, status: 'paid',    paidAt: '2026-02-10' }
+  ],
+
+  // Revenue history (last 6 months) for the trend chart
+  revenueHistory: [
+    { month: '2025-12', revenue: 3380, schools: 2 },
+    { month: '2026-01', revenue: 5300, schools: 3 },
+    { month: '2026-02', revenue: 5195, schools: 3 },
+    { month: '2026-03', revenue: 5200, schools: 3 },
+    { month: '2026-04', revenue: 5360, schools: 3 },
+    { month: '2026-05', revenue: 5380, schools: 3 }
+  ],
+
+  // ========== Reports module ==========
+  // Report definitions surfaced on the reports page
+  reportTypes: [
+    { id: 'daily-ridership',  category: 'operations', icon: '📊', name: 'Daily Ridership Report',     nameLo: 'ລາຍງານການເດີນທາງປະຈຳວັນ',
+      desc: 'Per route boarding/exit counts with timestamps and GPS.',
+      descLo: 'ຈຳນວນຂຶ້ນ-ລົງລົດແຕ່ລະເສັ້ນທາງ ພ້ອມເວລາ ແລະ GPS.' },
+    { id: 'monthly-attendance', category: 'operations', icon: '📅', name: 'Monthly Attendance',         nameLo: 'ການເຂົ້າຮຽນປະຈຳເດືອນ',
+      desc: 'Per-school, per-student attendance via the bus, by day.',
+      descLo: 'ການເຂົ້າຮຽນຜ່ານລົດ ແຍກຕາມໂຮງຮຽນ, ນັກຮຽນ ແລະ ວັນ.' },
+    { id: 'on-time-perf',     category: 'operations', icon: '⏱️', name: 'On-Time Performance',         nameLo: 'ການມາຕາມເວລາ',
+      desc: 'Percentage of runs on schedule across all routes.',
+      descLo: 'ເປີເຊັນຂອງເສັ້ນທາງທີ່ມາຕາມເວລາ ທົ່ວທຸກເສັ້ນ.' },
+    { id: 'fleet-utilization', category: 'operations', icon: '🚌', name: 'Fleet Utilization',           nameLo: 'ການນຳໃຊ້ລົດ',
+      desc: 'Bus hours, kilometers, capacity used by route.',
+      descLo: 'ຊົ່ວໂມງລົດແລ່ນ, ກິໂລແມັດ ແລະ ການນຳໃຊ້ຄວາມຈຸແຕ່ລະເສັ້ນທາງ.' },
+    { id: 'incident-log',     category: 'safety',     icon: '⚠️', name: 'Incident Log',                 nameLo: 'ບັນທຶກເຫດການ',
+      desc: 'All flagged incidents — wrong bus, no-shows, late arrivals.',
+      descLo: 'ເຫດການທີ່ຖືກແຈ້ງເຕືອນທັງໝົດ — ຂຶ້ນຜິດລົດ, ບໍ່ມາ, ຊ້າ.' },
+    { id: 'walk-bus-comp',    category: 'safety',     icon: '✅', name: 'Walk-the-Bus Compliance',      nameLo: 'ການກວດກາພາຍໃນລົດ',
+      desc: 'Percent of runs with confirmed end-of-route walk-through.',
+      descLo: 'ເປີເຊັນຂອງເສັ້ນທາງທີ່ມີການກວດກາພາຍໃນລົດເມື່ອສຳເລັດ.' },
+    { id: 'monthly-revenue',  category: 'finance',    icon: '💰', name: 'Monthly Revenue Report',       nameLo: 'ລາຍງານລາຍຮັບປະຈຳເດືອນ',
+      desc: 'Revenue breakdown by school and plan tier.',
+      descLo: 'ລາຍຮັບແຍກຕາມໂຮງຮຽນ ແລະ ຂັ້ນຂອງແພັກເກັດ.' },
+    { id: 'outstanding-inv',  category: 'finance',    icon: '🧾', name: 'Outstanding Invoices',         nameLo: 'ໃບເກັບເງິນຄ້າງຊຳລະ',
+      desc: 'All unpaid and overdue invoices across schools.',
+      descLo: 'ໃບເກັບເງິນທີ່ຍັງບໍ່ຊຳລະ ແລະ ເກີນກຳນົດ ທົ່ວທຸກໂຮງຮຽນ.' },
+    { id: 'school-export',    category: 'school',     icon: '📤', name: 'Per-School Data Export',       nameLo: 'ສົ່ງຂໍ້ມູນແຍກໂຮງຮຽນ',
+      desc: 'Full data dump for a single school — for their records.',
+      descLo: 'ສົ່ງອອກຂໍ້ມູນທັງໝົດສຳລັບໂຮງຮຽນດຽວ — ສຳລັບເກັບໄວ້ໃນບັນທຶກ.' }
+  ],
+
+  // Sample data for the "Daily Ridership" preview chart on the reports page
+  dailyRidershipPreview: [
+    { date: '2026-05-01', boarded: 712, exited: 706, ontime: 96 },
+    { date: '2026-05-02', boarded: 718, exited: 715, ontime: 97 },
+    { date: '2026-05-05', boarded: 715, exited: 711, ontime: 95 },
+    { date: '2026-05-06', boarded: 720, exited: 718, ontime: 98 },
+    { date: '2026-05-07', boarded: 723, exited: 720, ontime: 96 }
+  ],
+
   // Helper lookups built once
   byId: null
 };
@@ -312,15 +394,47 @@ window.APP_DATA = {
 (function buildIndices() {
   const d = window.APP_DATA;
   d.byId = {
-    school:   Object.fromEntries(d.schools.map(s => [s.id, s])),
-    bus:      Object.fromEntries(d.buses.map(b => [b.id, b])),
-    driver:   Object.fromEntries(d.drivers.map(dr => [dr.id, dr])),
-    student:  Object.fromEntries(d.students.map(s => [s.id, s])),
-    guardian: Object.fromEntries(d.guardians.map(g => [g.id, g])),
-    route:    Object.fromEntries(d.routes.map(r => [r.id, r])),
-    stop:     d.stops
+    school:       Object.fromEntries(d.schools.map(s => [s.id, s])),
+    bus:          Object.fromEntries(d.buses.map(b => [b.id, b])),
+    driver:       Object.fromEntries(d.drivers.map(dr => [dr.id, dr])),
+    student:      Object.fromEntries(d.students.map(s => [s.id, s])),
+    guardian:     Object.fromEntries(d.guardians.map(g => [g.id, g])),
+    route:        Object.fromEntries(d.routes.map(r => [r.id, r])),
+    stop:         d.stops,
+    plan:         d.plans,
+    subscription: Object.fromEntries(d.subscriptions.map(s => [s.id, s])),
+    subBySchool:  Object.fromEntries(d.subscriptions.map(s => [s.schoolId, s]))
   };
 })();
+
+// ========== Billing helpers ==========
+window.fmtMoney = function(amount, currency = 'USD') {
+  const sym = currency === 'USD' ? '$' : currency + ' ';
+  return sym + amount.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+};
+window.fmtMonth = function(yyyymm) {
+  const [y, m] = yyyymm.split('-');
+  return new Date(y, parseInt(m) - 1, 1).toLocaleString('en-US', { month: 'short', year: 'numeric' });
+};
+window.totalMRR = function() {
+  return APP_DATA.subscriptions
+    .filter(s => s.status === 'active')
+    .reduce((a, s) => a + s.monthlyAmount, 0);
+};
+window.outstandingTotal = function() {
+  return APP_DATA.invoices
+    .filter(i => i.status === 'pending' || i.status === 'overdue')
+    .reduce((a, i) => a + i.amount, 0);
+};
+window.totalStudentsBilled = function() {
+  return APP_DATA.subscriptions
+    .filter(s => s.status === 'active')
+    .reduce((a, s) => a + s.studentsBilled, 0);
+};
+window.invoicesForSchool = function(schoolId) {
+  return APP_DATA.invoices.filter(i => i.schoolId === schoolId)
+    .sort((a, b) => b.period.localeCompare(a.period));
+};
 
 // Utility: format Date or ISO string as HH:mm
 window.fmtTime = function(t) {
