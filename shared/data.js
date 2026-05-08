@@ -564,6 +564,56 @@ window.eventsForRun = function(runId) {
   return APP_DATA.events.filter(e => e.runId === runId);
 };
 
+// Utility: haversine distance in km between two [lat, lng] coords
+window.haversineKm = function(a, b) {
+  const R = 6371;  // earth radius km
+  const toRad = d => d * Math.PI / 180;
+  const dLat = toRad(b[0] - a[0]);
+  const dLon = toRad(b[1] - a[1]);
+  const lat1 = toRad(a[0]);
+  const lat2 = toRad(b[0]);
+  const x = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(x));
+};
+
+// Utility: total km along an ordered list of [lat,lng] points
+window.routeKm = function(points) {
+  let total = 0;
+  for (let i = 1; i < points.length; i++) total += haversineKm(points[i - 1], points[i]);
+  return total;
+};
+
+// Utility: get coords array for a run (start point + all stops + school)
+window.runCoords = function(run) {
+  const d = window.APP_DATA;
+  return run.stops.map(s => d.byId.stop[s.stopId].coords);
+};
+
+// Utility: nearest-neighbor TSP from a start point through a list of [lat,lng]
+// to an end point. Returns the optimized order of indices into `points`.
+window.nearestNeighborOrder = function(points, endIdx) {
+  const n = points.length;
+  if (n <= 2) return points.map((_, i) => i);
+  const visited = new Array(n).fill(false);
+  const order = [0];                       // pin first stop as start
+  visited[0] = true;
+  if (endIdx != null) visited[endIdx] = true;
+  while (order.length < n - (endIdx != null ? 1 : 0)) {
+    const last = points[order[order.length - 1]];
+    let best = -1, bestD = Infinity;
+    for (let i = 0; i < n; i++) {
+      if (visited[i]) continue;
+      const dist = haversineKm(last, points[i]);
+      if (dist < bestD) { bestD = dist; best = i; }
+    }
+    if (best < 0) break;
+    visited[best] = true;
+    order.push(best);
+  }
+  if (endIdx != null) order.push(endIdx);
+  return order;
+};
+
 // Utility: which run is a bus currently on
 window.currentRunForBus = function(busId) {
   const lp = APP_DATA.livePositions[busId];

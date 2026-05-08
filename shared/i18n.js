@@ -343,6 +343,45 @@ window.APP_I18N = {
       duplicate: 'Duplicate'
     },
 
+    // Routes page
+    routesPage: {
+      title: 'Routes',
+      subtitle: 'Plan and optimize the path each bus takes between home stops and schools.',
+      cardDesc: 'Pin schools and pickup points on the map. Plan and optimize routes to save time and fuel.',
+      newRoute: 'New route',
+      direction: 'Direction',
+      directionAm: 'AM (home → school)',
+      directionPm: 'PM (school → home)',
+      destination: 'Destination',
+      assignedBus: 'Bus',
+      assignedDriver: 'Driver',
+      stopsInOrder: 'Stops in order',
+      addStop: 'Add stop',
+      addStopHint: 'Click on the map to drop a new pickup point, or pick from the list.',
+      optimize: 'Optimize',
+      optimizeHint: 'Reorder stops for the shortest route to the school',
+      totalDistance: 'Distance',
+      estTime: 'Est. time',
+      stopCount: 'Stops',
+      studentsOnRun: 'Students',
+      saved: 'Saved',
+      saveChanges: 'Save changes',
+      revert: 'Revert',
+      moveUp: 'Move up',
+      moveDown: 'Move down',
+      removeStop: 'Remove',
+      legend: 'Legend',
+      legendSchool: 'School',
+      legendStop: 'Pickup stop',
+      legendCurrent: 'On this route',
+      pickStopFromList: 'Pick from existing stops',
+      newStopName: 'New stop name',
+      placeOnMap: 'Click on the map to place'
+    },
+    manage_routes: {
+      cardLabel: 'Routes'
+    },
+
     // Billing
     billing: {
       title: 'Billing & Subscriptions',
@@ -737,6 +776,44 @@ window.APP_I18N = {
       features: 'ຄຸນສົມບັດ',
       schoolsOnPlan: 'ໂຮງຮຽນທີ່ໃຊ້ແພັກນີ້',
       duplicate: 'ສຳເນົາ'
+    },
+
+    routesPage: {
+      title: 'ເສັ້ນທາງ',
+      subtitle: 'ວາງແຜນ ແລະ ປັບປຸງເສັ້ນທາງລະຫວ່າງປ້າຍຈອດທີ່ບ້ານ ກັບ ໂຮງຮຽນ.',
+      cardDesc: 'ປັກໝຸດໂຮງຮຽນ ແລະ ຈຸດຮັບນັກຮຽນ. ວາງແຜນ ແລະ ປັບປຸງເສັ້ນທາງເພື່ອປະຢັດເວລາ ແລະ ນ້ຳມັນ.',
+      newRoute: 'ເສັ້ນທາງໃໝ່',
+      direction: 'ທິດທາງ',
+      directionAm: 'ເຊົ້າ (ບ້ານ → ໂຮງຮຽນ)',
+      directionPm: 'ແລງ (ໂຮງຮຽນ → ບ້ານ)',
+      destination: 'ປາຍທາງ',
+      assignedBus: 'ລົດ',
+      assignedDriver: 'ຄົນຂັບ',
+      stopsInOrder: 'ປ້າຍຈອດຕາມລຳດັບ',
+      addStop: 'ເພີ່ມປ້າຍ',
+      addStopHint: 'ກົດໃສ່ແຜນທີ່ ເພື່ອວາງຈຸດຮັບໃໝ່ ຫຼື ເລືອກຈາກລາຍຊື່.',
+      optimize: 'ປັບປຸງ',
+      optimizeHint: 'ຈັດລຳດັບປ້າຍຈອດໃໝ່ ໃຫ້ໄລຍະທາງສັ້ນທີ່ສຸດໄປໂຮງຮຽນ',
+      totalDistance: 'ໄລຍະທາງ',
+      estTime: 'ເວລາໂດຍປະມານ',
+      stopCount: 'ປ້າຍຈອດ',
+      studentsOnRun: 'ນັກຮຽນ',
+      saved: 'ບັນທຶກແລ້ວ',
+      saveChanges: 'ບັນທຶກ',
+      revert: 'ກັບຄືນ',
+      moveUp: 'ຍ້າຍຂຶ້ນ',
+      moveDown: 'ຍ້າຍລົງ',
+      removeStop: 'ລຶບ',
+      legend: 'ສັນຍາລັກ',
+      legendSchool: 'ໂຮງຮຽນ',
+      legendStop: 'ຈຸດຮັບ',
+      legendCurrent: 'ໃນເສັ້ນທາງນີ້',
+      pickStopFromList: 'ເລືອກຈາກປ້າຍຈອດທີ່ມີ',
+      newStopName: 'ຊື່ຈຸດຮັບໃໝ່',
+      placeOnMap: 'ກົດທີ່ແຜນທີ່ເພື່ອວາງ'
+    },
+    manage_routes: {
+      cardLabel: 'ເສັ້ນທາງ'
     },
 
     // Billing

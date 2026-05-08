@@ -109,6 +109,18 @@
       </div>
     </a>
 
+    <a href="routes.html" class="sr-card p-5 hover:shadow-lg transition-shadow group">
+      <div class="flex items-start justify-between">
+        <div class="w-12 h-12 rounded-xl bg-cyan-50 text-cyan-700 flex items-center justify-center text-2xl">🗺️</div>
+        <div class="text-3xl font-extrabold sr-brand-text" id="cnt-routes">—</div>
+      </div>
+      <h3 class="mt-3 font-bold sr-brand-text" data-i18n="routesPage.title">Routes</h3>
+      <p class="text-xs text-slate-500 mt-1" data-i18n="routesPage.cardDesc">Pin schools and pickup points on the map. Plan and optimize routes to save time and fuel.</p>
+      <div class="mt-3 inline-flex items-center text-sm font-semibold text-cyan-700 group-hover:gap-2 transition-all gap-1">
+        <span data-i18n="crud.edit">Manage</span> →
+      </div>
+    </a>
+
   </div>
 
 </main>
@@ -127,6 +139,7 @@ document.getElementById('cnt-drivers').textContent  = APP_DATA.drivers.length;
 document.getElementById('cnt-students').textContent = APP_DATA.students.length;
 document.getElementById('cnt-parents').textContent  = APP_DATA.guardians.length;
 document.getElementById('cnt-plans').textContent    = Object.keys(APP_DATA.plans).length;
+document.getElementById('cnt-routes').textContent   = APP_DATA.routes.reduce((a, r) => a + r.runs.length, 0);
 </script>
 
 </body>
