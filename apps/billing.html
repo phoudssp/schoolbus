@@ -212,7 +212,7 @@ function renderChart() {
         x: { grid: { display: false } },
         y: {
           beginAtZero: true,
-          ticks: { callback: v => '$' + v.toLocaleString() },
+          ticks: { callback: v => fmtMoney(v) },
           grid: { color: '#F1F5F9' }
         }
       }

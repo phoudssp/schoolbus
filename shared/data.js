@@ -305,44 +305,44 @@ window.APP_DATA = {
   ],
 
   // ========== Billing & subscriptions ==========
-  // Pricing model: per-student per month, with plan tiers.
+  // Pricing model: per-student per month, in Lao Kip (LAK).
   plans: {
-    standard:   { id: 'standard',   name: 'Standard',   nameLo: 'ມາດຕະຖານ', perStudent: 5,  features: ['live_tracking', 'parent_app'] },
-    premium:    { id: 'premium',    name: 'Premium',    nameLo: 'ພຣີມຽມ',     perStudent: 8,  features: ['live_tracking', 'parent_app', 'reports', 'sms_fallback'] },
-    enterprise: { id: 'enterprise', name: 'Enterprise', nameLo: 'ອົງກອນ',     perStudent: 10, features: ['live_tracking', 'parent_app', 'reports', 'sms_fallback', 'priority_support', 'custom_branding'] }
+    standard:   { id: 'standard',   name: 'Standard',   nameLo: 'ມາດຕະຖານ', perStudent: 100000, features: ['live_tracking', 'parent_app'] },
+    premium:    { id: 'premium',    name: 'Premium',    nameLo: 'ພຣີມຽມ',     perStudent: 150000, features: ['live_tracking', 'parent_app', 'reports', 'sms_fallback'] },
+    enterprise: { id: 'enterprise', name: 'Enterprise', nameLo: 'ອົງກອນ',     perStudent: 200000, features: ['live_tracking', 'parent_app', 'reports', 'sms_fallback', 'priority_support', 'custom_branding'] }
   },
 
   // One subscription per school
   subscriptions: [
-    { id: 'SUB-VIS', schoolId: 'vis', planId: 'premium',    studentsBilled: 320, status: 'active',  startedAt: '2025-09-01', renewsAt: '2026-09-01', autoRenew: true,  monthlyAmount: 2560, currency: 'USD' },
-    { id: 'SUB-SGS', schoolId: 'sgs', planId: 'standard',   studentsBilled: 180, status: 'active',  startedAt: '2025-11-15', renewsAt: '2026-11-15', autoRenew: true,  monthlyAmount: 900,  currency: 'USD' },
-    { id: 'SUB-PTY', schoolId: 'pty', planId: 'premium',    studentsBilled: 240, status: 'active',  startedAt: '2026-01-08', renewsAt: '2027-01-08', autoRenew: true,  monthlyAmount: 1920, currency: 'USD' }
+    { id: 'SUB-VIS', schoolId: 'vis', planId: 'premium',  studentsBilled: 320, status: 'active', startedAt: '2025-09-01', renewsAt: '2026-09-01', autoRenew: true, monthlyAmount: 48000000, currency: 'LAK' },
+    { id: 'SUB-SGS', schoolId: 'sgs', planId: 'standard', studentsBilled: 180, status: 'active', startedAt: '2025-11-15', renewsAt: '2026-11-15', autoRenew: true, monthlyAmount: 18000000, currency: 'LAK' },
+    { id: 'SUB-PTY', schoolId: 'pty', planId: 'premium',  studentsBilled: 240, status: 'active', startedAt: '2026-01-08', renewsAt: '2027-01-08', autoRenew: true, monthlyAmount: 36000000, currency: 'LAK' }
   ],
 
   // Recent invoices — last 4 months across schools
   invoices: [
-    { id: 'INV-2026-05-VIS', schoolId: 'vis', period: '2026-05', issuedAt: '2026-05-01', dueAt: '2026-05-15', amount: 2560, status: 'pending' },
-    { id: 'INV-2026-05-SGS', schoolId: 'sgs', period: '2026-05', issuedAt: '2026-05-01', dueAt: '2026-05-15', amount: 900,  status: 'paid',    paidAt: '2026-05-04' },
-    { id: 'INV-2026-05-PTY', schoolId: 'pty', period: '2026-05', issuedAt: '2026-05-01', dueAt: '2026-05-15', amount: 1920, status: 'pending' },
-    { id: 'INV-2026-04-VIS', schoolId: 'vis', period: '2026-04', issuedAt: '2026-04-01', dueAt: '2026-04-15', amount: 2560, status: 'paid',    paidAt: '2026-04-08' },
-    { id: 'INV-2026-04-SGS', schoolId: 'sgs', period: '2026-04', issuedAt: '2026-04-01', dueAt: '2026-04-15', amount: 880,  status: 'paid',    paidAt: '2026-04-05' },
-    { id: 'INV-2026-04-PTY', schoolId: 'pty', period: '2026-04', issuedAt: '2026-04-01', dueAt: '2026-04-15', amount: 1920, status: 'paid',    paidAt: '2026-04-09' },
-    { id: 'INV-2026-03-VIS', schoolId: 'vis', period: '2026-03', issuedAt: '2026-03-01', dueAt: '2026-03-15', amount: 2480, status: 'paid',    paidAt: '2026-03-12' },
-    { id: 'INV-2026-03-SGS', schoolId: 'sgs', period: '2026-03', issuedAt: '2026-03-01', dueAt: '2026-03-15', amount: 880,  status: 'paid',    paidAt: '2026-03-05' },
-    { id: 'INV-2026-03-PTY', schoolId: 'pty', period: '2026-03', issuedAt: '2026-03-01', dueAt: '2026-03-15', amount: 1840, status: 'overdue' },
-    { id: 'INV-2026-02-VIS', schoolId: 'vis', period: '2026-02', issuedAt: '2026-02-01', dueAt: '2026-02-15', amount: 2480, status: 'paid',    paidAt: '2026-02-09' },
-    { id: 'INV-2026-02-SGS', schoolId: 'sgs', period: '2026-02', issuedAt: '2026-02-01', dueAt: '2026-02-15', amount: 875,  status: 'paid',    paidAt: '2026-02-04' },
-    { id: 'INV-2026-02-PTY', schoolId: 'pty', period: '2026-02', issuedAt: '2026-02-01', dueAt: '2026-02-15', amount: 1840, status: 'paid',    paidAt: '2026-02-10' }
+    { id: 'INV-2026-05-VIS', schoolId: 'vis', period: '2026-05', issuedAt: '2026-05-01', dueAt: '2026-05-15', amount: 48000000, status: 'pending' },
+    { id: 'INV-2026-05-SGS', schoolId: 'sgs', period: '2026-05', issuedAt: '2026-05-01', dueAt: '2026-05-15', amount: 18000000, status: 'paid',    paidAt: '2026-05-04' },
+    { id: 'INV-2026-05-PTY', schoolId: 'pty', period: '2026-05', issuedAt: '2026-05-01', dueAt: '2026-05-15', amount: 36000000, status: 'pending' },
+    { id: 'INV-2026-04-VIS', schoolId: 'vis', period: '2026-04', issuedAt: '2026-04-01', dueAt: '2026-04-15', amount: 48000000, status: 'paid',    paidAt: '2026-04-08' },
+    { id: 'INV-2026-04-SGS', schoolId: 'sgs', period: '2026-04', issuedAt: '2026-04-01', dueAt: '2026-04-15', amount: 17600000, status: 'paid',    paidAt: '2026-04-05' },
+    { id: 'INV-2026-04-PTY', schoolId: 'pty', period: '2026-04', issuedAt: '2026-04-01', dueAt: '2026-04-15', amount: 36000000, status: 'paid',    paidAt: '2026-04-09' },
+    { id: 'INV-2026-03-VIS', schoolId: 'vis', period: '2026-03', issuedAt: '2026-03-01', dueAt: '2026-03-15', amount: 46500000, status: 'paid',    paidAt: '2026-03-12' },
+    { id: 'INV-2026-03-SGS', schoolId: 'sgs', period: '2026-03', issuedAt: '2026-03-01', dueAt: '2026-03-15', amount: 17600000, status: 'paid',    paidAt: '2026-03-05' },
+    { id: 'INV-2026-03-PTY', schoolId: 'pty', period: '2026-03', issuedAt: '2026-03-01', dueAt: '2026-03-15', amount: 34500000, status: 'overdue' },
+    { id: 'INV-2026-02-VIS', schoolId: 'vis', period: '2026-02', issuedAt: '2026-02-01', dueAt: '2026-02-15', amount: 46500000, status: 'paid',    paidAt: '2026-02-09' },
+    { id: 'INV-2026-02-SGS', schoolId: 'sgs', period: '2026-02', issuedAt: '2026-02-01', dueAt: '2026-02-15', amount: 17500000, status: 'paid',    paidAt: '2026-02-04' },
+    { id: 'INV-2026-02-PTY', schoolId: 'pty', period: '2026-02', issuedAt: '2026-02-01', dueAt: '2026-02-15', amount: 34500000, status: 'paid',    paidAt: '2026-02-10' }
   ],
 
-  // Revenue history (last 6 months) for the trend chart
+  // Revenue history (last 6 months) for the trend chart, in Kip
   revenueHistory: [
-    { month: '2025-12', revenue: 3380, schools: 2 },
-    { month: '2026-01', revenue: 5300, schools: 3 },
-    { month: '2026-02', revenue: 5195, schools: 3 },
-    { month: '2026-03', revenue: 5200, schools: 3 },
-    { month: '2026-04', revenue: 5360, schools: 3 },
-    { month: '2026-05', revenue: 5380, schools: 3 }
+    { month: '2025-12', revenue:  64000000, schools: 2 },
+    { month: '2026-01', revenue: 102000000, schools: 3 },
+    { month: '2026-02', revenue:  98500000, schools: 3 },
+    { month: '2026-03', revenue:  98600000, schools: 3 },
+    { month: '2026-04', revenue: 101600000, schools: 3 },
+    { month: '2026-05', revenue: 102000000, schools: 3 }
   ],
 
   // ========== Reports module ==========
@@ -408,9 +408,24 @@ window.APP_DATA = {
 })();
 
 // ========== Billing helpers ==========
-window.fmtMoney = function(amount, currency = 'USD') {
-  const sym = currency === 'USD' ? '$' : currency + ' ';
-  return sym + amount.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+// fmtMoney(amount, currency = 'LAK')
+//   LAK ≥ 1,000,000 → "48M ₭" or "17.6M ₭"
+//   LAK ≥ 1,000     → "150K ₭"
+//   LAK < 1,000     → "500 ₭"
+window.fmtMoney = function(amount, currency = 'LAK') {
+  if (currency === 'USD') {
+    return '$' + amount.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  }
+  // Default: LAK with M / K abbreviations
+  if (amount >= 1000000) {
+    const m = amount / 1000000;
+    const s = (m % 1 === 0) ? m.toFixed(0) : m.toFixed(1);
+    return s + 'M ₭';
+  }
+  if (amount >= 1000) {
+    return Math.round(amount / 1000) + 'K ₭';
+  }
+  return amount.toLocaleString('en-US') + ' ₭';
 };
 window.fmtMonth = function(yyyymm) {
   const [y, m] = yyyymm.split('-');
