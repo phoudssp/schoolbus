@@ -95,11 +95,16 @@
         <!-- Manifest list -->
         <div class="flex-1 px-5 py-4 sr-scroll overflow-auto" id="manifestList"></div>
 
-        <!-- Scan area -->
+        <!-- Scan area: BOTH QR and NFC supported -->
         <div class="px-5 pb-5 pt-2 bg-white border-t border-slate-200">
-          <button id="scanBtn" class="sr-scan-btn">
-            📷 <span data-i18n="tapToScan">Tap to simulate scan</span>
-          </button>
+          <div class="grid grid-cols-2 gap-3">
+            <button id="scanQrBtn" class="sr-scan-btn" style="font-size:20px; padding:22px 16px;">
+              📷<br><span data-i18n="qrScan">QR scan</span>
+            </button>
+            <button id="scanNfcBtn" class="sr-scan-btn" style="font-size:20px; padding:22px 16px; background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%); color: white; border-color: #1E40AF;">
+              📡<br><span data-i18n="nfcTap">NFC tap</span>
+            </button>
+          </div>
           <div class="grid grid-cols-2 gap-2 mt-2">
             <button id="manualBtn" class="sr-btn sr-btn-ghost text-sm">
               👤 <span data-i18n="manualBoard">Manual board</span>
@@ -266,16 +271,14 @@ function addStudentRow(wrap, studentId, mode, done = false) {
   wrap.appendChild(row);
 }
 
-// ---------- Scan simulation ----------
-document.getElementById('scanBtn').addEventListener('click', () => {
+// ---------- Scan simulation (both QR and NFC) ----------
+function doScan(method) {
   const ss = stopState[currentStopIdx];
   if (ss.isSchool) {
-    // simulate exit scan — mark all boarded as exited (UI feedback only)
     toast('🏫 ' + t('arrived'));
     setTimeout(() => openWalkModal(), 800);
     return;
   }
-  // find next un-scanned student at this stop
   const next = ss.studentIds.find(id => !ss.boarded.has(id));
   if (!next) {
     toast(t('completed'));
@@ -284,10 +287,14 @@ document.getElementById('scanBtn').addEventListener('click', () => {
   ss.boarded.add(next);
   if (ss.boarded.size === ss.studentIds.length) ss.completed = true;
   const s = APP_DATA.byId.student[next];
-  toast(`✓ ${s.name} — ${t('childBoarded')}`);
+  const icon = method === 'nfc' ? '📡' : '📷';
+  const label = method === 'nfc' ? t('nfcTap') : t('qrScan');
+  toast(`${icon} ${s.name} — ${label}`);
   renderTimeline();
   renderCurrentStop();
-});
+}
+document.getElementById('scanQrBtn').addEventListener('click', () => doScan('qr'));
+document.getElementById('scanNfcBtn').addEventListener('click', () => doScan('nfc'));
 
 document.getElementById('manualBtn').addEventListener('click', () => {
   const ss = stopState[currentStopIdx];

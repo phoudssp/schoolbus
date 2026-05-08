@@ -6,13 +6,124 @@
   <title>SafeRide — Students</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
   <link rel="stylesheet" href="../shared/styles.css">
   <style>
+    /* ============ Real-look student ID card ============ */
+    .card-row { display: flex; flex-wrap: wrap; gap: 24px; justify-content: center; }
+    .id-card {
+      width: 480px;
+      aspect-ratio: 1.586 / 1;     /* CR80 credit-card ratio */
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 14px 36px rgba(15, 30, 61, 0.18), 0 0 0 1px rgba(15,30,61,0.06);
+      color: white;
+      flex-shrink: 0;
+    }
+    /* FRONT */
+    .card-front {
+      background: linear-gradient(135deg, #0F1E3D 0%, #182B57 60%, #2A3F75 100%);
+      padding: 18px 20px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+    .card-front::before {
+      /* decorative sweeping highlight */
+      content: '';
+      position: absolute; top: -40%; right: -30%;
+      width: 70%; height: 180%;
+      background: radial-gradient(circle, rgba(255,214,10,0.18) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .cf-header { display: flex; align-items: center; justify-content: space-between; }
+    .cf-logo { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 14px; }
+    .cf-logo .mark {
+      width: 26px; height: 26px; border-radius: 6px;
+      background: var(--sr-yellow); color: var(--sr-navy);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 14px;
+    }
+    .cf-school-badge {
+      font-size: 11px; font-weight: 800; padding: 3px 9px;
+      border-radius: 999px; letter-spacing: 0.04em;
+    }
+    .cf-body {
+      display: grid;
+      grid-template-columns: 84px 1fr auto;
+      align-items: center;
+      gap: 16px;
+      padding: 4px 0;
+    }
+    .cf-photo {
+      width: 84px; height: 84px; border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+      border: 2px solid var(--sr-yellow);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; font-weight: 900; color: var(--sr-yellow);
+    }
+    .cf-info { min-width: 0; }
+    .cf-name { font-size: 19px; font-weight: 800; line-height: 1.1; letter-spacing: -0.01em; }
+    .cf-grade { font-size: 13px; color: rgba(255,255,255,0.78); margin-top: 4px; }
+    .cf-school-name { font-size: 11px; color: rgba(255,255,255,0.55); margin-top: 4px; line-height: 1.2; }
+    .cf-tap {
+      text-align: center; color: var(--sr-yellow);
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+    }
+    .cf-tap-label {
+      font-size: 9px; font-weight: 800; letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .cf-tap-icon {
+      width: 36px; height: 36px;
+    }
+    .cf-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 10px; color: rgba(255,255,255,0.55);
+      letter-spacing: 0.04em;
+    }
+    .cf-card-id { font-family: 'SF Mono', ui-monospace, monospace; font-weight: 700; color: var(--sr-yellow); }
+
+    /* BACK */
+    .card-back {
+      background: white;
+      color: var(--sr-navy);
+      padding: 18px 20px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 18px;
+      align-items: center;
+    }
+    .card-back .stripe {
+      position: absolute; top: 26px; left: 0; right: 0; height: 32px;
+      background: var(--sr-navy);
+    }
+    .cb-qr {
+      background: white;
+      padding: 8px;
+      border-radius: 10px;
+      border: 1px solid #E2E8F0;
+      position: relative; z-index: 1;
+    }
+    .cb-info { font-size: 11px; line-height: 1.55; position: relative; z-index: 1; }
+    .cb-info h4 { font-size: 13px; font-weight: 800; margin: 0 0 4px; color: var(--sr-navy); line-height: 1.2; }
+    .cb-info .meta { color: #64748B; }
+    .cb-info .meta-row { display: flex; justify-content: space-between; gap: 8px; margin-top: 6px; }
+    .cb-info .uid { font-family: 'SF Mono', ui-monospace, monospace; font-size: 10px; color: #475569; word-break: break-all; }
+    .cb-info .contact {
+      margin-top: 10px; padding-top: 8px;
+      border-top: 1px dashed #CBD5E1;
+      font-size: 10px; color: #64748B;
+    }
+
+    /* Print */
+    @page { size: A4; margin: 14mm; }
     @media print {
       body * { visibility: hidden; }
       #printArea, #printArea * { visibility: visible; }
-      #printArea { position: absolute; left: 0; top: 0; width: 100%; }
+      #printArea { position: absolute; left: 0; top: 0; width: 100%; padding: 0; }
+      .card-row { gap: 36px; }
+      .id-card { box-shadow: 0 0 0 1px #94A3B8 !important; }
     }
   </style>
 </head>
@@ -59,7 +170,7 @@
           <th class="text-left px-4 py-2.5" data-i18n="schoolsPage.title">School</th>
           <th class="text-left px-4 py-2.5" data-i18n="parentsPage.parentName">Guardian</th>
           <th class="text-left px-4 py-2.5" data-i18n="studentsPage.stop">Home stop</th>
-          <th class="text-left px-4 py-2.5" data-i18n="studentsPage.qr">QR</th>
+          <th class="text-left px-4 py-2.5" data-i18n="studentsPage.cardId">Card ID</th>
           <th class="text-right px-4 py-2.5"></th>
         </tr>
       </thead>
@@ -136,9 +247,14 @@ function render() {
         <td class="px-4 py-3"><span class="font-semibold" style="color:${school.color}">${srEscape(school.shortName)}</span></td>
         <td class="px-4 py-3 text-slate-600">${guardian ? srEscape(guardian.name) : '—'}</td>
         <td class="px-4 py-3 text-slate-600 text-xs">${stop ? srEscape(stop.name) : '—'}</td>
-        <td class="px-4 py-3"><span class="font-mono text-xs bg-slate-100 px-2 py-0.5 rounded">${srEscape(s.qrToken)}</span></td>
+        <td class="px-4 py-3">
+          <div class="flex items-center gap-1.5">
+            <span class="font-mono text-xs bg-slate-100 px-2 py-0.5 rounded" title="QR token">${srEscape(s.qrToken)}</span>
+            <span class="inline-flex items-center gap-0.5 text-xs px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 font-bold" title="NFC ${srEscape(s.nfcUid)}">📡</span>
+          </div>
+        </td>
         <td class="px-4 py-3 text-right whitespace-nowrap">
-          <button onclick="viewQR('${s.id}')" class="sr-btn sr-btn-ghost text-xs py-1 px-2">📇 ${t('studentsPage.qr')}</button>
+          <button onclick="viewCard('${s.id}')" class="sr-btn sr-btn-ghost text-xs py-1 px-2">📇 ${t('studentsPage.qr')}</button>
           <button onclick="editStudent('${s.id}')" class="sr-btn sr-btn-ghost text-xs py-1 px-2">${t('crud.edit')}</button>
           <button onclick="deleteStudent('${s.id}')" class="sr-btn sr-btn-ghost text-xs py-1 px-2 text-red-600">${t('crud.delete')}</button>
         </td>
@@ -168,6 +284,7 @@ document.getElementById('addBtn').addEventListener('click', () => {
       const shortPrefix = school.shortName.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3) || 'SR';
       const idNum = id.split('-')[1];
       const tok = `${shortPrefix}-${idNum}-${Math.random().toString(16).slice(2, 6).toUpperCase()}`;
+      const today = new Date().toISOString().slice(0, 10);
       const student = {
         id,
         name: data.name,
@@ -176,8 +293,10 @@ document.getElementById('addBtn').addEventListener('click', () => {
         guardianId: data.guardianId || null,
         stopId: data.stopId,
         qrToken: tok,
+        nfcUid: nfcUidFor(id),               // auto-issue NFC UID
+        cardIssuedAt: today,
         photoInitials: data.name.split(' ').map(p => p[0]).slice(0, 2).join(''),
-        registeredAt: new Date().toISOString().slice(0, 10),
+        registeredAt: today,
         status: 'active'
       };
       APP_DATA.students.push(student);
@@ -187,10 +306,10 @@ document.getElementById('addBtn').addEventListener('click', () => {
         const g = APP_DATA.byId.guardian[data.guardianId];
         if (g && !g.studentIds.includes(id)) g.studentIds.push(id);
       }
-      srToast('✓ ' + t('crud.created') + ' — ' + s_safe(student.name));
+      srToast('✓ ' + t('studentsPage.cardIssuedToast'));
       render();
-      // Auto-show the QR card
-      setTimeout(() => viewQR(id), 200);
+      // Auto-show the issued card (front + back)
+      setTimeout(() => viewCard(id), 200);
     }
   });
 });
@@ -246,46 +365,109 @@ window.deleteStudent = function(id) {
   });
 };
 
-// ---------- QR card view ----------
-window.viewQR = function(id) {
+// ---------- Student ID card view (2-sided: NFC front + QR back) ----------
+window.viewCard = function(id) {
   const s = APP_DATA.byId.student[id];
   const school = APP_DATA.byId.school[s.schoolId];
+  const issuedFmt = new Date(s.cardIssuedAt || s.registeredAt).toLocaleDateString(
+    APP_LANG === 'lo' ? 'lo-LA' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+
+  // Contactless / NFC SVG icon — dot + 3 arcs of increasing size
+  const nfcIcon = `
+    <svg class="cf-tap-icon" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round">
+      <circle cx="22" cy="50" r="6" fill="currentColor"/>
+      <path d="M 38 28 Q 56 50 38 72"/>
+      <path d="M 56 16 Q 84 50 56 84"/>
+      <path d="M 74 4 Q 110 50 74 96" opacity="0.7"/>
+    </svg>`;
 
   const overlay = document.createElement('div');
-  overlay.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4';
+  overlay.className = 'fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 overflow-y-auto';
   overlay.innerHTML = `
-    <div class="bg-white rounded-2xl shadow-xl max-w-md w-full">
+    <div class="bg-white rounded-2xl shadow-xl max-w-3xl w-full my-4">
       <div class="px-5 py-3 border-b border-slate-200 flex items-center justify-between">
-        <h3 class="font-bold text-lg sr-brand-text">${t('studentsPage.qr')} — ${srEscape(s.name)}</h3>
+        <div>
+          <h3 class="font-bold text-lg sr-brand-text">${t('studentsPage.qr')} — ${srEscape(s.name)}</h3>
+          <p class="text-xs text-slate-500 mt-0.5">${t('studentsPage.cardIssued')} · ${issuedFmt}</p>
+        </div>
         <button class="text-slate-400 hover:text-slate-700 text-xl" data-close>&times;</button>
       </div>
-      <div id="printArea" class="p-6">
-        <!-- Student ID card -->
-        <div class="rounded-2xl overflow-hidden border-2 border-slate-200 shadow-md" style="background: white;">
-          <div class="px-4 py-3 sr-gradient text-white flex items-center justify-between">
-            <div class="flex items-center gap-2 font-extrabold">
-              <span class="sr-logo-mark" style="width:28px;height:28px;font-size:14px;">S</span>
-              <span>SafeRide</span>
+
+      <div id="printArea" class="px-6 py-7 bg-slate-50">
+        <div class="card-row">
+
+          <!-- ============== FRONT ============== -->
+          <div>
+            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 text-center" data-i18n="studentsPage.cardFront">FRONT</div>
+            <div class="id-card card-front">
+              <div class="cf-header">
+                <div class="cf-logo">
+                  <span class="mark">S</span>
+                  <span>SafeRide</span>
+                </div>
+                <span class="cf-school-badge" style="background:${school.color}; color:white;">${srEscape(school.shortName)}</span>
+              </div>
+              <div class="cf-body">
+                <div class="cf-photo">${srEscape(s.photoInitials)}</div>
+                <div class="cf-info">
+                  <div class="cf-name">${srEscape(s.name)}</div>
+                  <div class="cf-grade">${srEscape(s.grade)}</div>
+                  <div class="cf-school-name">${srEscape(APP_LANG === 'lo' ? (school.nameLo || school.name) : school.name)}</div>
+                </div>
+                <div class="cf-tap">
+                  ${nfcIcon}
+                  <span class="cf-tap-label">TAP</span>
+                </div>
+              </div>
+              <div class="cf-footer">
+                <span>STUDENT ID</span>
+                <span class="cf-card-id">${srEscape(s.qrToken)}</span>
+              </div>
             </div>
-            <span style="background:${school.color}; color:white;" class="text-xs font-bold px-2 py-0.5 rounded">${srEscape(school.shortName)}</span>
           </div>
-          <div class="p-5 flex items-center gap-4">
-            <div class="flex-shrink-0">
-              <canvas id="qrCanvas" style="background:white; border:1px solid #E2E8F0; border-radius:8px; padding:6px;"></canvas>
-            </div>
-            <div class="flex-1 min-w-0">
-              <div class="text-xs text-slate-400 uppercase tracking-wide">Student ID</div>
-              <div class="text-xl font-extrabold sr-brand-text leading-tight">${srEscape(s.name)}</div>
-              <div class="text-sm text-slate-600 mt-0.5">${srEscape(s.grade)}</div>
-              <div class="mt-2 font-mono text-xs bg-slate-100 px-2 py-1 rounded inline-block">${srEscape(s.qrToken)}</div>
+
+          <!-- ============== BACK ============== -->
+          <div>
+            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 text-center" data-i18n="studentsPage.cardBack">BACK</div>
+            <div class="id-card card-back">
+              <div class="stripe"></div>
+              <div class="cb-qr">
+                <img id="qrImg" alt="QR" width="130" height="130" style="display:block;">
+              </div>
+              <div class="cb-info">
+                <h4>${srEscape(APP_LANG === 'lo' ? (school.nameLo || school.name) : school.name)}</h4>
+                <div class="meta">${t('studentsPage.cardInstructions')}</div>
+                <div class="meta-row">
+                  <span class="text-slate-500">${t('studentsPage.issuedOn')}</span>
+                  <span class="font-semibold">${issuedFmt}</span>
+                </div>
+                <div class="meta-row">
+                  <span class="text-slate-500">${t('studentsPage.nfcUid')}</span>
+                  <span class="uid">${srEscape(s.nfcUid)}</span>
+                </div>
+                <div class="contact">
+                  Lost? Call SafeRide<br>+856 21 555 0100 · saferide.la
+                </div>
+              </div>
             </div>
           </div>
-          <div class="px-5 py-2 border-t border-slate-200 text-[10px] text-slate-400 text-center">
-            saferide.la · ${srEscape(school.name)}
+
+        </div>
+
+        <!-- legend below -->
+        <div class="mt-5 grid grid-cols-2 gap-3 max-w-3xl mx-auto text-xs">
+          <div class="bg-white rounded-lg p-3 border border-slate-200">
+            <div class="flex items-center gap-2 mb-1 font-bold sr-brand-text">📡 ${t('nfcTap')}</div>
+            <div class="text-slate-600">UID: <span class="font-mono">${srEscape(s.nfcUid)}</span></div>
+          </div>
+          <div class="bg-white rounded-lg p-3 border border-slate-200">
+            <div class="flex items-center gap-2 mb-1 font-bold sr-brand-text">📷 ${t('qrScan')}</div>
+            <div class="text-slate-600">Token: <span class="font-mono">${srEscape(s.qrToken)}</span></div>
           </div>
         </div>
       </div>
-      <div class="px-5 py-3 border-t border-slate-200 flex justify-end gap-2 bg-slate-50 rounded-b-2xl">
+
+      <div class="px-5 py-3 border-t border-slate-200 flex justify-end gap-2 bg-white rounded-b-2xl">
         <button class="sr-btn sr-btn-ghost" data-close>${t('crud.close')}</button>
         <button onclick="window.print()" class="sr-btn sr-btn-yellow">🖨 ${t('studentsPage.printQr')}</button>
       </div>
@@ -295,9 +477,14 @@ window.viewQR = function(id) {
   overlay.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', () => overlay.remove()));
   overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
 
-  // Render QR
-  const canvas = overlay.querySelector('#qrCanvas');
-  QRCode.toCanvas(canvas, s.qrToken, { width: 140, margin: 0, color: { dark: '#0F1E3D', light: '#FFFFFF' } });
+  // Render QR on the back (synchronous via qrcode-generator)
+  try {
+    const qr = qrcode(0, 'M');
+    qr.addData(s.qrToken);
+    qr.make();
+    const img = overlay.querySelector('#qrImg');
+    if (img) img.src = qr.createDataURL(5, 0);
+  } catch (e) { console.error(e); }
 };
 
 // Tiny escaper helper exposed globally so we can use in toast above
@@ -305,6 +492,14 @@ function s_safe(s) { return srEscape(s); }
 
 render();
 window.addEventListener('langchange', render);
+
+// Auto-open card view when ?card=ID is present (handy for direct demo links)
+(function () {
+  const cardId = new URLSearchParams(location.search).get('card');
+  if (cardId && APP_DATA.byId.student[cardId]) {
+    setTimeout(() => viewCard(cardId), 100);
+  }
+})();
 </script>
 </body>
 </html>

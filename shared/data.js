@@ -404,13 +404,28 @@ window.APP_DATA = {
     return (h >>> 0).toString(16).slice(-4).toUpperCase().padStart(4, '0');
   }
 
+  // Helper: NFC UID looks like a real Mifare 7-byte UID (e.g. 04:A3:F7:1B:C2:5E:80).
+  // Deterministic from the seed so it stays stable across reloads.
+  window.nfcUidFor = function (seed) {
+    let h = 17;
+    for (let i = 0; i < seed.length; i++) h = ((h * 131) + seed.charCodeAt(i)) | 0;
+    let parts = ['04'];   // NXP MIFARE prefix
+    for (let i = 0; i < 6; i++) {
+      h = ((h * 31) + i + 1) | 0;
+      parts.push(((h >>> 0) & 0xFF).toString(16).padStart(2, '0').toUpperCase());
+    }
+    return parts.join(':');
+  };
+
   const schoolById = Object.fromEntries(d.schools.map(s => [s.id, s]));
 
-  // Students: add qrToken, photoInitials, registeredAt
+  // Students: add qrToken, nfcUid, photoInitials, registeredAt
   d.students.forEach(s => {
     const school = schoolById[s.schoolId];
     const idNum = s.id.split('-')[1];
-    s.qrToken      = s.qrToken      || `${school.shortName.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3) || 'SR'}-${idNum}-${hash4(s.id)}`;
+    s.qrToken       = s.qrToken      || `${school.shortName.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3) || 'SR'}-${idNum}-${hash4(s.id)}`;
+    s.nfcUid        = s.nfcUid       || nfcUidFor(s.id);
+    s.cardIssuedAt  = s.cardIssuedAt || '2025-09-02';
     s.photoInitials = s.name.split(' ').map(p => p[0]).slice(0, 2).join('');
     s.registeredAt  = s.registeredAt || '2025-09-02';
     s.status        = s.status || 'active';   // active | inactive | graduated
