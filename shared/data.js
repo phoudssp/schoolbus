@@ -390,6 +390,87 @@ window.APP_DATA = {
   byId: null
 };
 
+// ========== Enrich existing rows with management-only fields ==========
+// (qrToken on students, email/accountStatus/lastLogin on guardians,
+// license + status on drivers). Computed deterministically so they stay
+// stable across reloads in the prototype.
+(function enrichForCrud() {
+  const d = window.APP_DATA;
+
+  // Helper: deterministic 4-hex-char token from a string
+  function hash4(s) {
+    let h = 7;
+    for (let i = 0; i < s.length; i++) h = ((h * 31) + s.charCodeAt(i)) | 0;
+    return (h >>> 0).toString(16).slice(-4).toUpperCase().padStart(4, '0');
+  }
+
+  const schoolById = Object.fromEntries(d.schools.map(s => [s.id, s]));
+
+  // Students: add qrToken, photoInitials, registeredAt
+  d.students.forEach(s => {
+    const school = schoolById[s.schoolId];
+    const idNum = s.id.split('-')[1];
+    s.qrToken      = s.qrToken      || `${school.shortName.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3) || 'SR'}-${idNum}-${hash4(s.id)}`;
+    s.photoInitials = s.name.split(' ').map(p => p[0]).slice(0, 2).join('');
+    s.registeredAt  = s.registeredAt || '2025-09-02';
+    s.status        = s.status || 'active';   // active | inactive | graduated
+  });
+
+  // Schools: add status flag
+  d.schools.forEach(s => {
+    s.status = s.status || 'active';
+  });
+
+  // Buses: status already exists ('active' / 'idle'). Add year + lastService.
+  d.buses.forEach(b => {
+    b.year        = b.year        || (2018 + (parseInt(b.id.slice(-1)) % 6));
+    b.lastService = b.lastService || '2026-04-15';
+  });
+
+  // Drivers: license, status, hire date
+  const driverInfo = {
+    'D-001': { licenseNo: 'LD-2019-1042', licenseExpiry: '2027-08-12', hiredAt: '2019-08-15', status: 'active'   },
+    'D-002': { licenseNo: 'LD-2020-0687', licenseExpiry: '2026-12-30', hiredAt: '2020-09-01', status: 'active'   },
+    'D-003': { licenseNo: 'LD-2018-2210', licenseExpiry: '2027-03-22', hiredAt: '2018-06-12', status: 'active'   },
+    'D-004': { licenseNo: 'LD-2021-1188', licenseExpiry: '2028-01-08', hiredAt: '2021-02-20', status: 'active'   },
+    'D-005': { licenseNo: 'LD-2017-0455', licenseExpiry: '2026-11-15', hiredAt: '2017-05-08', status: 'active'   },
+    'D-006': { licenseNo: 'LD-2022-3074', licenseExpiry: '2027-07-04', hiredAt: '2022-03-18', status: 'on_leave' }
+  };
+  d.drivers.forEach(dr => {
+    Object.assign(dr, driverInfo[dr.id] || { licenseNo: 'LD-?', licenseExpiry: '2027-01-01', hiredAt: '2020-01-01', status: 'active' });
+    // Find which bus this driver is assigned to via routes
+    const route = d.routes.find(r => r.driverId === dr.id);
+    dr.assignedBusId = route ? route.busId : null;
+  });
+
+  // Guardians: email + login info + linked student count
+  const guardianInfo = {
+    'G-001': { email: 'chanthavong.family@gmail.com',  accountStatus: 'active',  lastLogin: '2026-05-07T22:31:00+07:00', createdAt: '2025-09-01' },
+    'G-002': { email: 'vongchanh.maly@gmail.com',      accountStatus: 'active',  lastLogin: '2026-05-07T18:12:00+07:00', createdAt: '2025-09-04' },
+    'G-003': { email: 'phommachanh@gmail.com',         accountStatus: 'active',  lastLogin: '2026-05-07T20:55:00+07:00', createdAt: '2025-09-08' },
+    'G-004': { email: 'smith.family@expat.la',         accountStatus: 'active',  lastLogin: '2026-05-06T07:42:00+07:00', createdAt: '2025-09-15' },
+    'G-005': { email: 'souksakhone.k@gmail.com',       accountStatus: 'invited', lastLogin: null,                        createdAt: '2026-05-05' },
+    'G-006': { email: 'nakamura.yuki@expat.la',        accountStatus: 'active',  lastLogin: '2026-05-07T19:20:00+07:00', createdAt: '2025-10-12' },
+    'G-007': { email: 'sengsouvanh@gmail.com',         accountStatus: 'suspended', lastLogin: '2026-04-29T12:08:00+07:00', createdAt: '2025-09-22' }
+  };
+  d.guardians.forEach(g => {
+    Object.assign(g, guardianInfo[g.id] || { email: '—', accountStatus: 'active', lastLogin: null, createdAt: '2025-09-01' });
+  });
+
+  // Plans: feature labels for UI
+  const featLabels = {
+    live_tracking:    'Live GPS tracking',
+    parent_app:       'Parent mobile app',
+    reports:          'Reports & exports',
+    sms_fallback:     'SMS notifications',
+    priority_support: '24/7 priority support',
+    custom_branding:  'Custom branding'
+  };
+  Object.values(d.plans).forEach(p => {
+    p.featureLabels = p.features.map(f => featLabels[f] || f);
+  });
+})();
+
 // Build id→object lookups for convenience
 (function buildIndices() {
   const d = window.APP_DATA;

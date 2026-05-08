@@ -192,8 +192,142 @@ window.APP_I18N = {
     // Top nav (operator app sections)
     nav: {
       dashboard: 'Dashboard',
+      manage: 'Manage',
       billing: 'Billing',
       reports: 'Reports'
+    },
+
+    // Manage hub
+    manage: {
+      title: 'Manage',
+      subtitle: 'Schools, fleet, people, and plans — everything you administer.',
+      schoolsCard: 'Schools',
+      schoolsDesc: 'Schools you serve. Edit address, bell schedule, contacts.',
+      busesCard: 'Buses',
+      busesDesc: 'Fleet roster — plates, capacity, status, last service.',
+      driversCard: 'Drivers',
+      driversDesc: 'Drivers, licenses, assignments, leave status.',
+      studentsCard: 'Students',
+      studentsDesc: 'Roster across all schools. Register, edit, generate QR cards.',
+      parentsCard: 'Parent accounts',
+      parentsDesc: 'Parent app accounts. Invite, reset password, suspend.',
+      plansCard: 'Subscription plans',
+      plansDesc: 'Pricing tiers and features your customers can choose.'
+    },
+
+    // CRUD common
+    crud: {
+      add: 'Add',
+      edit: 'Edit',
+      delete: 'Delete',
+      archive: 'Archive',
+      save: 'Save',
+      cancel: 'Cancel',
+      close: 'Close',
+      search: 'Search…',
+      filter: 'Filter',
+      none: 'None',
+      yes: 'Yes',
+      no: 'No',
+      confirm: 'Confirm',
+      confirmDelete: 'Are you sure you want to delete this?',
+      saved: 'Saved',
+      deleted: 'Deleted',
+      created: 'Created',
+      sent: 'Sent',
+      copied: 'Copied'
+    },
+
+    // Schools page
+    schoolsPage: {
+      title: 'Schools',
+      subtitle: 'School customers served by your fleet.',
+      addSchool: 'Add school',
+      name: 'School name',
+      nameLo: 'Lao name',
+      address: 'Address',
+      bellAm: 'AM bell',
+      bellPm: 'PM bell',
+      color: 'Map color',
+      students: 'Students',
+      coordinates: 'Coordinates'
+    },
+
+    // Buses page
+    busesPage: {
+      title: 'Buses',
+      subtitle: 'Your fleet — plates, capacities, status.',
+      addBus: 'Add bus',
+      busId: 'Bus ID',
+      plate: 'Plate',
+      capacity: 'Capacity',
+      year: 'Year',
+      lastService: 'Last service',
+      notes: 'Notes',
+      decommission: 'Decommission'
+    },
+
+    // Drivers page
+    driversPage: {
+      title: 'Drivers',
+      subtitle: 'Driver roster, licenses, and assignments.',
+      addDriver: 'Add driver',
+      driverName: 'Full name',
+      phone: 'Phone',
+      license: 'License #',
+      licenseExpiry: 'License expiry',
+      hiredAt: 'Hired',
+      assignedBus: 'Assigned bus',
+      onLeave: 'On leave',
+      inactive: 'Inactive'
+    },
+
+    // Students page
+    studentsPage: {
+      title: 'Students',
+      subtitle: 'All registered students across your schools.',
+      registerStudent: 'Register student',
+      studentName: 'Full name',
+      grade: 'Grade',
+      stop: 'Home stop',
+      qr: 'QR card',
+      printQr: 'Print QR card',
+      generateQr: 'Generate QR',
+      regenerateQr: 'Regenerate token',
+      linkGuardian: 'Link to guardian'
+    },
+
+    // Parents page
+    parentsPage: {
+      title: 'Parent accounts',
+      subtitle: 'Login accounts that parents use to access the app.',
+      addParent: 'Add parent',
+      parentName: 'Parent name',
+      email: 'Email',
+      phone: 'Phone',
+      children: 'Children',
+      account: 'Account',
+      lastLogin: 'Last login',
+      sendInvite: 'Send invite',
+      resetPassword: 'Reset password',
+      activeAccount: 'Active',
+      invitedAccount: 'Invited',
+      suspendedAccount: 'Suspended',
+      neverLoggedIn: 'Never logged in',
+      inviteSent: 'Invitation sent',
+      passwordReset: 'Password reset link sent'
+    },
+
+    // Plans page
+    plansPage: {
+      title: 'Subscription plans',
+      subtitle: 'Pricing tiers your school customers subscribe to.',
+      addPlan: 'Add plan',
+      planName: 'Plan name',
+      pricePerStudent: 'Price per student / month',
+      features: 'Features',
+      schoolsOnPlan: 'Schools on this plan',
+      duplicate: 'Duplicate'
     },
 
     // Billing
@@ -446,8 +580,137 @@ window.APP_I18N = {
     // Top nav
     nav: {
       dashboard: 'ໜ້າຄວບຄຸມ',
+      manage: 'ຈັດການ',
       billing: 'ການເງິນ',
       reports: 'ລາຍງານ'
+    },
+
+    // Manage hub
+    manage: {
+      title: 'ຈັດການ',
+      subtitle: 'ໂຮງຮຽນ, ລົດ, ຄົນ ແລະ ແພັກເກັດ — ທຸກຢ່າງທີ່ທ່ານຄຸ້ມຄອງ.',
+      schoolsCard: 'ໂຮງຮຽນ',
+      schoolsDesc: 'ໂຮງຮຽນທີ່ທ່ານໃຫ້ບໍລິການ. ແກ້ໄຂທີ່ຢູ່, ເວລາໂຮງຮຽນ, ຕິດຕໍ່.',
+      busesCard: 'ລົດ',
+      busesDesc: 'ລາຍຊື່ລົດ — ປ້າຍທະບຽນ, ຄວາມຈຸ, ສະຖານະ.',
+      driversCard: 'ຄົນຂັບ',
+      driversDesc: 'ຄົນຂັບ, ໃບອະນຸຍາດ, ການມອບໝາຍ.',
+      studentsCard: 'ນັກຮຽນ',
+      studentsDesc: 'ນັກຮຽນທຸກຄົນທົ່ວທຸກໂຮງຮຽນ. ລົງທະບຽນ, ແກ້ໄຂ, ສ້າງບັດ QR.',
+      parentsCard: 'ບັນຊີຜູ້ປົກຄອງ',
+      parentsDesc: 'ບັນຊີສຳລັບແອັບຜູ້ປົກຄອງ. ເຊີນ, ຣີເຊັດລະຫັດ, ໂຈະ.',
+      plansCard: 'ແພັກເກັດການສະໝັກ',
+      plansDesc: 'ລະດັບລາຄາ ແລະ ຄຸນສົມບັດທີ່ລູກຄ້າເລືອກໄດ້.'
+    },
+
+    // CRUD common
+    crud: {
+      add: 'ເພີ່ມ',
+      edit: 'ແກ້ໄຂ',
+      delete: 'ລຶບ',
+      archive: 'ຈັດເກັບ',
+      save: 'ບັນທຶກ',
+      cancel: 'ຍົກເລີກ',
+      close: 'ປິດ',
+      search: 'ຄົ້ນຫາ…',
+      filter: 'ກັ່ນຕອງ',
+      none: 'ບໍ່ມີ',
+      yes: 'ແມ່ນ',
+      no: 'ບໍ່ແມ່ນ',
+      confirm: 'ຢືນຢັນ',
+      confirmDelete: 'ທ່ານແນ່ໃຈວ່າຕ້ອງການລຶບແທ້ບໍ?',
+      saved: 'ບັນທຶກແລ້ວ',
+      deleted: 'ລຶບແລ້ວ',
+      created: 'ສ້າງແລ້ວ',
+      sent: 'ສົ່ງແລ້ວ',
+      copied: 'ສຳເນົາແລ້ວ'
+    },
+
+    // Schools
+    schoolsPage: {
+      title: 'ໂຮງຮຽນ',
+      subtitle: 'ໂຮງຮຽນທີ່ໃຊ້ບໍລິການລົດຂອງທ່ານ.',
+      addSchool: 'ເພີ່ມໂຮງຮຽນ',
+      name: 'ຊື່ໂຮງຮຽນ (ອັງກິດ)',
+      nameLo: 'ຊື່ໂຮງຮຽນ (ລາວ)',
+      address: 'ທີ່ຢູ່',
+      bellAm: 'ຣະຄັງເຊົ້າ',
+      bellPm: 'ຣະຄັງແລງ',
+      color: 'ສີໃນແຜນທີ່',
+      students: 'ນັກຮຽນ',
+      coordinates: 'ພິກັດ'
+    },
+
+    busesPage: {
+      title: 'ລົດ',
+      subtitle: 'ກອງລົດຂອງທ່ານ — ປ້າຍທະບຽນ, ຄວາມຈຸ, ສະຖານະ.',
+      addBus: 'ເພີ່ມລົດ',
+      busId: 'ລະຫັດລົດ',
+      plate: 'ປ້າຍທະບຽນ',
+      capacity: 'ຄວາມຈຸ',
+      year: 'ປີ',
+      lastService: 'ບຳລຸງຮັກສາລ່າສຸດ',
+      notes: 'ໝາຍເຫດ',
+      decommission: 'ປົດປ່ອຍ'
+    },
+
+    driversPage: {
+      title: 'ຄົນຂັບ',
+      subtitle: 'ລາຍຊື່ຄົນຂັບ ແລະ ໃບອະນຸຍາດ.',
+      addDriver: 'ເພີ່ມຄົນຂັບ',
+      driverName: 'ຊື່ເຕັມ',
+      phone: 'ໂທລະສັບ',
+      license: 'ເລກໃບອະນຸຍາດ',
+      licenseExpiry: 'ວັນໝົດອາຍຸ',
+      hiredAt: 'ຈ້າງເມື່ອ',
+      assignedBus: 'ລົດທີ່ມອບໝາຍ',
+      onLeave: 'ລາພັກ',
+      inactive: 'ບໍ່ໃຊ້ງານ'
+    },
+
+    studentsPage: {
+      title: 'ນັກຮຽນ',
+      subtitle: 'ນັກຮຽນທຸກຄົນທີ່ລົງທະບຽນຢູ່ໃນທຸກໂຮງຮຽນ.',
+      registerStudent: 'ລົງທະບຽນນັກຮຽນ',
+      studentName: 'ຊື່ເຕັມ',
+      grade: 'ຊັ້ນ',
+      stop: 'ປ້າຍຈອດທີ່ບ້ານ',
+      qr: 'ບັດ QR',
+      printQr: 'ພິມບັດ QR',
+      generateQr: 'ສ້າງ QR',
+      regenerateQr: 'ສ້າງລະຫັດໃໝ່',
+      linkGuardian: 'ເຊື່ອມຕໍ່ກັບຜູ້ປົກຄອງ'
+    },
+
+    parentsPage: {
+      title: 'ບັນຊີຜູ້ປົກຄອງ',
+      subtitle: 'ບັນຊີລ໋ອກອິນທີ່ຜູ້ປົກຄອງໃຊ້ເຂົ້າແອັບ.',
+      addParent: 'ເພີ່ມຜູ້ປົກຄອງ',
+      parentName: 'ຊື່ຜູ້ປົກຄອງ',
+      email: 'ອີເມວ',
+      phone: 'ໂທລະສັບ',
+      children: 'ລູກ',
+      account: 'ບັນຊີ',
+      lastLogin: 'ເຂົ້າຊົມລ່າສຸດ',
+      sendInvite: 'ສົ່ງຄຳເຊີນ',
+      resetPassword: 'ຣີເຊັດລະຫັດຜ່ານ',
+      activeAccount: 'ໃຊ້ງານ',
+      invitedAccount: 'ເຊີນແລ້ວ',
+      suspendedAccount: 'ໂຈະ',
+      neverLoggedIn: 'ຍັງບໍ່ເຄີຍເຂົ້າ',
+      inviteSent: 'ສົ່ງຄຳເຊີນແລ້ວ',
+      passwordReset: 'ສົ່ງລິ້ງຣີເຊັດລະຫັດແລ້ວ'
+    },
+
+    plansPage: {
+      title: 'ແພັກເກັດການສະໝັກ',
+      subtitle: 'ລະດັບລາຄາທີ່ໂຮງຮຽນລູກຄ້າສະໝັກ.',
+      addPlan: 'ເພີ່ມແພັກເກັດ',
+      planName: 'ຊື່ແພັກເກັດ',
+      pricePerStudent: 'ລາຄາຕໍ່ນັກຮຽນ / ເດືອນ',
+      features: 'ຄຸນສົມບັດ',
+      schoolsOnPlan: 'ໂຮງຮຽນທີ່ໃຊ້ແພັກນີ້',
+      duplicate: 'ສຳເນົາ'
     },
 
     // Billing

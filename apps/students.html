@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SafeRide — Students</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <link rel="stylesheet" href="../shared/styles.css">
+  <style>
+    @media print {
+      body * { visibility: hidden; }
+      #printArea, #printArea * { visibility: visible; }
+      #printArea { position: absolute; left: 0; top: 0; width: 100%; }
+    }
+  </style>
+</head>
+<body class="bg-slate-100 min-h-screen">
+
+<header class="sr-gradient text-white sticky top-0 z-30">
+  <div class="px-5 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-6">
+      <a href="../index.html" class="sr-logo text-white"><span class="sr-logo-mark">S</span><span data-i18n="brand">SafeRide</span></a>
+      <nav id="topNav" class="hidden md:flex items-center gap-1 text-sm"></nav>
+    </div>
+    <button onclick="toggleLang()" class="sr-btn sr-btn-yellow text-sm px-3 py-1.5"><span data-i18n="languageSwitch">ລາວ</span></button>
+  </div>
+</header>
+
+<main class="px-5 py-5 max-w-7xl mx-auto">
+
+  <div class="text-sm text-slate-500 mb-2">
+    <a href="manage.html" class="hover:underline" data-i18n="manage.title">Manage</a>
+    <span class="mx-1">›</span>
+    <span data-i18n="studentsPage.title">Students</span>
+  </div>
+
+  <div class="flex flex-wrap items-end justify-between gap-3 mb-4">
+    <div>
+      <h1 class="text-2xl font-extrabold sr-brand-text" data-i18n="studentsPage.title">Students</h1>
+      <p class="text-sm text-slate-500" data-i18n="studentsPage.subtitle">All registered students across your schools.</p>
+    </div>
+    <div class="flex flex-wrap items-center gap-2">
+      <select id="schoolFilter" class="border border-slate-300 rounded-md px-2 py-1.5 text-sm bg-white">
+        <option value="">All schools</option>
+      </select>
+      <input id="search" type="text" data-i18n-placeholder="crud.search" placeholder="Search…" class="border border-slate-300 rounded-md px-3 py-1.5 text-sm w-56">
+      <button id="addBtn" class="sr-btn sr-btn-primary text-sm">➕ <span data-i18n="studentsPage.registerStudent">Register student</span></button>
+    </div>
+  </div>
+
+  <div class="sr-card overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wide">
+        <tr>
+          <th class="text-left px-4 py-2.5" data-i18n="studentsPage.studentName">Name</th>
+          <th class="text-left px-4 py-2.5" data-i18n="studentsPage.grade">Grade</th>
+          <th class="text-left px-4 py-2.5" data-i18n="schoolsPage.title">School</th>
+          <th class="text-left px-4 py-2.5" data-i18n="parentsPage.parentName">Guardian</th>
+          <th class="text-left px-4 py-2.5" data-i18n="studentsPage.stop">Home stop</th>
+          <th class="text-left px-4 py-2.5" data-i18n="studentsPage.qr">QR</th>
+          <th class="text-right px-4 py-2.5"></th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+
+</main>
+
+<script src="../shared/i18n.js"></script>
+<script src="../shared/data.js"></script>
+<script src="../shared/crud.js"></script>
+<script>
+document.getElementById('topNav').innerHTML = srOperatorNav('manage');
+document.querySelectorAll('#topNav [data-i18n]').forEach(el => el.textContent = t(el.getAttribute('data-i18n')));
+
+// School filter
+const sf = document.getElementById('schoolFilter');
+APP_DATA.schools.forEach(s => {
+  const o = document.createElement('option');
+  o.value = s.id;
+  o.textContent = s.name;
+  sf.appendChild(o);
+});
+sf.addEventListener('change', render);
+document.getElementById('search').addEventListener('input', render);
+
+const GRADES = ['Grade 1','Grade 2','Grade 3','Grade 4','Grade 5','Grade 6','Grade 7','Grade 8'];
+
+function stopOptions() {
+  return Object.entries(APP_DATA.stops)
+    .filter(([id, s]) => !s.isSchool)
+    .map(([id, s]) => ({ value: id, label: s.name }));
+}
+
+function guardianOptions() {
+  return [{ value: '', label: '— ' + t('crud.none') + ' —' }]
+    .concat(APP_DATA.guardians.map(g => ({ value: g.id, label: `${g.name} (${g.phone})` })));
+}
+
+function schoolOptions() {
+  return APP_DATA.schools.map(s => ({ value: s.id, label: s.name }));
+}
+
+function render() {
+  const q = (document.getElementById('search').value || '').toLowerCase();
+  const filterSchool = sf.value;
+  const tbody = document.getElementById('rows');
+  const list = APP_DATA.students.filter(s => {
+    if (filterSchool && s.schoolId !== filterSchool) return false;
+    if (q && !s.name.toLowerCase().includes(q) && !s.id.toLowerCase().includes(q)) return false;
+    return true;
+  });
+  if (list.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" class="px-4 py-6 text-center text-sm text-slate-400">${t('crud.none')}</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map(s => {
+    const school = APP_DATA.byId.school[s.schoolId];
+    const guardian = APP_DATA.byId.guardian[s.guardianId];
+    const stop = APP_DATA.stops[s.stopId];
+    return `
+      <tr class="border-t border-slate-100 hover:bg-slate-50">
+        <td class="px-4 py-3">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600 text-xs">${s.photoInitials}</div>
+            <div>
+              <div class="font-semibold">${srEscape(s.name)}</div>
+              <div class="text-xs text-slate-500 font-mono">${s.id}</div>
+            </div>
+          </div>
+        </td>
+        <td class="px-4 py-3 text-slate-600">${srEscape(s.grade)}</td>
+        <td class="px-4 py-3"><span class="font-semibold" style="color:${school.color}">${srEscape(school.shortName)}</span></td>
+        <td class="px-4 py-3 text-slate-600">${guardian ? srEscape(guardian.name) : '—'}</td>
+        <td class="px-4 py-3 text-slate-600 text-xs">${stop ? srEscape(stop.name) : '—'}</td>
+        <td class="px-4 py-3"><span class="font-mono text-xs bg-slate-100 px-2 py-0.5 rounded">${srEscape(s.qrToken)}</span></td>
+        <td class="px-4 py-3 text-right whitespace-nowrap">
+          <button onclick="viewQR('${s.id}')" class="sr-btn sr-btn-ghost text-xs py-1 px-2">📇 ${t('studentsPage.qr')}</button>
+          <button onclick="editStudent('${s.id}')" class="sr-btn sr-btn-ghost text-xs py-1 px-2">${t('crud.edit')}</button>
+          <button onclick="deleteStudent('${s.id}')" class="sr-btn sr-btn-ghost text-xs py-1 px-2 text-red-600">${t('crud.delete')}</button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function studentFields() {
+  return [
+    { key: 'name',       label: t('studentsPage.studentName'), type: 'text',   required: true, placeholder: 'Noi Chanthavong' },
+    { key: 'grade',      label: t('studentsPage.grade'),       type: 'select', required: true, options: GRADES, default: 'Grade 1' },
+    { key: 'schoolId',   label: t('schoolsPage.title'),        type: 'select', required: true, options: schoolOptions() },
+    { key: 'stopId',     label: t('studentsPage.stop'),        type: 'select', required: true, options: stopOptions() },
+    { key: 'guardianId', label: t('studentsPage.linkGuardian'), type: 'select', options: guardianOptions(), hint: 'Add a new guardian via the Parents page first if not listed.' }
+  ];
+}
+
+document.getElementById('addBtn').addEventListener('click', () => {
+  srModal({
+    title: t('studentsPage.registerStudent'),
+    fields: studentFields(),
+    onSave: data => {
+      if (!data.name || !data.schoolId || !data.stopId) return false;
+      const id = srNewId('S', APP_DATA.students);
+      const school = APP_DATA.byId.school[data.schoolId];
+      const shortPrefix = school.shortName.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3) || 'SR';
+      const idNum = id.split('-')[1];
+      const tok = `${shortPrefix}-${idNum}-${Math.random().toString(16).slice(2, 6).toUpperCase()}`;
+      const student = {
+        id,
+        name: data.name,
+        grade: data.grade,
+        schoolId: data.schoolId,
+        guardianId: data.guardianId || null,
+        stopId: data.stopId,
+        qrToken: tok,
+        photoInitials: data.name.split(' ').map(p => p[0]).slice(0, 2).join(''),
+        registeredAt: new Date().toISOString().slice(0, 10),
+        status: 'active'
+      };
+      APP_DATA.students.push(student);
+      APP_DATA.byId.student[id] = student;
+      // Link guardian
+      if (data.guardianId) {
+        const g = APP_DATA.byId.guardian[data.guardianId];
+        if (g && !g.studentIds.includes(id)) g.studentIds.push(id);
+      }
+      srToast('✓ ' + t('crud.created') + ' — ' + s_safe(student.name));
+      render();
+      // Auto-show the QR card
+      setTimeout(() => viewQR(id), 200);
+    }
+  });
+});
+
+window.editStudent = function(id) {
+  const s = APP_DATA.byId.student[id];
+  srModal({
+    title: t('crud.edit') + ' — ' + s.name,
+    fields: studentFields(),
+    values: s,
+    onSave: data => {
+      const oldGuardianId = s.guardianId;
+      Object.assign(s, {
+        name: data.name,
+        grade: data.grade,
+        schoolId: data.schoolId,
+        stopId: data.stopId,
+        guardianId: data.guardianId || null
+      });
+      // Re-link guardian if changed
+      if (oldGuardianId && oldGuardianId !== data.guardianId) {
+        const g = APP_DATA.byId.guardian[oldGuardianId];
+        if (g) g.studentIds = g.studentIds.filter(sid => sid !== id);
+      }
+      if (data.guardianId && data.guardianId !== oldGuardianId) {
+        const g = APP_DATA.byId.guardian[data.guardianId];
+        if (g && !g.studentIds.includes(id)) g.studentIds.push(id);
+      }
+      srToast('✓ ' + t('crud.saved'));
+      render();
+    }
+  });
+};
+
+window.deleteStudent = function(id) {
+  const s = APP_DATA.byId.student[id];
+  srConfirm({
+    title: t('crud.delete') + ' — ' + s.name,
+    message: t('crud.confirmDelete'),
+    danger: true,
+    onYes: () => {
+      const idx = APP_DATA.students.findIndex(x => x.id === id);
+      if (idx >= 0) APP_DATA.students.splice(idx, 1);
+      delete APP_DATA.byId.student[id];
+      // Unlink from guardian
+      if (s.guardianId) {
+        const g = APP_DATA.byId.guardian[s.guardianId];
+        if (g) g.studentIds = g.studentIds.filter(sid => sid !== id);
+      }
+      srToast('✓ ' + t('crud.deleted'));
+      render();
+    }
+  });
+};
+
+// ---------- QR card view ----------
+window.viewQR = function(id) {
+  const s = APP_DATA.byId.student[id];
+  const school = APP_DATA.byId.school[s.schoolId];
+
+  const overlay = document.createElement('div');
+  overlay.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4';
+  overlay.innerHTML = `
+    <div class="bg-white rounded-2xl shadow-xl max-w-md w-full">
+      <div class="px-5 py-3 border-b border-slate-200 flex items-center justify-between">
+        <h3 class="font-bold text-lg sr-brand-text">${t('studentsPage.qr')} — ${srEscape(s.name)}</h3>
+        <button class="text-slate-400 hover:text-slate-700 text-xl" data-close>&times;</button>
+      </div>
+      <div id="printArea" class="p-6">
+        <!-- Student ID card -->
+        <div class="rounded-2xl overflow-hidden border-2 border-slate-200 shadow-md" style="background: white;">
+          <div class="px-4 py-3 sr-gradient text-white flex items-center justify-between">
+            <div class="flex items-center gap-2 font-extrabold">
+              <span class="sr-logo-mark" style="width:28px;height:28px;font-size:14px;">S</span>
+              <span>SafeRide</span>
+            </div>
+            <span style="background:${school.color}; color:white;" class="text-xs font-bold px-2 py-0.5 rounded">${srEscape(school.shortName)}</span>
+          </div>
+          <div class="p-5 flex items-center gap-4">
+            <div class="flex-shrink-0">
+              <canvas id="qrCanvas" style="background:white; border:1px solid #E2E8F0; border-radius:8px; padding:6px;"></canvas>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="text-xs text-slate-400 uppercase tracking-wide">Student ID</div>
+              <div class="text-xl font-extrabold sr-brand-text leading-tight">${srEscape(s.name)}</div>
+              <div class="text-sm text-slate-600 mt-0.5">${srEscape(s.grade)}</div>
+              <div class="mt-2 font-mono text-xs bg-slate-100 px-2 py-1 rounded inline-block">${srEscape(s.qrToken)}</div>
+            </div>
+          </div>
+          <div class="px-5 py-2 border-t border-slate-200 text-[10px] text-slate-400 text-center">
+            saferide.la · ${srEscape(school.name)}
+          </div>
+        </div>
+      </div>
+      <div class="px-5 py-3 border-t border-slate-200 flex justify-end gap-2 bg-slate-50 rounded-b-2xl">
+        <button class="sr-btn sr-btn-ghost" data-close>${t('crud.close')}</button>
+        <button onclick="window.print()" class="sr-btn sr-btn-yellow">🖨 ${t('studentsPage.printQr')}</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  overlay.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', () => overlay.remove()));
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+
+  // Render QR
+  const canvas = overlay.querySelector('#qrCanvas');
+  QRCode.toCanvas(canvas, s.qrToken, { width: 140, margin: 0, color: { dark: '#0F1E3D', light: '#FFFFFF' } });
+};
+
+// Tiny escaper helper exposed globally so we can use in toast above
+function s_safe(s) { return srEscape(s); }
+
+render();
+window.addEventListener('langchange', render);
+</script>
+</body>
+</html>
