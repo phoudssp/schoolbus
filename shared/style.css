@@ -529,7 +529,12 @@ body {
    Phone frame (parent app)
    ============================================================ */
 .sr-phone-frame {
-  width: 392px; height: 820px;
+  /* Auto-fit to viewport: capped at original 820px tall, but shrinks
+     to stay within the visible viewport on shorter screens. Width is
+     derived from aspect-ratio so the phone shape stays correct. */
+  height: min(820px, calc(100vh - 90px));
+  aspect-ratio: 392 / 820;
+  width: auto;
   background: #0F172A;
   border-radius: 44px;
   padding: 12px;
