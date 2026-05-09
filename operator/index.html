@@ -212,14 +212,17 @@ Object.entries(APP_DATA.livePositions).forEach(([busId, lp]) => {
   busLayers[busId] = L.marker(lp.coords, { icon, zIndexOffset: 1000 }).addTo(map);
 });
 
-// Subtle live jiggle
+// Very subtle live jiggle (~5m every 6s, just to show "alive")
 setInterval(() => {
   Object.entries(APP_DATA.livePositions).forEach(([busId, lp]) => {
     if (lp.status === 'idle') return;
-    lp.coords = [lp.coords[0] + (Math.random() - 0.5) * 0.0006, lp.coords[1] + (Math.random() - 0.5) * 0.0006];
+    lp.coords = [
+      lp.coords[0] + (Math.random() - 0.5) * 0.00008,
+      lp.coords[1] + (Math.random() - 0.5) * 0.00008
+    ];
     busLayers[busId] && busLayers[busId].setLatLng(lp.coords);
   });
-}, 4000);
+}, 6000);
 
 // ---------- Alerts ----------
 const alertsHtml = APP_DATA.alerts.slice(-5).reverse().map(a => {
