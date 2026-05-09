@@ -130,7 +130,7 @@ document.getElementById('children').innerHTML = children.map(c => {
 const focused = children[0];
 const fStatus = getChildStatus(focused);
 const sch = APP_DATA.byId.school[focused.schoolId];
-const map = L.map('map', { zoomControl: false, attributionControl: false }).setView(sch.coords, 13);
+const map = L.map('map', { zoomControl: false, attributionControl: false, maxBounds: [APP_DATA.operator.bounds.sw, APP_DATA.operator.bounds.ne], maxBoundsViscosity: 1.0 }).setView(sch.coords, 13);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
 L.marker(sch.coords, { icon: L.divIcon({ className: '', html: `<div class="school-marker-div" style="border-color:${sch.color}; color:${sch.color}; font-size: 11px; padding: 2px 6px;">🏫 ${sch.shortName}</div>`, iconSize: [80, 22], iconAnchor: [40, 11] })}).addTo(map);
 if (focused.house) L.marker(focused.house.coords, { icon: L.divIcon({ className: '', html: `<div style="background: var(--sr-blue); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">🏠</div>`, iconSize: [24,24], iconAnchor: [12,12] }) }).addTo(map);

@@ -62,7 +62,7 @@
 <script>
 srMount({ role: 'operator', active: 'routes', user: { name: 'Souvanh P.', role: 'Super Admin', initials: 'SP' } });
 
-const map = L.map('map', { zoomControl: true, attributionControl: false }).setView(APP_DATA.operator.center, 14);
+const map = L.map('map', { zoomControl: true, attributionControl: false, maxBounds: [APP_DATA.operator.bounds.sw, APP_DATA.operator.bounds.ne], maxBoundsViscosity: 1.0, minZoom: 13 }).fitBounds([APP_DATA.operator.bounds.sw, APP_DATA.operator.bounds.ne]);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
 
 let selectedKey = null;

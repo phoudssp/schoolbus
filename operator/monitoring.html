@@ -87,14 +87,31 @@
 <script>
 srMount({ role: 'operator', active: 'monitoring', user: { name: 'Souvanh P.', role: 'Super Admin', initials: 'SP' } });
 
-// ---------- Map ----------
-const map = L.map('map', { zoomControl: true, attributionControl: false }).setView(APP_DATA.operator.center, 13);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+// ---------- Map (locked to Bokeo / Lao side of the Mekong) ----------
+const bb = APP_DATA.operator.bounds;
+const map = L.map('map', {
+  zoomControl: true, attributionControl: false,
+  maxBounds: [bb.sw, bb.ne], maxBoundsViscosity: 1.0, minZoom: 13
+}).fitBounds([bb.sw, bb.ne]);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, bounds: [bb.sw, bb.ne] }).addTo(map);
+
+// House pins — show every student (visualizes the customer base)
+APP_DATA.students.forEach(s => {
+  if (!s.house || !s.house.coords) return;
+  const sch = APP_DATA.byId.school[s.schoolId];
+  L.marker(s.house.coords, {
+    icon: L.divIcon({
+      className: '',
+      html: `<div style="width:14px;height:14px;border-radius:50%;background:${sch.color};border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,0.5);"></div>`,
+      iconSize: [14, 14], iconAnchor: [7, 7]
+    })
+  }).addTo(map).bindPopup(`<b>${s.name}</b><br>${s.house.addressLine}<br><span style="color:${sch.color}; font-weight:700;">${sch.shortName}</span>`);
+});
 
 // School markers
 APP_DATA.schools.forEach(s => {
   const icon = L.divIcon({ className: '', html: `<div class="school-marker-div" style="border-color:${s.color}; color:${s.color}">🏫 ${s.shortName}</div>`, iconSize: [110, 28], iconAnchor: [55, 14] });
-  L.marker(s.coords, { icon }).addTo(map).bindPopup(`<b>${s.name}</b>`);
+  L.marker(s.coords, { icon, zIndexOffset: 500 }).addTo(map).bindPopup(`<b>${s.name}</b>`);
 });
 
 // Bus markers

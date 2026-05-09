@@ -176,13 +176,30 @@ document.getElementById('kpi-students').textContent = APP_DATA.students.length.t
 document.getElementById('kpi-buses').textContent    = APP_DATA.buses.filter(b => b.status === 'active').length;
 document.getElementById('kpi-mrr').textContent      = fmtMoney(totalMRR());
 
-// ---------- Mini live map ----------
-const map = L.map('miniMap', { zoomControl: true, attributionControl: false }).setView(APP_DATA.operator.center, 13);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+// ---------- Mini live map (locked to Bokeo / Lao side of the Mekong) ----------
+const bb = APP_DATA.operator.bounds;
+const map = L.map('miniMap', {
+  zoomControl: true, attributionControl: false,
+  maxBounds: [bb.sw, bb.ne], maxBoundsViscosity: 1.0, minZoom: 13
+}).fitBounds([bb.sw, bb.ne]);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, bounds: [bb.sw, bb.ne] }).addTo(map);
+
+// House pins — every student so the customer base is visible
+APP_DATA.students.forEach(s => {
+  if (!s.house || !s.house.coords) return;
+  const sch = APP_DATA.byId.school[s.schoolId];
+  L.marker(s.house.coords, {
+    icon: L.divIcon({
+      className: '',
+      html: `<div style="width:14px;height:14px;border-radius:50%;background:${sch.color};border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,0.4);"></div>`,
+      iconSize: [14, 14], iconAnchor: [7, 7]
+    })
+  }).addTo(map).bindPopup(`<b>${s.name}</b><br>${s.house.addressLine}`);
+});
 
 APP_DATA.schools.forEach(s => {
   const icon = L.divIcon({ className: '', html: `<div class="school-marker-div" style="border-color:${s.color}; color:${s.color}">🏫 ${s.shortName}</div>`, iconSize: [110, 28], iconAnchor: [55, 14] });
-  L.marker(s.coords, { icon }).addTo(map).bindPopup(`<b>${s.name}</b><br>${s.address}`);
+  L.marker(s.coords, { icon, zIndexOffset: 500 }).addTo(map).bindPopup(`<b>${s.name}</b><br>${s.address}`);
 });
 
 const busLayers = {};
@@ -192,7 +209,7 @@ function busIconHtml(busId, status) {
 Object.entries(APP_DATA.livePositions).forEach(([busId, lp]) => {
   if (lp.status === 'idle') return;
   const icon = L.divIcon({ className: '', html: busIconHtml(busId, lp.status), iconSize: [80, 28], iconAnchor: [40, 14] });
-  busLayers[busId] = L.marker(lp.coords, { icon }).addTo(map);
+  busLayers[busId] = L.marker(lp.coords, { icon, zIndexOffset: 1000 }).addTo(map);
 });
 
 // Subtle live jiggle

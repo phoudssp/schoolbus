@@ -7,50 +7,52 @@ window.APP_NOW = new Date('2026-05-07T07:05:00+07:00');
 window.APP_DATA = {
   operator: {
     id: 'OP-1',
-    name: 'SafeRide Bus Co.',
-    nameLo: 'ບໍລິສັດ SafeRide ຂົນສົ່ງນັກຮຽນ',
+    name: 'Phetaloun SchoolBus',
+    nameLo: 'ບໍລິສັດ Phetaloun ຂົນສົ່ງນັກຮຽນ',
     city: 'Houayxay, Bokeo',
     cityLo: 'ຫ້ວຍຊາຍ, ບໍ່ແກ້ວ',
-    center: [20.2700, 100.4140],
-    contact: { phone: '+856 84 555 0100', email: 'ops@saferide.la' }
+    center: [20.2750, 100.4350],
+    // Bokeo (Lao side) bounds — keep map east of the Mekong, never crosses to Thailand
+    bounds: { sw: [20.2200, 100.4180], ne: [20.3200, 100.4800] },
+    contact: { phone: '+856 84 555 0100', email: 'ops@phetaloun.la' }
   },
 
   schools: [
     {
       id: 'vis',
-      name: 'Houayxay International School',
-      nameLo: 'ໂຮງຮຽນສາກົນຫ້ວຍຊາຍ',
-      shortName: 'HIS',
-      address: 'Houayxay City Centre, Bokeo',
-      coords: [20.2700, 100.4150],
+      name: 'Lycée Santiphab',
+      nameLo: 'ໂຮງຮຽນລີເຊ ສັນຕິພາບ',
+      shortName: 'LSB',
+      address: 'Ban Houayxai Centre, Houayxay',
+      coords: [20.2720, 100.4280],
       bellAm: '07:30',
       bellPm: '14:30',
-      color: '#2563EB',  // blue
+      color: '#0E4D92',  // Phetaloun deep blue
       students: 320
     },
     {
       id: 'sgs',
-      name: 'Bokeo Primary School',
-      nameLo: 'ໂຮງຮຽນປະຖົມບໍ່ແກ້ວ',
-      shortName: 'BPS',
+      name: 'Huaysaiy High School',
+      nameLo: 'ໂຮງຮຽນມັດທະຍົມຫ້ວຍຊາຍ',
+      shortName: 'HHS',
       address: 'Ban Phadeng, Houayxay',
-      coords: [20.2680, 100.4250],
+      coords: [20.2780, 100.4400],
       bellAm: '08:00',
       bellPm: '15:00',
-      color: '#059669',  // green
-      students: 180
+      color: '#29ABE2',  // Phetaloun cyan
+      students: 280
     },
     {
       id: 'pty',
-      name: 'Houayxay Secondary School',
-      nameLo: 'ໂຮງຮຽນມັດທະຍົມຫ້ວຍຊາຍ',
-      shortName: 'HSS',
+      name: 'Bokeo Primary School',
+      nameLo: 'ໂຮງຮຽນປະຖົມບໍ່ແກ້ວ',
+      shortName: 'BPS',
       address: 'Ban Donphung, Houayxay',
-      coords: [20.2780, 100.4350],
+      coords: [20.2680, 100.4470],
       bellAm: '08:30',
       bellPm: '15:30',
-      color: '#D97706',  // amber
-      students: 240
+      color: '#10B981',  // green
+      students: 200
     }
   ],
 
@@ -123,34 +125,35 @@ window.APP_DATA = {
     { id: 'S-4002', name: 'Mali Sayyalath',      grade: 'Grade 4', schoolId: 'sgs', guardianId: 'G-007', stopId: 'STOP-E2', specialNeeds: true, notes: 'Seizure protocol; meds in red bag' }
   ],
 
-  // Stops with coordinates around Houayxay (Bokeo Province)
+  // Stops in Houayxay — ALL coordinates kept east of the Mekong (lng >= 100.4200)
+  // so the live map never displays the Thailand side of the river.
   stops: {
-    // Cluster A — central Houayxay
-    'STOP-A1': { coords: [20.2620, 100.4080], name: 'Ban Houayxai Junction',     nameLo: 'ສາມແຍກບ້ານຫ້ວຍຊາຍ' },
-    'STOP-A2': { coords: [20.2680, 100.4140], name: 'Ban Phadeng Market',        nameLo: 'ຕະຫຼາດບ້ານຜາແດງ' },
-    'STOP-A3': { coords: [20.2750, 100.4050], name: 'Ban Donphung Village',      nameLo: 'ບ້ານດອນຜຸ້ງ' },
-    'STOP-A4': { coords: [20.2580, 100.4000], name: 'Mekong Port',               nameLo: 'ທ່າເຮືອແມ່ນໍ້າຂອງ' },
-    'STOP-A5': { coords: [20.2640, 100.4160], name: 'Houayxay Bridge',           nameLo: 'ຂົວຫ້ວຍຊາຍ' },
-    // Cluster B — west / Houayxoua side
-    'STOP-B1': { coords: [20.2870, 100.3920], name: 'Ban Houayxoua Market',      nameLo: 'ຕະຫຼາດບ້ານຫ້ວຍຊົວ' },
-    'STOP-B2': { coords: [20.2970, 100.3880], name: 'Ban Donsai Village',        nameLo: 'ບ້ານດອນຊາຍ' },
-    'STOP-B3': { coords: [20.2850, 100.3970], name: 'Pakkhing Junction',         nameLo: 'ສາມແຍກປາກຄິງ' },
+    // Cluster A — central Houayxay (around Lycée Santiphab)
+    'STOP-A1': { coords: [20.2700, 100.4250], name: 'Ban Houayxai Junction',     nameLo: 'ສາມແຍກບ້ານຫ້ວຍຊາຍ' },
+    'STOP-A2': { coords: [20.2740, 100.4310], name: 'Ban Phadeng Market',        nameLo: 'ຕະຫຼາດບ້ານຜາແດງ' },
+    'STOP-A3': { coords: [20.2680, 100.4290], name: 'Ban Donphung Village',      nameLo: 'ບ້ານດອນຜຸ້ງ' },
+    'STOP-A4': { coords: [20.2710, 100.4360], name: 'Talat Sao Junction',        nameLo: 'ສາມແຍກຕະຫຼາດເຊົ້າ' },
+    'STOP-A5': { coords: [20.2690, 100.4220], name: 'Sengsavanh Corner',         nameLo: 'ສາມແຍກເຊັງສະຫວັນ' },
+    // Cluster B — north
+    'STOP-B1': { coords: [20.2860, 100.4310], name: 'Ban Donsai Village',        nameLo: 'ບ້ານດອນຊາຍ' },
+    'STOP-B2': { coords: [20.2900, 100.4380], name: 'North Hill',                nameLo: 'ດອຍເໜືອ' },
+    'STOP-B3': { coords: [20.2830, 100.4250], name: 'Pakkhing Junction',         nameLo: 'ສາມແຍກປາກຄິງ' },
     // Cluster C — south-east toward Tonpheung
-    'STOP-C1': { coords: [20.2570, 100.4380], name: 'Tonpheung Bridge',          nameLo: 'ຂົວຕົ້ນເຜິ້ງ' },
-    'STOP-C2': { coords: [20.2540, 100.4480], name: 'Ban Donmak Village',        nameLo: 'ບ້ານດອນຫມາກ' },
-    'STOP-C3': { coords: [20.2610, 100.4560], name: 'Pakkha Junction',           nameLo: 'ສາມແຍກປາກຄ້າ' },
-    // Cluster D — east / Donthong side
-    'STOP-D1': { coords: [20.2820, 100.4250], name: 'Houayxay Mall',             nameLo: 'ສູນການຄ້າຫ້ວຍຊາຍ' },
-    'STOP-D2': { coords: [20.2760, 100.4400], name: 'Ban Donthong Junction',     nameLo: 'ສາມແຍກບ້ານດອນທອງ' },
-    'STOP-D3': { coords: [20.2880, 100.4280], name: 'Wat Phra Kaew',             nameLo: 'ວັດພະແກ້ວ' },
-    'STOP-D4': { coords: [20.2700, 100.4400], name: 'South Bridge',              nameLo: 'ຂົວໃຕ້' },
+    'STOP-C1': { coords: [20.2580, 100.4480], name: 'Tonpheung Bridge',          nameLo: 'ຂົວຕົ້ນເຜິ້ງ' },
+    'STOP-C2': { coords: [20.2540, 100.4580], name: 'Ban Donmak Village',        nameLo: 'ບ້ານດອນຫມາກ' },
+    'STOP-C3': { coords: [20.2610, 100.4650], name: 'Pakkha Junction',           nameLo: 'ສາມແຍກປາກຄ້າ' },
+    // Cluster D — east
+    'STOP-D1': { coords: [20.2820, 100.4400], name: 'Houayxay Mall',             nameLo: 'ສູນການຄ້າຫ້ວຍຊາຍ' },
+    'STOP-D2': { coords: [20.2780, 100.4520], name: 'Ban Donthong Junction',     nameLo: 'ສາມແຍກບ້ານດອນທອງ' },
+    'STOP-D3': { coords: [20.2880, 100.4450], name: 'Wat Phra Kaew',             nameLo: 'ວັດພະແກ້ວ' },
+    'STOP-D4': { coords: [20.2700, 100.4500], name: 'South Bridge',              nameLo: 'ຂົວໃຕ້' },
     // Cluster E — Special needs route
-    'STOP-E1': { coords: [20.2660, 100.4180], name: 'Ban Khounta Village',       nameLo: 'ບ້ານຄູນຕາ' },
-    'STOP-E2': { coords: [20.2720, 100.4220], name: 'Ban Donglan Junction',      nameLo: 'ສາມແຍກບ້ານດົງລານ' },
+    'STOP-E1': { coords: [20.2660, 100.4350], name: 'Ban Khounta Village',       nameLo: 'ບ້ານຄູນຕາ' },
+    'STOP-E2': { coords: [20.2720, 100.4420], name: 'Ban Donglan Junction',      nameLo: 'ສາມແຍກບ້ານດົງລານ' },
     // School stops
-    'STOP-VIS': { coords: [20.2700, 100.4150], name: 'Houayxay International School', nameLo: 'ໂຮງຮຽນສາກົນຫ້ວຍຊາຍ', isSchool: 'vis' },
-    'STOP-SGS': { coords: [20.2680, 100.4250], name: 'Bokeo Primary School',         nameLo: 'ໂຮງຮຽນປະຖົມບໍ່ແກ້ວ',  isSchool: 'sgs' },
-    'STOP-PTY': { coords: [20.2780, 100.4350], name: 'Houayxay Secondary School',    nameLo: 'ໂຮງຮຽນມັດທະຍົມຫ້ວຍຊາຍ', isSchool: 'pty' }
+    'STOP-VIS': { coords: [20.2720, 100.4280], name: 'Lycée Santiphab',          nameLo: 'ໂຮງຮຽນລີເຊ ສັນຕິພາບ', isSchool: 'vis' },
+    'STOP-SGS': { coords: [20.2780, 100.4400], name: 'Huaysaiy High School',     nameLo: 'ໂຮງຮຽນມັດທະຍົມຫ້ວຍຊາຍ', isSchool: 'sgs' },
+    'STOP-PTY': { coords: [20.2680, 100.4470], name: 'Bokeo Primary School',     nameLo: 'ໂຮງຮຽນປະຖົມບໍ່ແກ້ວ', isSchool: 'pty' }
   },
 
   // Routes — each bus's day. Each route has multiple runs.
@@ -286,14 +289,14 @@ window.APP_DATA = {
     { id: 'E-030', studentId: 'S-4001', busId: 'B-105', runId: 'RUN-105-AM-MIXED', stopId: 'STOP-E1', type: 'BOARD', direction: 'AM', timestamp: '2026-05-07T06:55:14+07:00' }
   ],
 
-  // Live bus positions at APP_NOW (07:05). Used for the operator/parent maps.
+  // Live bus positions at APP_NOW (07:05) — all east of Mekong (lng >= 100.4200)
   livePositions: {
-    'B-101': { coords: [20.2640, 100.4030], heading: 45,  status: 'in_transit', currentRunId: 'RUN-101-AM-VIS', nextStopId: 'STOP-A4', etaMin: 3 },
-    'B-102': { coords: [20.2790, 100.4320], heading: 90,  status: 'in_transit', currentRunId: 'RUN-102-AM-PTY', nextStopId: 'STOP-D2', etaMin: 11 },
-    'B-103': { coords: [20.2960, 100.3890], heading: 270, status: 'at_stop',    currentRunId: 'RUN-103-AM-VIS', nextStopId: 'STOP-B2', etaMin: 0 },
-    'B-104': { coords: [20.2580, 100.4400], heading: 30,  status: 'starting',   currentRunId: 'RUN-104-AM-SGS', nextStopId: 'STOP-C1', etaMin: 5 },
-    'B-105': { coords: [20.2680, 100.4170], heading: 60,  status: 'in_transit', currentRunId: 'RUN-105-AM-MIXED', nextStopId: 'STOP-VIS', etaMin: 18 },
-    'B-106': { coords: [20.2700, 100.4140], heading: 0,   status: 'idle',       currentRunId: null, nextStopId: null, etaMin: null }
+    'B-101': { coords: [20.2700, 100.4290], heading: 45,  status: 'in_transit', currentRunId: 'RUN-101-AM-VIS', nextStopId: 'STOP-A4', etaMin: 3 },
+    'B-102': { coords: [20.2790, 100.4420], heading: 90,  status: 'in_transit', currentRunId: 'RUN-102-AM-PTY', nextStopId: 'STOP-D2', etaMin: 11 },
+    'B-103': { coords: [20.2870, 100.4280], heading: 270, status: 'at_stop',    currentRunId: 'RUN-103-AM-VIS', nextStopId: 'STOP-B2', etaMin: 0 },
+    'B-104': { coords: [20.2580, 100.4500], heading: 30,  status: 'starting',   currentRunId: 'RUN-104-AM-SGS', nextStopId: 'STOP-C1', etaMin: 5 },
+    'B-105': { coords: [20.2680, 100.4380], heading: 60,  status: 'in_transit', currentRunId: 'RUN-105-AM-MIXED', nextStopId: 'STOP-VIS', etaMin: 18 },
+    'B-106': { coords: [20.2750, 100.4350], heading: 0,   status: 'idle',       currentRunId: null, nextStopId: null, etaMin: null }
   },
 
   // Simulated alerts visible on the operator dashboard
@@ -496,15 +499,20 @@ window.APP_DATA.subjects = [
     p.featureLabels = p.features.map(f => featLabels[f] || f);
   });
 
-  // Students: pin a house location near their existing stop (jittered ±0.001°)
+  // Students: pin a house near their stop (jittered ±0.0035° ≈ 350m for visible spread)
+  // Clamp lng to be safely east of the Mekong (>= 100.4220) so houses never appear in Thailand.
   d.students.forEach(s => {
     if (s.house) return;
     const stop = d.stops[s.stopId];
     const baseCoords = stop ? stop.coords : d.operator.center;
-    const jitterLat = (parseInt(s.id.slice(-2), 10) - 50) / 50000;     // deterministic
-    const jitterLng = (parseInt(s.id.slice(-3, -1) || '50', 10) - 50) / 50000;
+    // Deterministic jitter from the student id
+    const idNum = parseInt(s.id.split('-')[1] || '50', 10);
+    const jitterLat = ((idNum * 13) % 70 - 35) / 10000;     // ~ ±0.0035°
+    const jitterLng = ((idNum * 7)  % 70 - 35) / 10000;
+    let lat = baseCoords[0] + jitterLat;
+    let lng = Math.max(100.4220, baseCoords[1] + jitterLng);   // clamp to Lao side
     s.house = {
-      coords: [baseCoords[0] + jitterLat, baseCoords[1] + jitterLng],
+      coords: [lat, lng],
       addressLine: `${stop ? stop.name : 'Houayxay'}, House #${s.id.slice(-3)}`
     };
   });

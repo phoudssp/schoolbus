@@ -129,7 +129,7 @@ document.getElementById('body').innerHTML = `
 
 if (lp && lp.status !== 'idle') {
   setTimeout(() => {
-    const m = L.map('map', { zoomControl: false, attributionControl: false }).setView(lp.coords, 14);
+    const m = L.map('map', { zoomControl: false, attributionControl: false, maxBounds: [APP_DATA.operator.bounds.sw, APP_DATA.operator.bounds.ne], maxBoundsViscosity: 1.0 }).setView(lp.coords, 14);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(m);
     L.marker(sch.coords, { icon: L.divIcon({ className: '', html: `<div class="school-marker-div" style="border-color:${sch.color}; color:${sch.color}; font-size: 11px; padding: 2px 6px;">🏫</div>`, iconSize: [40, 22], iconAnchor: [20, 11] })}).addTo(m);
     L.marker(lp.coords, { icon: L.divIcon({ className: '', html: `<div class="bus-marker-div in_transit">🚌 ${busId}</div>`, iconSize: [70, 22], iconAnchor: [35, 11] })}).addTo(m);
