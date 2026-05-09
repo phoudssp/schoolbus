@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="lo"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phetaloun School — ວິຊາຮຽນ</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="../shared/style.css">
+</head><body>
+<div class="app-shell">
+  <aside class="sr-sidebar"></aside>
+  <div class="app-main">
+    <header class="sr-topbar"></header>
+    <div class="app-content">
+      <div class="sr-page-head">
+        <div>
+          <div class="sr-breadcrumb"><a href="index.html">ໂຮງຮຽນ</a><i data-lucide="chevron-right"></i><span>ວິຊາຮຽນ</span></div>
+          <h1 class="sr-page-title">ວິຊາຮຽນ</h1>
+          <p class="sr-page-sub">ຈັດການວິຊາຮຽນທັງໝົດທີ່ໂຮງຮຽນສອນ. ວິຊາໃໝ່ຈະປະກົດໃນແບບຟອມໃສ່ຄະແນນທັນທີ.</p>
+        </div>
+        <button id="addBtn" class="sr-btn sr-btn-primary"><i data-lucide="plus"></i>ເພີ່ມວິຊາ</button>
+      </div>
+
+      <div class="sr-grid sr-cols-3" id="cards"></div>
+    </div>
+  </div>
+</div>
+<script src="../shared/data.js"></script>
+<script src="../shared/ui.js"></script>
+<script>
+srMount({ role: 'school', active: 'subjects', user: { name: 'Bounnyong S.', role: 'Principal · LSB', initials: 'BS' } });
+
+const ICON_OPTIONS = ['calculator','book-open','languages','flask-conical','globe','palette','activity','music','code','beaker','dumbbell','map'];
+
+function render() {
+  document.getElementById('cards').innerHTML = APP_DATA.subjects.map(s => {
+    const scoreCount = APP_DATA.scores.filter(sc => sc.subject === s.id).length;
+    const teacherCount = APP_DATA.teachers.filter(t => t.subjects && t.subjects.includes(s.id)).length;
+    return `
+      <div class="sr-card">
+        <div style="display:flex; align-items:center; justify-content: space-between;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div class="sr-kpi-icon blue" style="width: 44px; height: 44px;"><i data-lucide="${s.icon}"></i></div>
+            <div>
+              <div style="font-weight: 800; font-size: 16px;">${srEscape(s.name)}</div>
+              <div class="text-text-3" style="font-size: 12px;">${srEscape(s.nameLo || '')}</div>
+            </div>
+          </div>
+          <span class="sr-pill neutral sr-mono">${srEscape(s.code || s.id.toUpperCase())}</span>
+        </div>
+        <div class="sr-grid" style="grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-top: 14px; padding: 10px; background: var(--sr-bg); border-radius: 8px;">
+          <div><div class="text-text-3" style="font-size: 10px; text-transform:uppercase;">ໜ່ວຍ</div><div style="font-weight: 800;">${s.credits || '—'}</div></div>
+          <div><div class="text-text-3" style="font-size: 10px; text-transform:uppercase;">ຄະແນນ</div><div style="font-weight: 800;">${scoreCount}</div></div>
+          <div><div class="text-text-3" style="font-size: 10px; text-transform:uppercase;">ຄູ</div><div style="font-weight: 800;">${teacherCount}</div></div>
+        </div>
+        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--sr-border); text-align: right;">
+          <button class="sr-btn sr-btn-sm sr-btn-ghost" onclick="edit('${s.id}')"><i data-lucide="pencil"></i>ແກ້ໄຂ</button>
+          ${scoreCount === 0 ? `<button class="sr-btn sr-btn-sm sr-btn-ghost" onclick="del('${s.id}')"><i data-lucide="trash-2"></i></button>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+  srIcons();
+}
+
+function fields(s) { return [
+  { key: 'id', label: 'ລະຫັດ ID', type: 'text', required: true, readonly: !!s, placeholder: 'math', hint: 'ໃຊ້ພາສາອັງກິດເທົ່ານັ້ນ — ບໍ່ສາມາດປ່ຽນພາຍຫຼັງ' },
+  { key: 'name', label: 'ຊື່ວິຊາ (ອັງກິດ)', type: 'text', required: true, placeholder: 'Mathematics' },
+  { key: 'nameLo', label: 'ຊື່ວິຊາ (ລາວ)', type: 'text', required: true, placeholder: 'ຄະນິດສາດ' },
+  { key: 'code', label: 'ລະຫັດສັ້ນ', type: 'text', placeholder: 'MATH', hint: 'ສະແດງໃນບັດ' },
+  { key: 'credits', label: 'ໜ່ວຍກິດ', type: 'number', default: 3 },
+  { key: 'icon', label: 'ໄອຄອນ', type: 'select', default: 'book-open', options: ICON_OPTIONS }
+];}
+
+document.getElementById('addBtn').addEventListener('click', () => srModal({
+  title: 'ເພີ່ມວິຊາ', fields: fields(),
+  onSave: data => {
+    if (!data.id || APP_DATA.byId.subject[data.id]) { alert('ລະຫັດຊ້ຳ'); return false; }
+    const s = { ...data };
+    APP_DATA.subjects.push(s);
+    APP_DATA.byId.subject[s.id] = s;
+    srToast('✓ ເພີ່ມວິຊາແລ້ວ');
+    render();
+  }
+}));
+
+window.edit = id => {
+  const s = APP_DATA.byId.subject[id];
+  srModal({ title: 'ແກ້ໄຂ ' + s.name, fields: fields(s), values: s,
+    onSave: data => { Object.assign(s, data); srToast('✓ ບັນທຶກແລ້ວ'); render(); } });
+};
+window.del = id => srConfirm({
+  title: 'ລຶບວິຊາ?', message: 'ການລຶບຈະບໍ່ກະທົບຄະແນນທີ່ມີຢູ່.', danger: true,
+  onYes: () => { APP_DATA.subjects = APP_DATA.subjects.filter(x => x.id !== id); delete APP_DATA.byId.subject[id]; srToast('✓ ລຶບແລ້ວ'); render(); }
+});
+
+render();
+</script>
+</body></html>

@@ -74,12 +74,26 @@ body {
 .sr-sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
 
 .sr-side-brand {
-  display: flex; align-items: center; gap: 12px;
-  padding: 22px 22px 16px;
-  font-size: 19px; font-weight: 800;
-  color: white;
-  letter-spacing: -0.01em;
+  padding: 18px 16px 16px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex; flex-direction: column; align-items: stretch; gap: 6px;
+}
+.sr-side-brand-logo {
+  width: 100%;
+  background: white;
+  border-radius: 10px;
+  padding: 10px 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+  display: flex; align-items: center; justify-content: center;
+}
+.sr-side-brand-logo img { width: 100%; height: auto; max-height: 60px; display: block; }
+.sr-side-brand-role {
+  text-align: center;
+  font-size: 11px; font-weight: 700;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 0 2px;
 }
 .sr-side-brand-mark {
   width: 38px; height: 38px;

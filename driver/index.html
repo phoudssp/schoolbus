@@ -1,132 +1,181 @@
 <!doctype html>
 <html lang="lo"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Phetaloun — Driver Tablet</title>
+<title>Phetaloun — ແອັບ PDA ຄົນຂັບ</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <link rel="stylesheet" href="../shared/style.css">
 <style>
-  body { background: linear-gradient(180deg, #0F1E3D 0%, #182B57 100%); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 22px 14px; gap: 16px; }
-  .stop-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; }
-  .stop-row.done { opacity: 0.55; }
+  body {
+    background: linear-gradient(180deg, #0E4D92 0%, #134AA6 100%);
+    display: flex; flex-direction: column; align-items: center; gap: 14px;
+    min-height: 100vh; padding: 22px 14px;
+  }
+  /* PDA frame: rugged charcoal plastic, yellow rubber bumpers, scan window + trigger */
+  .pda-frame {
+    width: 440px;
+    background: linear-gradient(160deg, #1F2937 0%, #111827 60%, #0F172A 100%);
+    border-radius: 26px;
+    padding: 18px 14px 22px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.45), inset 0 0 0 2px #0B1220;
+    position: relative;
+    border: 6px solid #2C3848;
+  }
+  .pda-frame::before, .pda-frame::after {
+    content: ''; position: absolute;
+    background: #FFC107; width: 32px; height: 14px; border-radius: 4px;
+  }
+  .pda-frame::before { top: -10px; left: 22px; }
+  .pda-frame::after  { top: -10px; right: 22px; }
+  .pda-scan-window {
+    position: relative; height: 42px; border-radius: 8px;
+    background: linear-gradient(180deg, #0A0A0A, #1A1A1A);
+    box-shadow: inset 0 0 0 2px #2C3848, inset 0 4px 10px rgba(0,0,0,0.7);
+    overflow: hidden; margin-bottom: 12px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 16px;
+    color: rgba(255,255,255,0.55);
+    font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .pda-scan-window .laser {
+    position: absolute; top: 50%; left: 8%; right: 8%; height: 2px;
+    background: linear-gradient(90deg, transparent, #FF3B30 20%, #FF3B30 80%, transparent);
+    box-shadow: 0 0 12px #FF3B30, 0 0 20px rgba(255,59,48,0.6);
+    transform: translateY(-50%); opacity: 0;
+  }
+  .pda-scan-window.active .laser { opacity: 1; animation: laser 0.8s ease-in-out 2; }
+  @keyframes laser {
+    0%, 100% { transform: translateY(-12px); }
+    50%      { transform: translateY(8px); }
+  }
+  .pda-scan-window .led { width: 8px; height: 8px; border-radius: 50%; background: #10B981; box-shadow: 0 0 6px #10B981; }
+  .pda-scan-window .nfc-icon { color: #29ABE2; }
+
+  .pda-screen {
+    background: var(--sr-bg);
+    border-radius: 10px;
+    overflow: hidden;
+    height: 600px;
+    display: flex; flex-direction: column;
+    box-shadow: inset 0 0 0 1.5px #2C3848, 0 4px 10px rgba(0,0,0,0.5);
+  }
+
+  .pda-bottom { margin-top: 14px; display: grid; grid-template-columns: 1fr 78px; gap: 10px; align-items: center; }
+  .pda-trigger {
+    background: linear-gradient(180deg, #FFD60A, #E5BC00);
+    color: #0F1E3D; border: 2px solid #B58800; border-radius: 10px;
+    padding: 14px; font-weight: 900; font-size: 16px; cursor: pointer;
+    box-shadow: 0 4px 0 #8B6800, 0 6px 14px rgba(0,0,0,0.4);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: transform 0.05s, box-shadow 0.05s;
+  }
+  .pda-trigger:active { transform: translateY(3px); box-shadow: 0 1px 0 #8B6800, 0 2px 6px rgba(0,0,0,0.4); }
+  .pda-trigger i { width: 22px; height: 22px; }
+  .pda-nfc-pad {
+    background: linear-gradient(180deg, #29ABE2, #1B95C9);
+    color: white; border: 2px solid #156D94; border-radius: 10px;
+    padding: 14px 6px; font-weight: 900; font-size: 11px; cursor: pointer;
+    box-shadow: 0 4px 0 #0B5475, 0 6px 14px rgba(0,0,0,0.4);
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    transition: transform 0.05s, box-shadow 0.05s; text-align: center;
+  }
+  .pda-nfc-pad:active { transform: translateY(3px); box-shadow: 0 1px 0 #0B5475, 0 2px 6px rgba(0,0,0,0.4); }
+  .pda-nfc-pad i { width: 22px; height: 22px; }
+
+  .scr { padding: 10px 14px; display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+  .scr-head { padding: 6px 0; border-bottom: 1px solid var(--sr-border); display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
+  .scr-stop-list { flex: 1; overflow-y: auto; padding: 6px 0; }
+  .stop-row { display: flex; align-items: center; gap: 8px; padding: 7px 8px; border-radius: 6px; font-size: 12px; }
+  .stop-row.done { color: var(--sr-text-3); opacity: 0.6; }
   .stop-row.current { background: #FFFBEA; border: 1px solid var(--sr-yellow); }
-  .stop-pin { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 11px; flex-shrink: 0; }
-  .stop-row.done .stop-pin { background: var(--sr-green); color: white; }
+  .stop-pin { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 10px; flex-shrink: 0; background: white; border: 1.5px solid var(--sr-border-2); color: var(--sr-text-3); }
+  .stop-row.done .stop-pin { background: var(--sr-green); color: white; border-color: var(--sr-green); }
   .stop-row.current .stop-pin { background: var(--sr-yellow); color: var(--sr-navy); border: 2px solid var(--sr-navy); }
-  .stop-row .stop-pin { background: white; color: var(--sr-text-3); border: 1.5px solid var(--sr-border-2); }
-  .scan-btn { padding: 28px 16px; border-radius: 16px; font-weight: 800; font-size: 18px; cursor: pointer; border: 3px solid transparent; transition: transform 0.1s; display: flex; flex-direction: column; align-items: center; gap: 6px; }
-  .scan-btn:active { transform: translateY(2px); }
-  .scan-qr  { background: linear-gradient(135deg, #FFD60A, #E5BC00); color: var(--sr-navy); border-color: var(--sr-navy); }
-  .scan-nfc { background: linear-gradient(135deg, #5570F1, #4256BF); color: white; border-color: #1E3A8A; }
-  .scan-btn i { width: 32px; height: 32px; }
+
+  .current-card { background: #FFFBEA; border: 1px solid var(--sr-yellow); padding: 10px 12px; border-radius: 8px; margin: 8px 0; }
+  .manifest-row { display: flex; align-items: center; gap: 8px; padding: 6px 8px; background: white; border: 1px solid var(--sr-border); border-radius: 6px; margin-bottom: 4px; font-size: 11px; }
+  .manifest-row.done { opacity: 0.55; }
+  .scr-foot { background: var(--sr-bg); padding: 6px 10px; display: flex; justify-content: space-between; font-size: 10px; color: var(--sr-text-3); border-top: 1px solid var(--sr-border); }
+
+  .pda-toast {
+    position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%);
+    background: var(--sr-navy); color: white;
+    padding: 8px 16px; border-radius: 999px;
+    font-size: 12px; font-weight: 700;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+    z-index: 100;
+  }
 </style>
 </head><body>
 
 <div style="display:flex; align-items: center; gap: 12px; color: white;">
-  <a href="../index.html" style="color: white; text-decoration: none; font-size: 13px;"><i data-lucide="arrow-left" style="vertical-align:middle; width: 16px; height: 16px;"></i> ກັບຄືນ</a>
+  <a href="../index.html" style="color: white; text-decoration: none; font-size: 13px;"><i data-lucide="arrow-left" style="vertical-align:middle; width: 16px; height: 16px;"></i> ກັບໄປໜ້າຫຼັກ</a>
   <span style="opacity:0.4;">·</span>
-  <span style="font-size: 13px; opacity: 0.7;">ແທັບເລັດຄົນຂັບ — ລົດ B-101</span>
+  <span style="font-size: 13px; opacity: 0.7;">PDA ຄົນຂັບ — ລົດ B-101</span>
 </div>
 
-<div class="sr-tablet-frame">
-  <div class="sr-tablet-screen" style="display: flex; flex-direction: column;">
+<div class="pda-frame" id="pda">
+  <div class="pda-scan-window" id="scanWindow">
+    <span><i data-lucide="scan-line" style="width:12px; height:12px; vertical-align:middle;"></i> ຊ່ອງສະແກນ QR / ບາໂຄດ</span>
+    <span class="nfc-icon"><i data-lucide="nfc" style="width:14px; height:14px; vertical-align:middle;"></i> NFC</span>
+    <div class="laser"></div>
+    <span class="led"></span>
+  </div>
 
-    <!-- Header -->
-    <header style="background: linear-gradient(135deg, var(--sr-navy), var(--sr-navy-2)); color: white; padding: 14px 22px; display: flex; align-items: center; justify-content: space-between;">
-      <div>
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <div style="width: 38px; height: 38px; background: var(--sr-yellow); color: var(--sr-navy); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px;">S</div>
-          <div>
-            <div style="font-weight: 800; font-size: 18px;">B-101 · ບກ-1234</div>
-            <div style="font-size: 11px; color: rgba(255,255,255,0.7);">🧑‍✈️ Bounmy Phimmasone · → <span style="color: var(--sr-yellow); font-weight: 700;">HIS</span></div>
-          </div>
+  <div class="pda-screen">
+    <div class="scr">
+      <div class="scr-head">
+        <div>
+          <div style="font-weight: 800; color: var(--sr-navy);">B-101 · ບກ-1234</div>
+          <div class="text-text-3" style="font-size: 10px;">Bounmy P. · → <span style="color: var(--sr-blue); font-weight: 700;">LSB</span></div>
+        </div>
+        <div style="text-align: right;">
+          <div class="text-text-3" style="font-size: 9px;">ເສັ້ນທາງ</div>
+          <div class="sr-mono" style="font-size: 10px; font-weight: 800;">RUN-101</div>
         </div>
       </div>
-      <div style="text-align: right;">
-        <div style="font-size: 10px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.06em;">Current run</div>
-        <div class="sr-mono" style="font-weight: 800; font-size: 13px;" id="runHeader">RUN-101-AM-VIS</div>
+
+      <div class="current-card" id="currentCard"></div>
+
+      <div style="font-size: 10px; font-weight: 700; color: var(--sr-text-3); text-transform: uppercase; letter-spacing: 0.04em; padding: 4px 0;">ນັກຮຽນທີ່ປ້າຍຈອດນີ້</div>
+      <div id="manifest" style="overflow-y: auto; max-height: 180px; padding-bottom: 4px;"></div>
+
+      <div style="font-size: 10px; font-weight: 700; color: var(--sr-text-3); text-transform: uppercase; letter-spacing: 0.04em; padding: 6px 0 4px; border-top: 1px solid var(--sr-border); margin-top: 6px;">ປ້າຍຈອດທັງໝົດ</div>
+      <div class="scr-stop-list" id="stops"></div>
+
+      <div class="scr-foot">
+        <div style="display: flex; gap: 8px;">
+          <span><span class="sr-live-dot" style="display:inline-block; vertical-align:middle; margin-right:3px; width:6px; height:6px;"></span>GPS</span>
+          <span>📶 4G</span>
+          <span>🔋 87%</span>
+        </div>
+        <span class="sr-mono" id="footTime">07:05</span>
       </div>
-    </header>
+    </div>
+  </div>
 
-    <!-- Body -->
-    <main style="flex: 1; display: grid; grid-template-columns: 5fr 7fr; overflow: hidden;">
-
-      <!-- LEFT: stop timeline -->
-      <aside style="border-right: 1px solid var(--sr-border); padding: 16px; overflow-y: auto; background: white;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-          <strong style="font-size: 14px;">ປ້າຍຈອດ</strong>
-          <span class="text-text-3" style="font-size: 12px;" id="stopProgress">3/5</span>
-        </div>
-        <div id="stopsTimeline" style="display: flex; flex-direction: column; gap: 4px;"></div>
-
-        <div style="margin-top: 16px; padding: 12px; background: var(--sr-bg); border-radius: 10px; font-size: 12px;">
-          <div style="display: flex; justify-content: space-between; padding: 4px 0;">
-            <span class="text-text-3">ຢູ່ໃນລົດ</span>
-            <strong id="onBoard">7</strong>
-          </div>
-          <div style="display: flex; justify-content: space-between; padding: 4px 0;">
-            <span class="text-text-3">ຄາດໝາຍທັງໝົດ</span>
-            <strong id="expectedTotal">8</strong>
-          </div>
-          <div style="display: flex; justify-content: space-between; padding: 4px 0;">
-            <span class="text-text-3">ເວລາມາຮອດປ້າຍຕໍ່ໄປ</span>
-            <strong id="etaText">3 min</strong>
-          </div>
-        </div>
-      </aside>
-
-      <!-- RIGHT: current stop + scan -->
-      <section style="display: flex; flex-direction: column;">
-        <div style="background: #FFFBEA; padding: 14px 22px; border-bottom: 1px solid #FFE45A;">
-          <div style="display: flex; align-items: end; justify-content: space-between;">
-            <div>
-              <div style="font-size: 11px; font-weight: 800; color: #92400E; text-transform: uppercase; letter-spacing: 0.06em;">ປ້າຍຈອດຕໍ່ໄປ</div>
-              <div style="font-size: 22px; font-weight: 800; color: var(--sr-navy);" id="currentStopName">Mekong Port</div>
-              <div style="font-size: 12px; color: var(--sr-text-2);" id="currentStopMeta">07:08 · 1 expected</div>
-            </div>
-            <div style="text-align: right;"><div style="font-size: 28px; font-weight: 900; color: var(--sr-navy);" id="stopScanCount">0/1</div><div style="font-size: 10px; color: var(--sr-text-3); text-transform: uppercase;">ສະແກນແລ້ວ</div></div>
-          </div>
-        </div>
-
-        <div style="flex: 1; padding: 16px 22px; overflow-y: auto;">
-          <div style="font-size: 11px; font-weight: 700; color: var(--sr-text-3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px;">ລາຍຊື່ນັກຮຽນປ້າຍຈອດ</div>
-          <div id="manifest" style="display: flex; flex-direction: column; gap: 6px;"></div>
-        </div>
-
-        <!-- Scan buttons -->
-        <div style="padding: 14px 22px; background: white; border-top: 1px solid var(--sr-border);">
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-            <button id="qrBtn" class="scan-btn scan-qr"><i data-lucide="scan-line"></i><span>ສະແກນ QR</span></button>
-            <button id="nfcBtn" class="scan-btn scan-nfc"><i data-lucide="nfc"></i><span>ແຕະ NFC</span></button>
-          </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px;">
-            <button id="manualBtn" class="sr-btn sr-btn-ghost"><i data-lucide="user-plus"></i>ຂຶ້ນລົດແບບກຳມື (ລືມບັດ)</button>
-            <button id="nextStopBtn" class="sr-btn sr-btn-primary" disabled><i data-lucide="check"></i>ສຳເລັດປ້າຍ · ຕໍ່ໄປ</button>
-          </div>
-        </div>
-
-        <!-- Footer -->
-        <footer style="background: var(--sr-bg); padding: 8px 22px; display: flex; justify-content: space-between; font-size: 11px; color: var(--sr-text-3); border-top: 1px solid var(--sr-border);">
-          <div style="display: flex; gap: 14px;">
-            <span><span class="sr-live-dot" style="display: inline-block; vertical-align: middle; margin-right: 4px;"></span>GPS</span>
-            <span><i data-lucide="signal" style="width:11px;height:11px; vertical-align: middle;"></i> 4G</span>
-            <span><i data-lucide="battery-full" style="width:13px;height:11px; vertical-align: middle;"></i> 87%</span>
-          </div>
-          <div class="sr-mono" id="footerTime">07:05</div>
-        </footer>
-      </section>
-
-    </main>
-
+  <div class="pda-bottom">
+    <button class="pda-trigger" id="triggerBtn">
+      <i data-lucide="scan-barcode"></i>
+      ກົດເພື່ອສະແກນ
+    </button>
+    <button class="pda-nfc-pad" id="nfcBtn">
+      <i data-lucide="nfc"></i>
+      <span>ແຕະ NFC</span>
+    </button>
   </div>
 </div>
 
-<!-- Walk-the-bus modal -->
+<div style="display: flex; gap: 8px; margin-top: 4px;">
+  <button id="manualBtn" class="sr-btn sr-btn-ghost"><i data-lucide="user-plus"></i>ລົງທະບຽນກຳມື (ລືມບັດ)</button>
+  <button id="nextStopBtn" class="sr-btn sr-btn-yellow" disabled><i data-lucide="check"></i>ສຳເລັດ · ຕໍ່ໄປ</button>
+</div>
+
 <div id="walkModal" class="sr-modal-bg" style="display: none;">
-  <div class="sr-modal" style="max-width: 420px;">
+  <div class="sr-modal" style="max-width: 380px;">
     <div class="sr-modal-body" style="text-align: center;">
-      <div style="font-size: 48px; margin-bottom: 12px;">🚌</div>
-      <h3 style="margin: 0 0 6px; font-size: 18px; font-weight: 800;">ກວດກາພາຍໃນລົດ</h3>
-      <p style="margin: 0; font-size: 13px; color: var(--sr-text-3);">ຂ້ອຍຢືນຢັນວ່າໄດ້ກວດເບິ່ງລົດແລ້ວ. ບໍ່ມີນັກຮຽນຄ້າງຢູ່ໃນລົດ.</p>
+      <div style="font-size: 44px; margin-bottom: 8px;">🚌</div>
+      <h3 style="margin: 0 0 4px; font-size: 16px;">ກວດກາພາຍໃນລົດ</h3>
+      <p style="margin: 0; font-size: 12px; color: var(--sr-text-3);">ຂ້ອຍຢືນຢັນວ່າໄດ້ກວດເບິ່ງລົດແລ້ວ. ບໍ່ມີນັກຮຽນຄ້າງຢູ່ໃນລົດ.</p>
     </div>
     <div class="sr-modal-foot">
       <button class="sr-btn sr-btn-ghost" data-close>ຍົກເລີກ</button>
@@ -148,36 +197,39 @@ let currentStopIdx = stopState.findIndex(ss => !ss.completed && ss.studentIds.le
 if (currentStopIdx < 0) currentStopIdx = stopState.length - 1;
 
 function renderTimeline() {
-  document.getElementById('stopsTimeline').innerHTML = stopState.map((ss, i) => {
+  document.getElementById('stops').innerHTML = stopState.map((ss, i) => {
     const stop = APP_DATA.byId.stop[ss.stopId];
     const cls = i < currentStopIdx ? 'done' : (i === currentStopIdx ? 'current' : '');
     const pin = ss.isSchool ? '🏫' : (i + 1);
     return `
       <div class="stop-row ${cls}">
         <div class="stop-pin">${pin}</div>
-        <div style="flex: 1; min-width: 0;">
-          <div style="font-weight: 700; font-size: 13px;">${srEscape(stop.name)}</div>
-          <div class="text-text-3" style="font-size: 11px;">${ss.time}${ss.isSchool ? '' : ` · ${ss.boarded.size}/${ss.studentIds.length} boarded`}</div>
+        <div style="flex:1; min-width: 0;">
+          <div style="font-weight: 600;">${srEscape(stop.name)}</div>
+          <div style="font-size: 10px; color: var(--sr-text-3);">${ss.time}${ss.isSchool ? '' : ` · ${ss.boarded.size}/${ss.studentIds.length}`}</div>
         </div>
       </div>
     `;
   }).join('');
-  document.getElementById('stopProgress').textContent = `${stopState.filter(s => s.completed).length}/${stopState.length}`;
-  document.getElementById('onBoard').textContent = stopState.reduce((a, s) => a + s.boarded.size, 0);
-  document.getElementById('expectedTotal').textContent = stopState.reduce((a, s) => a + s.studentIds.length, 0);
+  srIcons();
 }
 
-function renderStop() {
+function renderCurrent() {
   const ss = stopState[currentStopIdx];
   const stop = APP_DATA.byId.stop[ss.stopId];
-  document.getElementById('currentStopName').textContent = stop.name;
-  if (ss.isSchool) {
-    document.getElementById('currentStopMeta').textContent = `${ss.time} · School arrival · scan all out`;
-    document.getElementById('stopScanCount').textContent = '🏫';
-  } else {
-    document.getElementById('currentStopMeta').textContent = `${ss.time} · ${ss.studentIds.length} expected`;
-    document.getElementById('stopScanCount').textContent = `${ss.boarded.size}/${ss.studentIds.length}`;
-  }
+  document.getElementById('currentCard').innerHTML = `
+    <div style="display: flex; justify-content: space-between; align-items: end;">
+      <div>
+        <div style="font-size: 10px; font-weight: 800; color: #92400E; text-transform: uppercase; letter-spacing: 0.04em;">ປ້າຍຈອດຕໍ່ໄປ</div>
+        <div style="font-size: 16px; font-weight: 800; color: var(--sr-navy);">${srEscape(stop.name)}</div>
+        <div style="font-size: 11px; color: var(--sr-text-2);">${ss.time}${ss.isSchool ? ' · ມາຮອດໂຮງຮຽນ' : ` · ${ss.studentIds.length} ຄາດໝາຍ`}</div>
+      </div>
+      <div style="text-align: right;">
+        <div style="font-size: 22px; font-weight: 900; color: var(--sr-navy);">${ss.isSchool ? '🏫' : ss.boarded.size + '/' + ss.studentIds.length}</div>
+        <div style="font-size: 9px; text-transform: uppercase; color: var(--sr-text-3);">ສະແກນແລ້ວ</div>
+      </div>
+    </div>
+  `;
 
   const studentIds = ss.isSchool
     ? stopState.filter(s => !s.isSchool).flatMap(s => Array.from(s.boarded))
@@ -187,10 +239,10 @@ function renderStop() {
     const sch = APP_DATA.byId.school[stu.schoolId];
     const done = ss.boarded.has(sid);
     return `
-      <div style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: white; border: 1px solid var(--sr-border); border-radius: 10px; ${done ? 'opacity: 0.55;' : ''}">
-        <div class="sr-avatar" style="background:${sch.color}22; color:${sch.color};">${srInitials(stu.name)}</div>
-        <div style="flex: 1;"><div style="font-weight: 700; font-size: 13px;">${srEscape(stu.name)}</div><div class="text-text-3" style="font-size: 11px;">${srEscape(stu.grade)} · ${srEscape(sch.shortName)}</div></div>
-        ${done ? '<i data-lucide="check-circle-2" style="color: var(--sr-green); width: 22px; height: 22px;"></i>' : '<span class="sr-pill neutral">ຄາດໝາຍ</span>'}
+      <div class="manifest-row ${done ? 'done' : ''}">
+        <div class="sr-avatar sm" style="background:${sch.color}22; color:${sch.color}; font-size: 9px;">${srInitials(stu.name)}</div>
+        <div style="flex:1; min-width: 0;"><div style="font-weight: 700; font-size: 11px;">${srEscape(stu.name)}</div><div style="font-size: 9px; color: var(--sr-text-3);">${srEscape(stu.grade)}</div></div>
+        ${done ? '<i data-lucide="check-circle-2" style="color: var(--sr-green); width: 16px; height: 16px;"></i>' : '<span style="font-size: 9px; color: var(--sr-text-4);">ລໍ</span>'}
       </div>
     `;
   }).join('');
@@ -199,37 +251,50 @@ function renderStop() {
   srIcons();
 }
 
+function pdaToast(msg) {
+  const el = document.createElement('div');
+  el.className = 'pda-toast';
+  el.textContent = msg;
+  document.getElementById('pda').appendChild(el);
+  setTimeout(() => el.remove(), 1800);
+}
+
+function flashScanner() {
+  const sw = document.getElementById('scanWindow');
+  sw.classList.add('active');
+  setTimeout(() => sw.classList.remove('active'), 1600);
+}
+
 function doScan(method) {
   const ss = stopState[currentStopIdx];
-  if (ss.isSchool) { srToast('🏫 Arrived at school'); openWalk(); return; }
+  if (ss.isSchool) { pdaToast('🏫 ມາຮອດໂຮງຮຽນ'); openWalk(); return; }
   const next = ss.studentIds.find(id => !ss.boarded.has(id));
-  if (!next) { srToast('All students at this stop scanned'); return; }
+  if (!next) { pdaToast('ປ້າຍຈອດສຳເລັດແລ້ວ'); return; }
   ss.boarded.add(next);
   if (ss.boarded.size === ss.studentIds.length) ss.completed = true;
   const stu = APP_DATA.byId.student[next];
-  srToast(`${method === 'nfc' ? '📡 NFC' : '📷 QR'} · ${stu.name} boarded`);
-  renderTimeline(); renderStop();
+  flashScanner();
+  pdaToast(`${method === 'nfc' ? '📡 NFC' : '📷 ສະແກນ'} · ${stu.name.split(' ')[0]} ຂຶ້ນລົດ`);
+  renderTimeline(); renderCurrent();
 }
 
-document.getElementById('qrBtn').addEventListener('click', () => doScan('qr'));
+document.getElementById('triggerBtn').addEventListener('click', () => doScan('qr'));
 document.getElementById('nfcBtn').addEventListener('click', () => doScan('nfc'));
 document.getElementById('manualBtn').addEventListener('click', () => doScan('manual'));
 document.getElementById('nextStopBtn').addEventListener('click', () => {
-  const ss = stopState[currentStopIdx];
-  ss.completed = true;
-  if (currentStopIdx < stopState.length - 1) {
-    currentStopIdx++;
-    renderTimeline(); renderStop();
-    srToast('→ Next stop');
-  } else openWalk();
+  const ss = stopState[currentStopIdx]; ss.completed = true;
+  if (currentStopIdx < stopState.length - 1) { currentStopIdx++; renderTimeline(); renderCurrent(); pdaToast('→ ປ້າຍຈອດຕໍ່ໄປ'); }
+  else openWalk();
 });
 
 function openWalk() { document.getElementById('walkModal').style.display = 'flex'; }
 document.querySelectorAll('#walkModal [data-close]').forEach(el => el.addEventListener('click', () => document.getElementById('walkModal').style.display = 'none'));
-document.getElementById('walkConfirm').addEventListener('click', () => { document.getElementById('walkModal').style.display = 'none'; srToast('✅ Run completed — all students accounted for'); });
+document.getElementById('walkConfirm').addEventListener('click', () => { document.getElementById('walkModal').style.display = 'none'; pdaToast('✅ ສຳເລັດ — ນັກຮຽນທຸກຄົນຂຶ້ນຄົບ'); });
 
 let clk = new Date(APP_NOW);
-setInterval(() => { clk = new Date(clk.getTime() + 30 * 1000); document.getElementById('footerTime').textContent = srFmtTime(clk); }, 4000);
+setInterval(() => { clk = new Date(clk.getTime() + 30 * 1000); document.getElementById('footTime').textContent = srFmtTime(clk); }, 4000);
 
-renderTimeline(); renderStop();
-</script></body></html>
+renderTimeline(); renderCurrent();
+srIcons();
+</script>
+</body></html>

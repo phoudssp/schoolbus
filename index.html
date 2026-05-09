@@ -19,32 +19,21 @@
   .role-card:hover { transform: translateY(-4px); background: rgba(255,255,255,0.1); border-color: var(--sr-cyan); }
   .role-icon { width: 56px; height: 56px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
   .role-icon i { width: 28px; height: 28px; }
-  .brand-mark {
-    width: 44px; height: 44px;
-    background: white; color: var(--sr-navy);
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 900; font-size: 22px;
-    position: relative; overflow: hidden;
+  .brand-block {
+    background: white;
+    border-radius: 12px;
+    padding: 8px 14px;
+    display: flex; align-items: center;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.18);
   }
-  .brand-mark::after {
-    content: ''; position: absolute; right: -7px; bottom: 6px;
-    width: 28px; height: 6px;
-    background: var(--sr-cyan);
-    border-radius: 999px;
-    transform: rotate(-30deg);
-    box-shadow: 0 0 0 2px white;
-  }
+  .brand-block img { height: 42px; display: block; }
 </style>
 </head><body>
 
 <header style="padding: 18px 28px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08);">
-  <div style="display: flex; align-items: center; gap: 12px; font-weight: 800;">
-    <span class="brand-mark">P</span>
-    <div>
-      <div style="font-size: 19px;">Phetaloun <span style="color: var(--sr-cyan);">SchoolBus</span></div>
-      <div style="font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.6);">ບໍ່ແກ້ວ · ລາວ</div>
-    </div>
+  <div style="display: flex; align-items: center; gap: 14px;">
+    <div class="brand-block"><img src="shared/phetaloun-logo.svg" alt="Phetaloun SchoolBus"></div>
+    <div style="font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.6);">ບໍ່ແກ້ວ · ລາວ</div>
   </div>
   <div style="display: flex; gap: 12px; align-items: center;">
     <a href="flow.html" style="color: rgba(255,255,255,0.85); text-decoration: none; font-size: 13px;"><i data-lucide="play-circle" style="vertical-align: middle; width: 16px; height: 16px;"></i> ເບິ່ງຂັ້ນຕອນການຂຶ້ນລົດ</a>

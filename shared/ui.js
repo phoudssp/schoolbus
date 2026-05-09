@@ -157,16 +157,12 @@
   window.srSidebar = function (role, active) {
     const groups = role === 'school' ? schoolGroups() : operatorGroups();
     const brandSub = role === 'school' ? 'ຜູ້ດູແລໂຮງຮຽນ' : 'ຜູ້ດູແລລະບົບສູງສຸດ';
-    // If a Phetaloun logo file exists at ../shared/phetaloun-logo.png, use it.
-    // Otherwise render a CSS-styled "P" mark in brand colors.
-    const logoMark = `<span class="sr-side-brand-mark">P</span>`;
     let html = `
       <div class="sr-side-brand">
-        ${logoMark}
-        <div>
-          <div>Phetaloun</div>
-          <div class="sr-side-brand-sub">${brandSub}</div>
+        <div class="sr-side-brand-logo">
+          <img src="../shared/phetaloun-logo.svg" alt="Phetaloun SchoolBus" onerror="this.style.display='none'; this.parentNode.innerHTML='<span style=&quot;font-weight:900; font-size:22px; color:#0E4D92;&quot;>Phetaloun</span>';">
         </div>
+        <div class="sr-side-brand-role">${brandSub}</div>
       </div>
     `;
     groups.forEach(g => {
@@ -231,7 +227,10 @@
         { id: 'attendance', href: 'attendance.html', icon: 'calendar-check', label: 'ການເຂົ້າຮຽນ' }
       ]},
       { section: 'ການສຶກສາ', links: [
-        { id: 'scores',     href: 'scores.html',        icon: 'award',         label: 'ການຈັດການຄະແນນ' }
+        { id: 'scores',           href: 'scores.html',           icon: 'award',          label: 'ການຈັດການຄະແນນ' },
+        { id: 'subjects',         href: 'subjects.html',         icon: 'book-open',      label: 'ວິຊາຮຽນ' },
+        { id: 'assessment-types', href: 'assessment-types.html', icon: 'clipboard-list', label: 'ປະເພດການປະເມີນ' },
+        { id: 'teachers',         href: 'teachers.html',         icon: 'graduation-cap', label: 'ຄູອາຈານ' }
       ]},
       { section: 'ລະບົບ', links: [
         { id: 'notifications', href: 'notifications.html', icon: 'bell', label: 'ການແຈ້ງເຕືອນ' },

@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="lo"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phetaloun School — ປະເພດການປະເມີນ</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="../shared/style.css">
+</head><body>
+<div class="app-shell">
+  <aside class="sr-sidebar"></aside>
+  <div class="app-main">
+    <header class="sr-topbar"></header>
+    <div class="app-content">
+      <div class="sr-page-head">
+        <div>
+          <div class="sr-breadcrumb"><a href="index.html">ໂຮງຮຽນ</a><i data-lucide="chevron-right"></i><span>ປະເພດການປະເມີນ</span></div>
+          <h1 class="sr-page-title">ປະເພດການປະເມີນ</h1>
+          <p class="sr-page-sub">ຈັດການປະເພດການປະເມີນ (ຄວິສ, ການທົດສອບ, ໂຄງການ ແລະ ອື່ນໆ). ນ້ຳໜັກໃຊ້ຄຳນວນຄະແນນສະເລ່ຍ.</p>
+        </div>
+        <button id="addBtn" class="sr-btn sr-btn-primary"><i data-lucide="plus"></i>ເພີ່ມປະເພດ</button>
+      </div>
+
+      <div class="sr-card" style="margin-bottom: 16px; padding: 14px 18px; display:flex; align-items: center; gap: 10px;">
+        <i data-lucide="info" style="color: var(--sr-blue); width: 18px; height: 18px;"></i>
+        <span style="font-size: 13px; color: var(--sr-text-2);">ນ້ຳໜັກລວມຂອງທຸກປະເພດ: <strong id="totalWeight">100%</strong>. ໃຊ້ຄຳນວນຄະແນນລວມຂອງນັກຮຽນຕາມສິ້ນຮຽນ.</span>
+      </div>
+
+      <div class="sr-table-wrap"><table class="sr-table">
+        <thead><tr><th>ປະເພດ</th><th>ຊື່ ລາວ</th><th>ນ້ຳໜັກ</th><th>ຈຳນວນຄະແນນ</th><th></th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+<script src="../shared/data.js"></script>
+<script src="../shared/ui.js"></script>
+<script>
+srMount({ role: 'school', active: 'assessment-types', user: { name: 'Bounnyong S.', role: 'Principal · LSB', initials: 'BS' } });
+
+const ICON_OPTIONS = ['help-circle','file-text','pen-line','calendar-days','graduation-cap','folder-open','clipboard-list','check-square','target','book-marked'];
+
+function render() {
+  const tbody = document.getElementById('rows');
+  let totalWeight = 0;
+  tbody.innerHTML = APP_DATA.assessmentTypes.map(t => {
+    const count = APP_DATA.scores.filter(s => s.assessmentType === t.name).length;
+    totalWeight += t.weight || 0;
+    return `
+      <tr>
+        <td><div style="display:flex; gap:10px; align-items:center;">
+          <div class="sr-kpi-icon yellow" style="width:36px; height:36px;"><i data-lucide="${t.icon}"></i></div>
+          <div><div style="font-weight: 700;">${srEscape(t.name)}</div><div class="text-text-3 sr-mono" style="font-size: 11px;">${t.id}</div></div>
+        </div></td>
+        <td>${srEscape(t.nameLo || '—')}</td>
+        <td><span class="sr-pill info" style="font-weight:800;">${t.weight}%</span></td>
+        <td><strong>${count}</strong> <span class="text-text-3" style="font-size:11px;">ຄະແນນ</span></td>
+        <td style="text-align:right;">
+          <button class="sr-icon-btn" onclick="edit('${t.id}')"><i data-lucide="pencil"></i></button>
+          ${count === 0 ? `<button class="sr-icon-btn" onclick="del('${t.id}')"><i data-lucide="trash-2"></i></button>` : ''}
+        </td>
+      </tr>
+    `;
+  }).join('');
+  document.getElementById('totalWeight').textContent = totalWeight + '%';
+  srIcons();
+}
+
+function fields(t) { return [
+  { key: 'id', label: 'ID', type: 'text', required: true, readonly: !!t, placeholder: 'quiz' },
+  { key: 'name', label: 'ຊື່ (ອັງກິດ)', type: 'text', required: true, placeholder: 'Quiz' },
+  { key: 'nameLo', label: 'ຊື່ (ລາວ)', type: 'text', required: true, placeholder: 'ຄວິສ' },
+  { key: 'weight', label: 'ນ້ຳໜັກ (%)', type: 'number', required: true, default: 10, hint: 'ສ່ວນແບ່ງໃນຄະແນນລວມ' },
+  { key: 'icon', label: 'ໄອຄອນ', type: 'select', default: 'help-circle', options: ICON_OPTIONS }
+];}
+
+document.getElementById('addBtn').addEventListener('click', () => srModal({
+  title: 'ເພີ່ມປະເພດ', fields: fields(),
+  onSave: data => {
+    if (!data.id || APP_DATA.byId.assessmentType[data.id]) { alert('ID ຊ້ຳ'); return false; }
+    APP_DATA.assessmentTypes.push(data);
+    APP_DATA.byId.assessmentType[data.id] = data;
+    srToast('✓ ເພີ່ມແລ້ວ'); render();
+  }
+}));
+
+window.edit = id => {
+  const t = APP_DATA.byId.assessmentType[id];
+  srModal({ title: 'ແກ້ໄຂ ' + t.name, fields: fields(t), values: t,
+    onSave: data => { Object.assign(t, data); srToast('✓ ບັນທຶກແລ້ວ'); render(); } });
+};
+window.del = id => srConfirm({
+  title: 'ລຶບປະເພດ?', message: 'ລຶບໄດ້ສະເພາະປະເພດທີ່ບໍ່ມີຄະແນນໃຊ້ງານ.', danger: true,
+  onYes: () => { APP_DATA.assessmentTypes = APP_DATA.assessmentTypes.filter(x => x.id !== id); delete APP_DATA.byId.assessmentType[id]; srToast('✓ ລຶບແລ້ວ'); render(); }
+});
+
+render();
+</script>
+</body></html>

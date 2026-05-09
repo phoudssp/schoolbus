@@ -393,15 +393,37 @@ window.APP_DATA = {
   byId: null
 };
 
-// ========== Curriculum subjects (for the school score module) ==========
+// ========== Curriculum subjects (school can CRUD) ==========
 window.APP_DATA.subjects = [
-  { id: 'math',    name: 'Mathematics',    nameLo: 'ຄະນິດສາດ',     icon: 'calculator' },
-  { id: 'lao',     name: 'Lao Language',   nameLo: 'ພາສາລາວ',       icon: 'book-open' },
-  { id: 'eng',     name: 'English',        nameLo: 'ພາສາອັງກິດ',   icon: 'languages' },
-  { id: 'sci',     name: 'Science',        nameLo: 'ວິທະຍາສາດ',     icon: 'flask-conical' },
-  { id: 'soc',     name: 'Social Studies', nameLo: 'ສັງຄົມສາດ',     icon: 'globe' },
-  { id: 'art',     name: 'Art',            nameLo: 'ສິລະປະ',         icon: 'palette' },
-  { id: 'pe',      name: 'Physical Ed.',   nameLo: 'ພະລະສຶກສາ',     icon: 'activity' }
+  { id: 'math', name: 'Mathematics',    nameLo: 'ຄະນິດສາດ',     icon: 'calculator',     code: 'MATH', credits: 4 },
+  { id: 'lao',  name: 'Lao Language',   nameLo: 'ພາສາລາວ',       icon: 'book-open',      code: 'LAO',  credits: 4 },
+  { id: 'eng',  name: 'English',        nameLo: 'ພາສາອັງກິດ',   icon: 'languages',      code: 'ENG',  credits: 3 },
+  { id: 'sci',  name: 'Science',        nameLo: 'ວິທະຍາສາດ',     icon: 'flask-conical',  code: 'SCI',  credits: 3 },
+  { id: 'soc',  name: 'Social Studies', nameLo: 'ສັງຄົມສາດ',     icon: 'globe',          code: 'SOC',  credits: 2 },
+  { id: 'art',  name: 'Art',            nameLo: 'ສິລະປະ',         icon: 'palette',        code: 'ART',  credits: 1 },
+  { id: 'pe',   name: 'Physical Ed.',   nameLo: 'ພະລະສຶກສາ',     icon: 'activity',       code: 'PE',   credits: 1 }
+];
+
+// ========== Assessment types (school can CRUD) ==========
+window.APP_DATA.assessmentTypes = [
+  { id: 'quiz',       name: 'Quiz',       nameLo: 'ຄວິສ',         weight: 10, icon: 'help-circle' },
+  { id: 'test',       name: 'Test',       nameLo: 'ການທົດສອບ',     weight: 20, icon: 'file-text' },
+  { id: 'assignment', name: 'Assignment', nameLo: 'ວຽກບ້ານ',       weight: 15, icon: 'pen-line' },
+  { id: 'midterm',    name: 'Mid-term',   nameLo: 'ສອບກາງເທີມ',   weight: 25, icon: 'calendar-days' },
+  { id: 'final',      name: 'Final',      nameLo: 'ສອບປາຍເທີມ',   weight: 30, icon: 'graduation-cap' },
+  { id: 'project',    name: 'Project',    nameLo: 'ໂຄງການ',         weight: 20, icon: 'folder-open' }
+];
+
+// ========== Teachers (school-scoped, school can CRUD) ==========
+window.APP_DATA.teachers = [
+  { id: 'T-001', name: 'Mrs. Phanthavong', email: 'phanthavong@lsb.edu.la', phone: '+856 20 5555 8001', schoolId: 'vis', subjects: ['math'],          status: 'active', hiredAt: '2018-09-01', avatar: '👩‍🏫' },
+  { id: 'T-002', name: 'Mr. Khamla',       email: 'khamla@lsb.edu.la',       phone: '+856 20 5555 8002', schoolId: 'vis', subjects: ['lao'],           status: 'active', hiredAt: '2019-09-01', avatar: '👨‍🏫' },
+  { id: 'T-003', name: 'Ms. Inthavong',    email: 'inthavong@lsb.edu.la',    phone: '+856 20 5555 8003', schoolId: 'vis', subjects: ['eng'],           status: 'active', hiredAt: '2020-09-01', avatar: '👩‍🏫' },
+  { id: 'T-004', name: 'Mr. Sourivong',    email: 'sourivong@lsb.edu.la',    phone: '+856 20 5555 8004', schoolId: 'vis', subjects: ['sci', 'soc'],   status: 'active', hiredAt: '2017-09-01', avatar: '👨‍🏫' },
+  { id: 'T-005', name: 'Ms. Bouasavanh',   email: 'bouasavanh@lsb.edu.la',   phone: '+856 20 5555 8005', schoolId: 'vis', subjects: ['art', 'pe'],    status: 'active', hiredAt: '2021-09-01', avatar: '👩‍🏫' },
+  { id: 'T-006', name: 'Mr. Soulisak',     email: 'soulisak@hhs.edu.la',     phone: '+856 20 5555 8006', schoolId: 'sgs', subjects: ['math', 'sci'],  status: 'active', hiredAt: '2018-09-01', avatar: '👨‍🏫' },
+  { id: 'T-007', name: 'Ms. Khotsana',     email: 'khotsana@hhs.edu.la',     phone: '+856 20 5555 8007', schoolId: 'sgs', subjects: ['lao', 'soc'],   status: 'active', hiredAt: '2020-09-01', avatar: '👩‍🏫' },
+  { id: 'T-008', name: 'Ms. Vongphakdy',   email: 'vongphakdy@bps.edu.la',   phone: '+856 20 5555 8008', schoolId: 'pty', subjects: ['math', 'art'],  status: 'active', hiredAt: '2019-09-01', avatar: '👩‍🏫' }
 ];
 
 // ========== Enrich existing rows with management-only fields ==========
@@ -587,10 +609,12 @@ window.APP_DATA.subjects = [
 
   // ----- Helper indices (defensive: byId may not be built yet) -----
   d.byId = d.byId || {};
-  d.byId.score      = Object.fromEntries(d.scores.map(s => [s.id, s]));
-  d.byId.absence    = Object.fromEntries(d.absences.map(a => [a.id, a]));
-  d.byId.adminUser  = Object.fromEntries(d.adminUsers.map(u => [u.id, u]));
-  d.byId.subject    = Object.fromEntries(d.subjects.map(s => [s.id, s]));
+  d.byId.score          = Object.fromEntries(d.scores.map(s => [s.id, s]));
+  d.byId.absence        = Object.fromEntries(d.absences.map(a => [a.id, a]));
+  d.byId.adminUser      = Object.fromEntries(d.adminUsers.map(u => [u.id, u]));
+  d.byId.subject        = Object.fromEntries(d.subjects.map(s => [s.id, s]));
+  d.byId.assessmentType = Object.fromEntries(d.assessmentTypes.map(t => [t.id, t]));
+  d.byId.teacher        = Object.fromEntries(d.teachers.map(t => [t.id, t]));
 })();
 
 // ========== Live monitoring helpers ==========

@@ -106,24 +106,46 @@ function render() {
 }
 let chart = null;
 
-document.getElementById('addBtn').addEventListener('click', () => srModal({
-  title: 'ໃສ່ຄະແນນ',
-  fields: [
-    { key: 'studentId', label: 'ນັກຮຽນ', type: 'select', required: true, options: myStudents.map(s => ({ value: s.id, label: s.name + ' · ' + s.grade })) },
-    { key: 'subject',   label: 'ວິຊາ', type: 'select', required: true, options: APP_DATA.subjects.map(s => ({ value: s.id, label: s.name })) },
-    { key: 'assessmentType', label: 'ປະເພດ', type: 'select', required: true, default: 'Test', options: ['Quiz','Test','Assignment','Mid-term','Final','Project'] },
-    { key: 'score', label: 'ຄະແນນ (ເຕັມ 100)', type: 'number', required: true, default: 80 },
-    { key: 'date',  label: 'ວັນທີ', type: 'date', required: true, default: '2026-05-09' },
-    { key: 'comment', label: 'ໝາຍເຫດ (ບໍ່ບັງຄັບ)', type: 'textarea' }
-  ],
-  onSave: data => {
-    const subj = APP_DATA.byId.subject[data.subject];
-    const newS = { id: 'SC-' + (APP_DATA.scores.length + 1).toString().padStart(4, '0'), schoolId: SCHOOL_ID, max: 100, subjectName: subj.name, teacher: 'Bounnyong S.', ...data };
-    APP_DATA.scores.push(newS);
-    srToast('✓ ບັນທຶກຄະແນນແລ້ວ — ແຈ້ງເຕືອນຜູ້ປົກຄອງແລ້ວ');
-    render();
-  }
-}));
+document.getElementById('addBtn').addEventListener('click', () => {
+  // Pull dropdown options from the live CRUD data — Subjects / Assessment Types / Teachers
+  const subjOpts    = APP_DATA.subjects.map(s => ({ value: s.id, label: s.name + (s.nameLo ? ' · ' + s.nameLo : '') }));
+  const typeOpts    = APP_DATA.assessmentTypes.map(t => ({ value: t.name, label: t.name + (t.nameLo ? ' · ' + t.nameLo : '') + ' (' + (t.weight || 0) + '%)' }));
+  const teacherOpts = APP_DATA.teachers.filter(t => t.schoolId === SCHOOL_ID).map(t => ({
+    value: t.id,
+    label: t.name + ' — ' + (t.subjects || []).map(sid => (APP_DATA.byId.subject[sid] || {}).name).filter(Boolean).join(', ')
+  }));
+
+  if (subjOpts.length === 0)    { srToast('ກະລຸນາເພີ່ມວິຊາກ່ອນ');           setTimeout(() => location = 'subjects.html', 800); return; }
+  if (typeOpts.length === 0)    { srToast('ກະລຸນາເພີ່ມປະເພດການປະເມີນກ່ອນ'); setTimeout(() => location = 'assessment-types.html', 800); return; }
+  if (teacherOpts.length === 0) { srToast('ກະລຸນາເພີ່ມຄູກ່ອນ');               setTimeout(() => location = 'teachers.html', 800); return; }
+
+  srModal({
+    title: 'ໃສ່ຄະແນນ',
+    fields: [
+      { key: 'studentId',      label: 'ນັກຮຽນ',                   type: 'select', required: true, options: myStudents.map(s => ({ value: s.id, label: s.name + ' · ' + s.grade })) },
+      { key: 'subject',        label: 'ວິຊາ',                      type: 'select', required: true, options: subjOpts,    hint: 'ຈັດການລາຍຊື່ທີ່ "ວິຊາຮຽນ"' },
+      { key: 'assessmentType', label: 'ປະເພດ',                     type: 'select', required: true, options: typeOpts,    hint: 'ຈັດການລາຍຊື່ທີ່ "ປະເພດການປະເມີນ"' },
+      { key: 'teacherId',      label: 'ຄູ',                         type: 'select', required: true, options: teacherOpts, hint: 'ຈັດການລາຍຊື່ທີ່ "ຄູອາຈານ"' },
+      { key: 'score',          label: 'ຄະແນນ (ເຕັມ 100)',        type: 'number', required: true, default: 80 },
+      { key: 'date',           label: 'ວັນທີ',                      type: 'date',   required: true, default: '2026-05-09' },
+      { key: 'comment',        label: 'ໝາຍເຫດ (ບໍ່ບັງຄັບ)',     type: 'textarea' }
+    ],
+    onSave: data => {
+      const subj = APP_DATA.byId.subject[data.subject];
+      const teacherObj = APP_DATA.byId.teacher[data.teacherId];
+      const newS = {
+        id: 'SC-' + (APP_DATA.scores.length + 1).toString().padStart(4, '0'),
+        schoolId: SCHOOL_ID, max: 100,
+        subjectName: subj.name,
+        teacher: teacherObj ? teacherObj.name : '—',
+        ...data
+      };
+      APP_DATA.scores.push(newS);
+      srToast('✓ ບັນທຶກຄະແນນແລ້ວ — ແຈ້ງເຕືອນຜູ້ປົກຄອງແລ້ວ');
+      render();
+    }
+  });
+});
 window.del = id => srConfirm({ title: 'Delete score?', message: 'The parent will see the deletion.', danger: true,
   onYes: () => { APP_DATA.scores = APP_DATA.scores.filter(x => x.id !== id); srToast('✓ ລຶບແລ້ວ'); render(); }});
 

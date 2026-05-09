@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="lo"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phetaloun School — ຄູອາຈານ</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="../shared/style.css">
+</head><body>
+<div class="app-shell">
+  <aside class="sr-sidebar"></aside>
+  <div class="app-main">
+    <header class="sr-topbar"></header>
+    <div class="app-content">
+      <div class="sr-page-head">
+        <div>
+          <div class="sr-breadcrumb"><a href="index.html">ໂຮງຮຽນ</a><i data-lucide="chevron-right"></i><span>ຄູອາຈານ</span></div>
+          <h1 class="sr-page-title">ຄູອາຈານ</h1>
+          <p class="sr-page-sub">ຈັດການຄູອາຈານທີ່ສອນຢູ່ໂຮງຮຽນ. ຄູທີ່ເພີ່ມຈະປະກົດໃນແບບຟອມໃສ່ຄະແນນ.</p>
+        </div>
+        <button id="addBtn" class="sr-btn sr-btn-primary"><i data-lucide="user-plus"></i>ເພີ່ມຄູ</button>
+      </div>
+
+      <div class="sr-card" style="padding: 14px 18px; margin-bottom: 16px;">
+        <div style="display:flex; gap: 10px; align-items: center;">
+          <div class="sr-search" style="flex:1; max-width: 320px;"><i data-lucide="search"></i><input id="search" placeholder="ຄົ້ນຫາຕາມຊື່ ຫຼື ວິຊາ…"></div>
+          <span style="margin-left: auto;" class="text-text-3" id="countLabel">— ຄົນ</span>
+        </div>
+      </div>
+
+      <div class="sr-table-wrap"><table class="sr-table">
+        <thead><tr><th>ຄູ</th><th>ວິຊາທີ່ສອນ</th><th>ໂທລະສັບ</th><th>ອີເມລ</th><th>ສະຖານະ</th><th>ຈ້າງເມື່ອ</th><th></th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+<script src="../shared/data.js"></script>
+<script src="../shared/ui.js"></script>
+<script>
+const SCHOOL_ID = 'vis';
+srMount({ role: 'school', active: 'teachers', user: { name: 'Bounnyong S.', role: 'Principal · LSB', initials: 'BS' } });
+
+function mySubjects() { return APP_DATA.subjects.map(s => ({ value: s.id, label: s.name + ' · ' + s.nameLo })); }
+
+function render() {
+  const q = (document.getElementById('search').value || '').toLowerCase();
+  const list = APP_DATA.teachers.filter(t => t.schoolId === SCHOOL_ID && (
+    !q || t.name.toLowerCase().includes(q) ||
+    (t.subjects || []).some(sid => (APP_DATA.byId.subject[sid] || {}).name?.toLowerCase().includes(q))
+  ));
+  document.getElementById('countLabel').textContent = list.length + ' ຄົນ';
+  document.getElementById('rows').innerHTML = list.map(t => {
+    const subjPills = (t.subjects || []).map(sid => {
+      const s = APP_DATA.byId.subject[sid];
+      return s ? `<span class="sr-pill info" style="font-size:11px;"><i data-lucide="${s.icon}" style="width:11px;height:11px;"></i>${srEscape(s.name)}</span>` : '';
+    }).join(' ');
+    return `
+      <tr>
+        <td><div style="display:flex; gap:10px; align-items:center;">
+          <div class="sr-avatar lg" style="background:rgba(85,112,241,0.12); color: var(--sr-blue);">${srInitials(t.name)}</div>
+          <div><div style="font-weight: 700;">${srEscape(t.name)}</div><div class="text-text-3 sr-mono" style="font-size: 11px;">${t.id}</div></div>
+        </div></td>
+        <td><div style="display: flex; flex-wrap: wrap; gap: 4px;">${subjPills || '<span class="text-text-4">—</span>'}</div></td>
+        <td class="sr-mono" style="font-size:12px;">${srEscape(t.phone || '')}</td>
+        <td class="text-text-2" style="font-size:12px;">${srEscape(t.email || '')}</td>
+        <td><span class="sr-pill ${t.status === 'active' ? 'success' : 'neutral'}"><span class="dot"></span>${t.status === 'active' ? 'ໃຊ້ງານ' : 'ບໍ່ໃຊ້'}</span></td>
+        <td class="text-text-3" style="font-size:11px;">${srFmtDate(t.hiredAt)}</td>
+        <td style="text-align:right;">
+          <button class="sr-icon-btn" onclick="edit('${t.id}')"><i data-lucide="pencil"></i></button>
+          <button class="sr-icon-btn" onclick="del('${t.id}')"><i data-lucide="trash-2"></i></button>
+        </td>
+      </tr>
+    `;
+  }).join('') || `<tr><td colspan="7"><div class="sr-empty"><i data-lucide="graduation-cap"></i><div>ບໍ່ມີຄູ</div></div></td></tr>`;
+  srIcons();
+}
+
+function fields() { return [
+  { key: 'name', label: 'ຊື່ເຕັມ', type: 'text', required: true, placeholder: 'Mrs. Phanthavong' },
+  { key: 'email', label: 'ອີເມລ', type: 'email', required: true },
+  { key: 'phone', label: 'ໂທລະສັບ', type: 'tel', placeholder: '+856 20 …' },
+  { key: 'subjects', label: 'ວິຊາທີ່ສອນ', type: 'checkboxes', options: mySubjects(), hint: 'ເລືອກໄດ້ຫຼາຍວິຊາ' },
+  { key: 'hiredAt', label: 'ວັນທີຈ້າງ', type: 'date', default: new Date().toISOString().slice(0,10) },
+  { key: 'status', label: 'ສະຖານະ', type: 'select', default: 'active', options: [{value:'active',label:'ໃຊ້ງານ'},{value:'on_leave',label:'ລາພັກ'},{value:'inactive',label:'ບໍ່ໃຊ້ງານ'}] }
+];}
+
+document.getElementById('addBtn').addEventListener('click', () => srModal({
+  title: 'ເພີ່ມຄູ', fields: fields(), values: { subjects: [] },
+  onSave: data => {
+    const id = srNewId('T', APP_DATA.teachers);
+    const t = { id, schoolId: SCHOOL_ID, avatar: '👨‍🏫', ...data };
+    APP_DATA.teachers.push(t);
+    APP_DATA.byId.teacher[id] = t;
+    srToast('✓ ເພີ່ມຄູແລ້ວ'); render();
+  }
+}));
+
+window.edit = id => {
+  const t = APP_DATA.byId.teacher[id];
+  srModal({ title: 'ແກ້ໄຂ ' + t.name, fields: fields(), values: t,
+    onSave: data => { Object.assign(t, data); srToast('✓ ບັນທຶກແລ້ວ'); render(); } });
+};
+window.del = id => srConfirm({
+  title: 'ລຶບຄູ?', message: 'ຄະແນນທີ່ໃສ່ໂດຍຄູນີ້ຈະຍັງຄົງຢູ່.', danger: true,
+  onYes: () => { APP_DATA.teachers = APP_DATA.teachers.filter(x => x.id !== id); delete APP_DATA.byId.teacher[id]; srToast('✓ ລຶບແລ້ວ'); render(); }
+});
+
+document.getElementById('search').addEventListener('input', render);
+render();
+</script>
+</body></html>
