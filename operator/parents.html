@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="lo">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SafeRide — Parents</title>
+  <title>Phetaloun — Parents</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
   <link rel="stylesheet" href="../shared/style.css">
@@ -17,24 +17,24 @@
 
       <div class="sr-page-head">
         <div>
-          <div class="sr-breadcrumb"><a href="index.html">Operator</a><i data-lucide="chevron-right"></i><span>Parents</span></div>
+          <div class="sr-breadcrumb"><a href="index.html">ຜູ້ດຳເນີນການ</a><i data-lucide="chevron-right"></i><span>ຜູ້ປົກຄອງ</span></div>
           <h1 class="sr-page-title">Parent accounts</h1>
-          <p class="sr-page-sub">Login accounts for the parent app — invite, suspend, reset passwords.</p>
+          <p class="sr-page-sub">ບັນຊີລ໋ອກອິນສຳລັບແອັບຜູ້ປົກຄອງ — ເຊີນ, ຢຸດ, ຣີເຊັດລະຫັດ.</p>
         </div>
-        <button id="addBtn" class="sr-btn sr-btn-primary"><i data-lucide="mail-plus"></i>Invite parent</button>
+        <button id="addBtn" class="sr-btn sr-btn-primary"><i data-lucide="mail-plus"></i>ເຊີນຜູ້ປົກຄອງ</button>
       </div>
 
       <div class="sr-card" style="padding: 14px 18px; margin-bottom: 16px;">
         <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-          <div class="sr-search" style="flex: 1; max-width: 320px;"><i data-lucide="search"></i><input id="search" placeholder="Search by name or email…"></div>
+          <div class="sr-search" style="flex: 1; max-width: 320px;"><i data-lucide="search"></i><input id="search" placeholder="ຄົ້ນຫາຕາມຊື່ ຫຼື ອີເມລ…"></div>
           <select id="statusFilter" class="sr-select" style="max-width: 200px;">
-            <option value="">All statuses</option><option value="active">Active</option><option value="invited">Invited</option><option value="suspended">Suspended</option>
+            <option value="">ສະຖານະທັງໝົດ</option><option value="active">ໃຊ້ງານ</option><option value="invited">Invited</option><option value="suspended">Suspended</option>
           </select>
         </div>
       </div>
 
       <div class="sr-table-wrap"><table class="sr-table">
-        <thead><tr><th>Parent</th><th>Email</th><th>Phone</th><th>Children</th><th>Account</th><th>Last login</th><th></th></tr></thead>
+        <thead><tr><th>Parent</th><th>ອີເມລ</th><th>ໂທລະສັບ</th><th>ລູກ</th><th>ບັນຊີ</th><th>ເຂົ້າຊົມລ່າສຸດ</th><th></th></tr></thead>
         <tbody id="rows"></tbody>
       </table></div>
 
@@ -80,14 +80,14 @@ function render() {
 }
 function fields() {
   return [
-    { key: 'name', label: 'Parent name', type: 'text', required: true },
-    { key: 'email', label: 'Email (login)', type: 'email', required: true, hint: 'Used as the login email for the parent app.' },
-    { key: 'phone', label: 'Phone', type: 'tel' },
-    { key: 'studentIds', label: 'Children', type: 'checkboxes', options: APP_DATA.students.map(s => ({ value: s.id, label: s.name + ' · ' + (APP_DATA.byId.school[s.schoolId] || {}).shortName })) },
-    { key: 'accountStatus', label: 'Status', type: 'select', default: 'invited', options: [{value:'invited',label:'Invited'},{value:'active',label:'Active'},{value:'suspended',label:'Suspended'}] }
+    { key: 'name', label: 'ຊື່ຜູ້ປົກຄອງ', type: 'text', required: true },
+    { key: 'email', label: 'ອີເມລ (ລ໋ອກອິນ)', type: 'email', required: true, hint: 'Used as the login email for the parent app.' },
+    { key: 'phone', label: 'ໂທລະສັບ', type: 'tel' },
+    { key: 'studentIds', label: 'ລູກ', type: 'checkboxes', options: APP_DATA.students.map(s => ({ value: s.id, label: s.name + ' · ' + (APP_DATA.byId.school[s.schoolId] || {}).shortName })) },
+    { key: 'accountStatus', label: 'ສະຖານະ', type: 'select', default: 'invited', options: [{value:'invited',label:'Invited'},{value:'active',label:'Active'},{value:'suspended',label:'Suspended'}] }
   ];
 }
-document.getElementById('addBtn').addEventListener('click', () => srModal({ title: 'Invite parent', fields: fields(), values: { studentIds: [], accountStatus: 'invited' },
+document.getElementById('addBtn').addEventListener('click', () => srModal({ title: 'ເຊີນຜູ້ປົກຄອງ', fields: fields(), values: { studentIds: [], accountStatus: 'invited' },
   onSave: data => {
     const id = srNewId('G', APP_DATA.guardians);
     const g = { id, ...data, lastLogin: null, createdAt: new Date().toISOString().slice(0, 10) };
@@ -97,12 +97,12 @@ document.getElementById('addBtn').addEventListener('click', () => srModal({ titl
   }}));
 window.edit = id => {
   const g = APP_DATA.byId.guardian[id];
-  srModal({ title: 'Edit ' + g.name, fields: fields(), values: g, onSave: data => { Object.assign(g, data); srToast('✓ Saved'); render(); } });
+  srModal({ title: 'ແກ້ໄຂ ' + g.name, fields: fields(), values: g, onSave: data => { Object.assign(g, data); srToast('✓ ບັນທຶກແລ້ວ'); render(); } });
 };
 window.del = id => srConfirm({ title: 'Delete parent?', message: 'This unlinks them from all children.', danger: true,
-  onYes: () => { APP_DATA.guardians = APP_DATA.guardians.filter(x => x.id !== id); delete APP_DATA.byId.guardian[id]; srToast('✓ Deleted'); render(); } });
+  onYes: () => { APP_DATA.guardians = APP_DATA.guardians.filter(x => x.id !== id); delete APP_DATA.byId.guardian[id]; srToast('✓ ລຶບແລ້ວ'); render(); } });
 window.invite = id => srToast('📧 Invitation re-sent to ' + APP_DATA.byId.guardian[id].email);
-window.reset = id => srToast('🔑 Password reset link sent to ' + APP_DATA.byId.guardian[id].email);
+window.reset = id => srToast('🔑 ສົ່ງລິ້ງຣີເຊັດລະຫັດໄປຫາ ' + APP_DATA.byId.guardian[id].email);
 
 document.getElementById('search').addEventListener('input', render);
 document.getElementById('statusFilter').addEventListener('change', render);

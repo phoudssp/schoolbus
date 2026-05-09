@@ -4,19 +4,20 @@
    ============================================================ */
 
 :root {
-  --sr-navy:     #0F1E3D;
-  --sr-navy-2:   #182B57;
-  --sr-navy-3:   #1F2A52;
-  --sr-yellow:   #FFD60A;
-  --sr-yellow-2: #E5BC00;
-  --sr-blue:     #5570F1;
-  --sr-blue-2:   #4256BF;
+  /* Phetaloun brand palette */
+  --sr-navy:     #0E4D92;   /* Phetaloun deep blue */
+  --sr-navy-2:   #134AA6;   /* Slightly brighter */
+  --sr-navy-3:   #1A5BB8;
+  --sr-yellow:   #29ABE2;   /* Phetaloun cyan accent (was yellow) */
+  --sr-yellow-2: #1B95C9;
+  --sr-blue:     #1B95C9;
+  --sr-blue-2:   #156D94;
   --sr-green:    #10B981;
   --sr-amber:    #F59E0B;
   --sr-red:      #EF4444;
   --sr-rose:     #F43F5E;
   --sr-purple:   #8B5CF6;
-  --sr-cyan:     #06B6D4;
+  --sr-cyan:     #29ABE2;
 
   --sr-bg:       #F1F5F9;
   --sr-card:     #FFFFFF;
@@ -81,12 +82,29 @@ body {
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 .sr-side-brand-mark {
-  width: 36px; height: 36px;
-  background: var(--sr-yellow);
+  width: 38px; height: 38px;
+  background: white;
   color: var(--sr-navy);
   border-radius: 9px;
   display: flex; align-items: center; justify-content: center;
   font-weight: 900; font-size: 18px;
+  position: relative; overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.sr-side-brand-mark::after {
+  content: ''; position: absolute; right: -6px; bottom: 4px;
+  width: 24px; height: 6px;
+  background: var(--sr-cyan);
+  border-radius: 999px;
+  transform: rotate(-30deg);
+  box-shadow: 0 0 0 2px white;
+}
+.sr-side-brand-mark.with-img {
+  padding: 4px;
+  background: white;
+}
+.sr-side-brand-mark.with-img img {
+  max-width: 100%; max-height: 100%; object-fit: contain;
 }
 .sr-side-brand-sub {
   font-size: 11px; font-weight: 500;

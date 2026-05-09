@@ -1,6 +1,6 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SafeRide School — Live Status</title>
+<html lang="lo"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phetaloun School — Live Status</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <link rel="stylesheet" href="../shared/style.css">
@@ -11,26 +11,26 @@
     <header class="sr-topbar"></header>
     <div class="app-content">
       <div class="sr-page-head"><div>
-        <div class="sr-breadcrumb"><a href="index.html">School</a><i data-lucide="chevron-right"></i><span>Live Status</span></div>
+        <div class="sr-breadcrumb"><a href="index.html">ໂຮງຮຽນ</a><i data-lucide="chevron-right"></i><span>ສະຖານະສົດ</span></div>
         <h1 class="sr-page-title"><span class="sr-live-dot" style="display:inline-block; vertical-align:middle; margin-right: 8px;"></span>Live student status</h1>
-        <p class="sr-page-sub">Real-time check-in feed as students board the bus and arrive at school.</p>
+        <p class="sr-page-sub">ການລົງທະບຽນສົດໆເມື່ອນັກຮຽນຂຶ້ນລົດ ແລະ ມາຮອດໂຮງຮຽນ.</p>
       </div></div>
 
       <div class="sr-grid sr-cols-4" style="margin-bottom: 18px;">
-        <div class="sr-kpi"><div class="sr-kpi-icon blue"><i data-lucide="bus"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">Buses incoming</div><div class="sr-kpi-val" id="k-buses">—</div></div></div>
-        <div class="sr-kpi"><div class="sr-kpi-icon green"><i data-lucide="user-check"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">On bus / arrived</div><div class="sr-kpi-val" id="k-on">—</div></div></div>
-        <div class="sr-kpi"><div class="sr-kpi-icon amber"><i data-lucide="user-x"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">Not boarded yet</div><div class="sr-kpi-val" id="k-not">—</div></div></div>
-        <div class="sr-kpi"><div class="sr-kpi-icon rose"><i data-lucide="calendar-x"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">Absent today</div><div class="sr-kpi-val" id="k-abs">—</div></div></div>
+        <div class="sr-kpi"><div class="sr-kpi-icon blue"><i data-lucide="bus"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">ລົດກຳລັງມາ</div><div class="sr-kpi-val" id="k-buses">—</div></div></div>
+        <div class="sr-kpi"><div class="sr-kpi-icon green"><i data-lucide="user-check"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">ຢູ່ລົດ / ມາຮອດ</div><div class="sr-kpi-val" id="k-on">—</div></div></div>
+        <div class="sr-kpi"><div class="sr-kpi-icon amber"><i data-lucide="user-x"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">ຍັງບໍ່ຂຶ້ນລົດ</div><div class="sr-kpi-val" id="k-not">—</div></div></div>
+        <div class="sr-kpi"><div class="sr-kpi-icon rose"><i data-lucide="calendar-x"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">ຂາດຮຽນມື້ນີ້</div><div class="sr-kpi-val" id="k-abs">—</div></div></div>
       </div>
 
       <div class="sr-grid sr-cols-12">
         <div class="sr-card" style="grid-column: span 7;">
-          <div class="sr-card-head"><h3 class="sr-card-title">Today's incoming buses</h3><span class="sr-pill success"><span class="dot"></span>Live · auto-updating</span></div>
+          <div class="sr-card-head"><h3 class="sr-card-title">ລົດທີ່ມາມື້ນີ້</h3><span class="sr-pill success"><span class="dot"></span>Live · auto-updating</span></div>
           <div id="busList" style="display: flex; flex-direction: column; gap: 10px;"></div>
         </div>
 
         <div class="sr-card" style="grid-column: span 5;">
-          <div class="sr-card-head"><h3 class="sr-card-title">Latest scans</h3><span class="text-text-3" style="font-size:11px;">Live feed</span></div>
+          <div class="sr-card-head"><h3 class="sr-card-title">ການສະແກນຫຼ້າສຸດ</h3><span class="text-text-3" style="font-size:11px;">Live feed</span></div>
           <div id="feed" style="display: flex; flex-direction: column; gap: 8px; max-height: 480px; overflow-y: auto;"></div>
         </div>
       </div>
@@ -66,12 +66,12 @@ document.getElementById('busList').innerHTML = myRuns.map(({ route, run }) => {
       <div class="sr-kpi-icon yellow" style="width:42px;height:42px;"><i data-lucide="bus"></i></div>
       <div style="flex: 1; min-width: 0;">
         <div style="display: flex; align-items: center; gap: 8px;"><strong>${route.busId}</strong><span class="sr-pill ${lp.status === 'in_transit' ? 'success' : 'warn'}"><span class="dot"></span>${lp.status.replace('_',' ')}</span></div>
-        <div class="text-text-3" style="font-size: 12px;">ETA ${lp.etaMin != null ? lp.etaMin + ' min' : '—'} · ${run.stops.filter(s => !APP_DATA.byId.stop[s.stopId].isSchool).length} stops · ${expected} students</div>
+        <div class="text-text-3" style="font-size: 12px;">ETA ${lp.etaMin != null ? lp.etaMin + ' ນທ' : '—'} · ${run.stops.filter(s => !APP_DATA.byId.stop[s.stopId].isSchool).length} stops · ${expected} students</div>
         <div style="margin-top: 6px; height: 6px; background: white; border: 1px solid var(--sr-border); border-radius: 999px; overflow: hidden;">
           <div style="background: var(--sr-green); height: 100%; width: ${pct}%;"></div>
         </div>
       </div>
-      <div style="text-align: right;"><div style="font-size: 22px; font-weight: 800;">${scanned}<span class="text-text-3" style="font-size: 13px; font-weight: 500;">/${expected}</span></div><div class="text-text-3" style="font-size: 11px;">boarded</div></div>
+      <div style="text-align: right;"><div style="font-size: 22px; font-weight: 800;">${scanned}<span class="text-text-3" style="font-size: 13px; font-weight: 500;">/${expected}</span></div><div class="text-text-3" style="font-size: 11px;">ຂຶ້ນລົດແລ້ວ</div></div>
     </div>
   `;
 }).join('');

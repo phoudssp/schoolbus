@@ -1,6 +1,6 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SafeRide — School Dashboard</title>
+<html lang="lo"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phetaloun — School Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -13,36 +13,36 @@
     <div class="app-content">
       <div class="sr-page-head">
         <div>
-          <div class="sr-breadcrumb"><i data-lucide="school"></i><span>HIS · Houayxay International School</span></div>
-          <h1 class="sr-page-title">Welcome back, Bounnyong 👋</h1>
-          <p class="sr-page-sub">Saturday, May 9 · 320 students · Bell 07:30 / 14:30</p>
+          <div class="sr-breadcrumb"><i data-lucide="school"></i><span>HIS · ໂຮງຮຽນສາກົນຫ້ວຍຊາຍ</span></div>
+          <h1 class="sr-page-title">ຍິນດີຕ້ອນຮັບ Bounnyong 👋</h1>
+          <p class="sr-page-sub">ວັນເສົາ 9 ພຶດສະພາ · ນັກຮຽນ 320 ຄົນ · ກິ່ງ 07:30 / 14:30</p>
         </div>
         <div style="display:flex;gap:8px;">
-          <a href="live.html" class="sr-btn sr-btn-yellow"><i data-lucide="radar"></i>Live status</a>
-          <a href="scores.html" class="sr-btn sr-btn-primary"><i data-lucide="award"></i>Add scores</a>
+          <a href="live.html" class="sr-btn sr-btn-yellow"><i data-lucide="radar"></i>ສະຖານະສົດ</a>
+          <a href="scores.html" class="sr-btn sr-btn-primary"><i data-lucide="award"></i>ໃສ່ຄະແນນ</a>
         </div>
       </div>
 
       <div class="sr-grid sr-cols-4" style="margin-bottom: 18px;">
-        <div class="sr-kpi"><div class="sr-kpi-icon blue"><i data-lucide="users"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">Total students</div><div class="sr-kpi-val">320</div><span class="sr-kpi-trend up"><i data-lucide="trending-up"></i>+12 this term</span></div></div>
-        <div class="sr-kpi"><div class="sr-kpi-icon green"><i data-lucide="check-check"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">Present today (bus)</div><div class="sr-kpi-val" id="kpi-present">—</div><span class="sr-kpi-trend up"><i data-lucide="trending-up"></i>96%</span></div></div>
-        <div class="sr-kpi"><div class="sr-kpi-icon amber"><i data-lucide="calendar-x"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">Absence requests</div><div class="sr-kpi-val" id="kpi-abs">—</div><span class="sr-kpi-trend flat"><i data-lucide="hand"></i>Awaiting review</span></div></div>
-        <div class="sr-kpi"><div class="sr-kpi-icon purple"><i data-lucide="award"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">Scores entered</div><div class="sr-kpi-val" id="kpi-scores">—</div><span class="sr-kpi-trend flat"><i data-lucide="calendar"></i>This week</span></div></div>
+        <div class="sr-kpi"><div class="sr-kpi-icon blue"><i data-lucide="users"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">ນັກຮຽນທັງໝົດ</div><div class="sr-kpi-val">320</div><span class="sr-kpi-trend up"><i data-lucide="trending-up"></i>+12 ພາກຮຽນນີ້</span></div></div>
+        <div class="sr-kpi"><div class="sr-kpi-icon green"><i data-lucide="check-check"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">ມາມື້ນີ້ (ລົດ)</div><div class="sr-kpi-val" id="kpi-present">—</div><span class="sr-kpi-trend up"><i data-lucide="trending-up"></i>96%</span></div></div>
+        <div class="sr-kpi"><div class="sr-kpi-icon amber"><i data-lucide="calendar-x"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">ຄຳຮ້ອງຂາດຮຽນ</div><div class="sr-kpi-val" id="kpi-abs">—</div><span class="sr-kpi-trend flat"><i data-lucide="hand"></i>ກຳລັງລໍກວດສອບ</span></div></div>
+        <div class="sr-kpi"><div class="sr-kpi-icon purple"><i data-lucide="award"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">ຄະແນນທີ່ໃສ່</div><div class="sr-kpi-val" id="kpi-scores">—</div><span class="sr-kpi-trend flat"><i data-lucide="calendar"></i>ສັບປະດານີ້</span></div></div>
       </div>
 
       <div class="sr-grid sr-cols-12" style="margin-bottom: 18px;">
         <div class="sr-card" style="grid-column: span 8;">
           <div class="sr-card-head">
-            <div><h3 class="sr-card-title">Incoming buses today</h3><p class="text-text-3" style="font-size:12px; margin: 2px 0 0;">SafeRide buses bringing your students this morning</p></div>
-            <a href="live.html" class="sr-btn sr-btn-sm sr-btn-ghost">Open live <i data-lucide="arrow-up-right"></i></a>
+            <div><h3 class="sr-card-title">ລົດທີ່ມາມື້ນີ້</h3><p class="text-text-3" style="font-size:12px; margin: 2px 0 0;">ລົດ Phetaloun ນຳພານັກຮຽນຂອງທ່ານໃນເຊົ້າມື້ນີ້</p></div>
+            <a href="live.html" class="sr-btn sr-btn-sm sr-btn-ghost">ເປີດສົດ <i data-lucide="arrow-up-right"></i></a>
           </div>
           <div id="busesIn" style="display: flex; flex-direction: column; gap: 10px;"></div>
         </div>
 
         <div class="sr-card" style="grid-column: span 4;">
           <div class="sr-card-head">
-            <h3 class="sr-card-title">Pending absences</h3>
-            <a href="attendance.html" class="sr-btn sr-btn-sm sr-btn-ghost">Review all <i data-lucide="arrow-up-right"></i></a>
+            <h3 class="sr-card-title">ຄຳຮ້ອງຂາດຮຽນທີ່ລໍ</h3>
+            <a href="attendance.html" class="sr-btn sr-btn-sm sr-btn-ghost">ກວດສອບທັງໝົດ <i data-lucide="arrow-up-right"></i></a>
           </div>
           <div id="absList"></div>
         </div>
@@ -50,11 +50,11 @@
 
       <div class="sr-grid sr-cols-12">
         <div class="sr-card" style="grid-column: span 7;">
-          <div class="sr-card-head"><h3 class="sr-card-title">Average score by subject</h3></div>
+          <div class="sr-card-head"><h3 class="sr-card-title">ຄະແນນສະເລ່ຍຕາມວິຊາ</h3></div>
           <div style="position: relative; height: 240px;"><canvas id="scoreChart"></canvas></div>
         </div>
         <div class="sr-card" style="grid-column: span 5;">
-          <div class="sr-card-head"><h3 class="sr-card-title">Recent activity</h3></div>
+          <div class="sr-card-head"><h3 class="sr-card-title">ກິດຈະກຳລ່າສຸດ</h3></div>
           <div id="activity" style="font-size: 13px;"></div>
         </div>
       </div>
@@ -90,12 +90,12 @@ document.getElementById('busesIn').innerHTML = myRuns.map(({ route, run }) => {
       <div class="sr-kpi-icon yellow" style="width:42px;height:42px;"><i data-lucide="bus"></i></div>
       <div style="flex:1; min-width: 0;">
         <div style="display: flex; align-items: center; gap: 8px;"><strong>${route.busId}</strong><span class="sr-pill ${sCls}"><span class="dot"></span>${lp.status.replace('_',' ')}</span></div>
-        <div class="text-text-3" style="font-size: 12px;">${srEscape(driver.name)} · ETA ${lp.etaMin != null ? lp.etaMin + ' min' : '—'}</div>
+        <div class="text-text-3" style="font-size: 12px;">${srEscape(driver.name)} · ETA ${lp.etaMin != null ? lp.etaMin + ' ນທ' : '—'}</div>
         <div style="margin-top: 6px; height: 6px; background: var(--sr-border); border-radius: 999px; overflow: hidden;">
           <div style="background: var(--sr-green); height: 100%; width: ${pct}%; border-radius: 999px;"></div>
         </div>
       </div>
-      <div style="text-align: right;"><div style="font-size: 18px; font-weight: 800;">${scanned}<span class="text-text-3" style="font-size: 13px; font-weight: 500;">/${expected}</span></div><div class="text-text-3" style="font-size: 11px;">boarded</div></div>
+      <div style="text-align: right;"><div style="font-size: 18px; font-weight: 800;">${scanned}<span class="text-text-3" style="font-size: 13px; font-weight: 500;">/${expected}</span></div><div class="text-text-3" style="font-size: 11px;">ຂຶ້ນລົດແລ້ວ</div></div>
     </div>
   `;
 }).join('');
@@ -110,7 +110,7 @@ document.getElementById('absList').innerHTML = myAbsences.filter(a => a.status =
         <div style="font-weight: 700; font-size: 13px;">${srEscape(stu.name)}</div>
         <div class="text-text-3" style="font-size: 11px;">${srEscape(a.reason)} · ${srFmtDate(a.date)}</div>
       </div>
-      <a href="attendance.html" class="sr-btn sr-btn-sm sr-btn-yellow">Review</a>
+      <a href="attendance.html" class="sr-btn sr-btn-sm sr-btn-yellow">ກວດສອບ</a>
     </div>
   `;
 }).join('') || '<div class="sr-empty"><i data-lucide="check-check"></i><div>No pending absences</div></div>';

@@ -1,6 +1,6 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SafeRide School — Notifications</title>
+<html lang="lo"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phetaloun School — Notifications</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <link rel="stylesheet" href="../shared/style.css">
@@ -11,10 +11,10 @@
     <header class="sr-topbar"></header>
     <div class="app-content">
       <div class="sr-page-head"><div>
-        <div class="sr-breadcrumb"><a href="index.html">School</a><i data-lucide="chevron-right"></i><span>Notifications</span></div>
-        <h1 class="sr-page-title">Notifications</h1>
-        <p class="sr-page-sub">Send messages to parents and view system alerts.</p>
-      </div><button class="sr-btn sr-btn-primary"><i data-lucide="send"></i>Send announcement</button></div>
+        <div class="sr-breadcrumb"><a href="index.html">ໂຮງຮຽນ</a><i data-lucide="chevron-right"></i><span>ການແຈ້ງເຕືອນ</span></div>
+        <h1 class="sr-page-title">ການແຈ້ງເຕືອນ</h1>
+        <p class="sr-page-sub">ສົ່ງຂໍ້ຄວາມຫາຜູ້ປົກຄອງ ແລະ ເບິ່ງການແຈ້ງເຕືອນລະບົບ.</p>
+      </div><button class="sr-btn sr-btn-primary"><i data-lucide="send"></i>ສົ່ງປະກາດ</button></div>
 
       <div class="sr-card">
         <div id="list"></div>
@@ -31,7 +31,7 @@ const items = [
   { i: 'calendar-x', t: 'Absence request from Mrs. Vongchanh',  d: 'Maly · Dental check-up · May 11', tm: '10h ago', c: 'amber' },
   { i: 'message-square', t: 'Driver Bounmy reported delay',     d: 'Bus B-101 · 5 min late', tm: '1h ago', c: 'blue' },
   { i: 'check-check', t: 'Score notification sent',              d: 'Math quiz scores delivered to 28 parents', tm: 'Yesterday', c: 'green' },
-  { i: 'bus', t: 'Bus B-103 arriving in 5 min',                  d: 'Live status', tm: '2m ago', c: 'green' }
+  { i: 'bus', t: 'Bus B-103 arriving in 5 min',                  d: 'ສະຖານະສົດ', tm: '2m ago', c: 'green' }
 ];
 document.getElementById('list').innerHTML = items.map(it => `
   <div class="sr-list-row">

@@ -82,8 +82,8 @@
       </div>
       <div class="sr-modal-body">${bodyHtml}</div>
       <div class="sr-modal-foot">
-        <button type="button" class="sr-btn sr-btn-ghost" data-close>Cancel</button>
-        <button type="submit" form="${formId}" class="sr-btn sr-btn-primary">${escapeHtml(saveLabel || 'Save')}</button>
+        <button type="button" class="sr-btn sr-btn-ghost" data-close>ຍົກເລີກ</button>
+        <button type="submit" form="${formId}" class="sr-btn sr-btn-primary">${escapeHtml(saveLabel || 'ບັນທຶກ')}</button>
       </div>
     `;
     overlay.appendChild(modal);
@@ -115,7 +115,7 @@
   };
 
   // ---------- Confirm ----------
-  window.srConfirm = function ({ title, message, onYes, danger = false, yesLabel = 'Confirm', noLabel = 'Cancel' }) {
+  window.srConfirm = function ({ title, message, onYes, danger = false, yesLabel = 'ຢືນຢັນ', noLabel = 'ຍົກເລີກ' }) {
     const overlay = document.createElement('div');
     overlay.className = 'sr-modal-bg';
     overlay.innerHTML = `
@@ -156,12 +156,15 @@
   // active: id of the current page
   window.srSidebar = function (role, active) {
     const groups = role === 'school' ? schoolGroups() : operatorGroups();
-    const brandSub = role === 'school' ? 'School Admin' : 'Super Admin';
+    const brandSub = role === 'school' ? 'ຜູ້ດູແລໂຮງຮຽນ' : 'ຜູ້ດູແລລະບົບສູງສຸດ';
+    // If a Phetaloun logo file exists at ../shared/phetaloun-logo.png, use it.
+    // Otherwise render a CSS-styled "P" mark in brand colors.
+    const logoMark = `<span class="sr-side-brand-mark">P</span>`;
     let html = `
       <div class="sr-side-brand">
-        <span class="sr-side-brand-mark">S</span>
+        ${logoMark}
         <div>
-          <div>SafeRide</div>
+          <div>Phetaloun</div>
           <div class="sr-side-brand-sub">${brandSub}</div>
         </div>
       </div>
@@ -194,25 +197,25 @@
   function operatorGroups() {
     return [
       { links: [
-        { id: 'dashboard',  href: 'index.html',      icon: 'layout-dashboard', label: 'Dashboard' },
-        { id: 'monitoring', href: 'monitoring.html', icon: 'radar',            label: 'Live Monitoring', badge: 'LIVE' }
+        { id: 'dashboard',  href: 'index.html',      icon: 'layout-dashboard', label: 'ໜ້າຄວບຄຸມ' },
+        { id: 'monitoring', href: 'monitoring.html', icon: 'radar',            label: 'ຕິດຕາມສົດ', badge: 'LIVE' }
       ]},
-      { section: 'Operations', links: [
-        { id: 'routes',   href: 'routes.html',   icon: 'route',     label: 'Routes' },
-        { id: 'schools',  href: 'schools.html',  icon: 'school',    label: 'Schools' },
-        { id: 'students', href: 'students.html', icon: 'users',     label: 'Students' },
-        { id: 'parents',  href: 'parents.html',  icon: 'user-round',label: 'Parents' },
-        { id: 'drivers',  href: 'drivers.html',  icon: 'id-card',   label: 'Drivers' },
-        { id: 'buses',    href: 'buses.html',    icon: 'bus',       label: 'Buses' }
+      { section: 'ການດຳເນີນງານ', links: [
+        { id: 'routes',   href: 'routes.html',   icon: 'route',     label: 'ເສັ້ນທາງ' },
+        { id: 'schools',  href: 'schools.html',  icon: 'school',    label: 'ໂຮງຮຽນ' },
+        { id: 'students', href: 'students.html', icon: 'users',     label: 'ນັກຮຽນ' },
+        { id: 'parents',  href: 'parents.html',  icon: 'user-round',label: 'ຜູ້ປົກຄອງ' },
+        { id: 'drivers',  href: 'drivers.html',  icon: 'id-card',   label: 'ຄົນຂັບ' },
+        { id: 'buses',    href: 'buses.html',    icon: 'bus',       label: 'ລົດ' }
       ]},
-      { section: 'Business', links: [
-        { id: 'plans',   href: 'plans.html',   icon: 'package',     label: 'Subscription Plans' },
-        { id: 'billing', href: 'billing.html', icon: 'wallet',      label: 'Billing' },
-        { id: 'reports', href: 'reports.html', icon: 'bar-chart-3', label: 'Reports' }
+      { section: 'ທຸລະກິດ', links: [
+        { id: 'plans',   href: 'plans.html',   icon: 'package',     label: 'ແພັກເກັດການສະໝັກ' },
+        { id: 'billing', href: 'billing.html', icon: 'wallet',      label: 'ການເງິນ' },
+        { id: 'reports', href: 'reports.html', icon: 'bar-chart-3', label: 'ລາຍງານ' }
       ]},
-      { section: 'System', links: [
-        { id: 'users',    href: 'users.html',    icon: 'shield-check', label: 'Admin Users' },
-        { id: 'settings', href: 'settings.html', icon: 'settings',     label: 'Settings' }
+      { section: 'ລະບົບ', links: [
+        { id: 'users',    href: 'users.html',    icon: 'shield-check', label: 'ຜູ້ໃຊ້ລະບົບ' },
+        { id: 'settings', href: 'settings.html', icon: 'settings',     label: 'ການຕັ້ງຄ່າ' }
       ]}
     ];
   }
@@ -220,39 +223,38 @@
   function schoolGroups() {
     return [
       { links: [
-        { id: 'dashboard', href: 'index.html', icon: 'layout-dashboard', label: 'Dashboard' }
+        { id: 'dashboard', href: 'index.html', icon: 'layout-dashboard', label: 'ໜ້າຄວບຄຸມ' }
       ]},
-      { section: 'Students', links: [
-        { id: 'students',   href: 'students.html',   icon: 'users',          label: 'All Students' },
-        { id: 'live',       href: 'live.html',       icon: 'radio',          label: 'Live Status', badge: 'LIVE' },
-        { id: 'attendance', href: 'attendance.html', icon: 'calendar-check', label: 'Attendance' }
+      { section: 'ນັກຮຽນ', links: [
+        { id: 'students',   href: 'students.html',   icon: 'users',          label: 'ນັກຮຽນທັງໝົດ' },
+        { id: 'live',       href: 'live.html',       icon: 'radio',          label: 'ສະຖານະສົດ', badge: 'LIVE' },
+        { id: 'attendance', href: 'attendance.html', icon: 'calendar-check', label: 'ການເຂົ້າຮຽນ' }
       ]},
-      { section: 'Academic', links: [
-        { id: 'scores',     href: 'scores.html',        icon: 'award',         label: 'Score Management' }
+      { section: 'ການສຶກສາ', links: [
+        { id: 'scores',     href: 'scores.html',        icon: 'award',         label: 'ການຈັດການຄະແນນ' }
       ]},
-      { section: 'System', links: [
-        { id: 'notifications', href: 'notifications.html', icon: 'bell', label: 'Notifications' },
-        { id: 'settings',      href: 'settings.html',      icon: 'settings', label: 'Settings' }
+      { section: 'ລະບົບ', links: [
+        { id: 'notifications', href: 'notifications.html', icon: 'bell', label: 'ການແຈ້ງເຕືອນ' },
+        { id: 'settings',      href: 'settings.html',      icon: 'settings', label: 'ການຕັ້ງຄ່າ' }
       ]}
     ];
   }
 
   // ---------- Topbar template ----------
   window.srTopbar = function ({ search = true, user = null, lang = true } = {}) {
-    user = user || { name: 'Souvanh P.', role: 'Super Admin', initials: 'SP' };
+    user = user || { name: 'Souvanh P.', role: 'ຜູ້ດູແລລະບົບສູງສຸດ', initials: 'SP' };
     return `
       <div class="sr-topbar-left">
         ${search ? `
           <div class="sr-search">
             <i data-lucide="search"></i>
-            <input type="text" placeholder="Search…">
+            <input type="text" placeholder="ຄົ້ນຫາ…">
           </div>
         ` : ''}
       </div>
       <div class="sr-topbar-right">
-        ${lang ? `<button class="sr-icon-btn" onclick="window.srToggleLang && srToggleLang()" title="Switch language"><i data-lucide="languages"></i></button>` : ''}
-        <button class="sr-icon-btn" title="Notifications"><i data-lucide="bell"></i><span class="ping"></span></button>
-        <button class="sr-icon-btn" title="Help"><i data-lucide="circle-help"></i></button>
+        <button class="sr-icon-btn" title="ການແຈ້ງເຕືອນ"><i data-lucide="bell"></i><span class="ping"></span></button>
+        <button class="sr-icon-btn" title="ຊ່ວຍເຫຼືອ"><i data-lucide="circle-help"></i></button>
         <div class="sr-topbar-user">
           <div class="sr-topbar-user-avatar">${escapeHtml(user.initials)}</div>
           <div class="sr-topbar-user-info">

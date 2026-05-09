@@ -1,6 +1,6 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SafeRide School — Score Management</title>
+<html lang="lo"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phetaloun School — Score Management</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -13,34 +13,34 @@
     <div class="app-content">
       <div class="sr-page-head">
         <div>
-          <div class="sr-breadcrumb"><a href="index.html">School</a><i data-lucide="chevron-right"></i><span>Scores</span></div>
-          <h1 class="sr-page-title">Score management</h1>
-          <p class="sr-page-sub">Enter scores per student × subject. Parents see them instantly in their app.</p>
+          <div class="sr-breadcrumb"><a href="index.html">ໂຮງຮຽນ</a><i data-lucide="chevron-right"></i><span>ຄະແນນ</span></div>
+          <h1 class="sr-page-title">ການຈັດການຄະແນນ</h1>
+          <p class="sr-page-sub">ໃສ່ຄະແນນສຳລັບແຕ່ລະນັກຮຽນ × ວິຊາ. ຜູ້ປົກຄອງເຫັນທັນທີໃນແອັບ.</p>
         </div>
-        <button id="addBtn" class="sr-btn sr-btn-primary"><i data-lucide="award"></i>Add score</button>
+        <button id="addBtn" class="sr-btn sr-btn-primary"><i data-lucide="award"></i>ໃສ່ຄະແນນ</button>
       </div>
 
       <div class="sr-grid sr-cols-12" style="margin-bottom: 18px;">
         <div class="sr-card" style="grid-column: span 8;">
           <div class="sr-card-head">
-            <h3 class="sr-card-title">Filter scores</h3>
+            <h3 class="sr-card-title">ກັ່ນຕອງຄະແນນ</h3>
           </div>
           <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <select id="filterStu" class="sr-select" style="max-width: 220px;"><option value="">All students</option></select>
-            <select id="filterSubj" class="sr-select" style="max-width: 200px;"><option value="">All subjects</option></select>
+            <select id="filterStu" class="sr-select" style="max-width: 220px;"><option value="">ນັກຮຽນທັງໝົດ</option></select>
+            <select id="filterSubj" class="sr-select" style="max-width: 200px;"><option value="">ວິຊາທັງໝົດ</option></select>
             <select id="filterMonth" class="sr-select" style="max-width: 160px;">
-              <option value="">All months</option><option value="2026-05">May 2026</option><option value="2026-04">April 2026</option><option value="2026-03">March 2026</option>
+              <option value="">ເດືອນທັງໝົດ</option><option value="2026-05">May 2026</option><option value="2026-04">April 2026</option><option value="2026-03">March 2026</option>
             </select>
           </div>
         </div>
         <div class="sr-card" style="grid-column: span 4;">
-          <div class="sr-card-head"><h3 class="sr-card-title">School averages</h3></div>
+          <div class="sr-card-head"><h3 class="sr-card-title">ຄະແນນສະເລ່ຍຂອງໂຮງຮຽນ</h3></div>
           <div style="position: relative; height: 140px;"><canvas id="avgChart"></canvas></div>
         </div>
       </div>
 
       <div class="sr-table-wrap"><table class="sr-table">
-        <thead><tr><th>Student</th><th>Subject</th><th>Type</th><th>Score</th><th>Date</th><th>Teacher</th><th></th></tr></thead>
+        <thead><tr><th>ນັກຮຽນ</th><th>ວິຊາ</th><th>ປະເພດ</th><th>ຄະແນນ</th><th>ວັນທີ</th><th>ຄູ</th><th></th></tr></thead>
         <tbody id="rows"></tbody>
       </table></div>
     </div>
@@ -107,25 +107,25 @@ function render() {
 let chart = null;
 
 document.getElementById('addBtn').addEventListener('click', () => srModal({
-  title: 'Add score',
+  title: 'ໃສ່ຄະແນນ',
   fields: [
-    { key: 'studentId', label: 'Student', type: 'select', required: true, options: myStudents.map(s => ({ value: s.id, label: s.name + ' · ' + s.grade })) },
-    { key: 'subject',   label: 'Subject', type: 'select', required: true, options: APP_DATA.subjects.map(s => ({ value: s.id, label: s.name })) },
-    { key: 'assessmentType', label: 'Type', type: 'select', required: true, default: 'Test', options: ['Quiz','Test','Assignment','Mid-term','Final','Project'] },
-    { key: 'score', label: 'Score (out of 100)', type: 'number', required: true, default: 80 },
-    { key: 'date',  label: 'Date', type: 'date', required: true, default: '2026-05-09' },
-    { key: 'comment', label: 'Comment (optional)', type: 'textarea' }
+    { key: 'studentId', label: 'ນັກຮຽນ', type: 'select', required: true, options: myStudents.map(s => ({ value: s.id, label: s.name + ' · ' + s.grade })) },
+    { key: 'subject',   label: 'ວິຊາ', type: 'select', required: true, options: APP_DATA.subjects.map(s => ({ value: s.id, label: s.name })) },
+    { key: 'assessmentType', label: 'ປະເພດ', type: 'select', required: true, default: 'Test', options: ['Quiz','Test','Assignment','Mid-term','Final','Project'] },
+    { key: 'score', label: 'ຄະແນນ (ເຕັມ 100)', type: 'number', required: true, default: 80 },
+    { key: 'date',  label: 'ວັນທີ', type: 'date', required: true, default: '2026-05-09' },
+    { key: 'comment', label: 'ໝາຍເຫດ (ບໍ່ບັງຄັບ)', type: 'textarea' }
   ],
   onSave: data => {
     const subj = APP_DATA.byId.subject[data.subject];
     const newS = { id: 'SC-' + (APP_DATA.scores.length + 1).toString().padStart(4, '0'), schoolId: SCHOOL_ID, max: 100, subjectName: subj.name, teacher: 'Bounnyong S.', ...data };
     APP_DATA.scores.push(newS);
-    srToast('✓ Score saved — parent has been notified');
+    srToast('✓ ບັນທຶກຄະແນນແລ້ວ — ແຈ້ງເຕືອນຜູ້ປົກຄອງແລ້ວ');
     render();
   }
 }));
 window.del = id => srConfirm({ title: 'Delete score?', message: 'The parent will see the deletion.', danger: true,
-  onYes: () => { APP_DATA.scores = APP_DATA.scores.filter(x => x.id !== id); srToast('✓ Deleted'); render(); }});
+  onYes: () => { APP_DATA.scores = APP_DATA.scores.filter(x => x.id !== id); srToast('✓ ລຶບແລ້ວ'); render(); }});
 
 render();
 </script></body></html>

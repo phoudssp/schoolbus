@@ -1,6 +1,6 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SafeRide — Plans</title>
+<html lang="lo"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phetaloun — Plans</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <link rel="stylesheet" href="../shared/style.css">
@@ -12,11 +12,11 @@
     <div class="app-content">
       <div class="sr-page-head">
         <div>
-          <div class="sr-breadcrumb"><a href="index.html">Operator</a><i data-lucide="chevron-right"></i><span>Plans</span></div>
-          <h1 class="sr-page-title">Subscription plans</h1>
-          <p class="sr-page-sub">Pricing tiers your school customers subscribe to.</p>
+          <div class="sr-breadcrumb"><a href="index.html">ຜູ້ດຳເນີນການ</a><i data-lucide="chevron-right"></i><span>Plans</span></div>
+          <h1 class="sr-page-title">ແພັກເກັດການສະໝັກ</h1>
+          <p class="sr-page-sub">ລະດັບລາຄາທີ່ໂຮງຮຽນລູກຄ້າສະໝັກ.</p>
         </div>
-        <button id="addBtn" class="sr-btn sr-btn-primary"><i data-lucide="plus"></i>Add plan</button>
+        <button id="addBtn" class="sr-btn sr-btn-primary"><i data-lucide="plus"></i>ເພີ່ມແພັກເກັດ</button>
       </div>
       <div class="sr-grid sr-cols-3" id="cards"></div>
     </div>
@@ -46,7 +46,7 @@ function render() {
         </div>
         <div style="margin-top: 8px;">
           <span style="font-size: 28px; font-weight: 900; color: var(--sr-navy);">${fmtMoney(p.perStudent)}</span>
-          <span class="text-text-3" style="font-size: 12px;"> / student / month</span>
+          <span class="text-text-3" style="font-size: 12px;"> / ນັກຮຽນ / ເດືອນ</span>
         </div>
         <ul style="list-style: none; padding: 0; margin: 16px 0 0; font-size: 13px;">
           ${p.featureLabels.map(f => `<li style="display: flex; align-items: center; gap: 8px; padding: 4px 0;"><i data-lucide="check" style="color: var(--sr-green); width: 14px; height: 14px;"></i>${srEscape(f)}</li>`).join('')}
@@ -64,14 +64,14 @@ function render() {
   srIcons();
 }
 function fields(p) { return [
-  { key: 'id', label: 'Plan ID', type: 'text', required: true, readonly: !!p, placeholder: 'pro' },
-  { key: 'name', label: 'Plan name', type: 'text', required: true },
+  { key: 'id', label: 'ລະຫັດແພັກເກັດ', type: 'text', required: true, readonly: !!p, placeholder: 'pro' },
+  { key: 'name', label: 'ຊື່ແພັກເກັດ', type: 'text', required: true },
   { key: 'perStudent', label: 'Price per student / month (₭)', type: 'number', required: true, default: 100000 },
-  { key: 'features', label: 'Features', type: 'checkboxes', options: FEATURES }
+  { key: 'features', label: 'ຄຸນສົມບັດ', type: 'checkboxes', options: FEATURES }
 ];}
-document.getElementById('addBtn').addEventListener('click', () => srModal({ title: 'Add plan', fields: fields(),
-  onSave: data => { if (APP_DATA.plans[data.id]) { alert('ID exists'); return false; } const p = { ...data, featureLabels: (data.features || []).map(f => FEATURES.find(o => o.value === f)?.label || f) }; APP_DATA.plans[data.id] = p; srToast('✓ Created'); render(); }}));
-window.edit = id => { const p = APP_DATA.plans[id]; srModal({ title: 'Edit ' + p.name, fields: fields(p), values: p, onSave: data => { Object.assign(p, { ...data, featureLabels: (data.features || []).map(f => FEATURES.find(o => o.value === f)?.label || f) }); srToast('✓ Saved'); render(); }}); };
-window.del = id => srConfirm({ title: 'Delete plan?', message: 'Plans with active schools cannot be deleted.', danger: true, onYes: () => { delete APP_DATA.plans[id]; srToast('✓ Deleted'); render(); } });
+document.getElementById('addBtn').addEventListener('click', () => srModal({ title: 'ເພີ່ມແພັກເກັດ', fields: fields(),
+  onSave: data => { if (APP_DATA.plans[data.id]) { alert('ID exists'); return false; } const p = { ...data, featureLabels: (data.features || []).map(f => FEATURES.find(o => o.value === f)?.label || f) }; APP_DATA.plans[data.id] = p; srToast('✓ ສ້າງແລ້ວ'); render(); }}));
+window.edit = id => { const p = APP_DATA.plans[id]; srModal({ title: 'ແກ້ໄຂ ' + p.name, fields: fields(p), values: p, onSave: data => { Object.assign(p, { ...data, featureLabels: (data.features || []).map(f => FEATURES.find(o => o.value === f)?.label || f) }); srToast('✓ ບັນທຶກແລ້ວ'); render(); }}); };
+window.del = id => srConfirm({ title: 'Delete plan?', message: 'Plans with active schools cannot be deleted.', danger: true, onYes: () => { delete APP_DATA.plans[id]; srToast('✓ ລຶບແລ້ວ'); render(); } });
 render();
 </script></body></html>

@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="lo">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SafeRide — Routes</title>
+  <title>Phetaloun — Routes</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -27,14 +27,14 @@
         <aside style="background: white; border-right: 1px solid var(--sr-border); display: flex; flex-direction: column; overflow: hidden;">
 
           <div style="padding: 18px 20px; border-bottom: 1px solid var(--sr-border);">
-            <div class="sr-breadcrumb"><a href="index.html">Operator</a><i data-lucide="chevron-right"></i><span>Routes</span></div>
-            <h2 style="margin: 4px 0 4px; font-size: 18px; font-weight: 800;">Route planning</h2>
-            <p class="text-text-3" style="font-size: 12px; margin: 0;">Door-to-door pickups. Optimize for shortest distance to each school.</p>
-            <button id="newRoute" class="sr-btn sr-btn-primary" style="margin-top: 12px; width: 100%;"><i data-lucide="plus"></i>New route</button>
+            <div class="sr-breadcrumb"><a href="index.html">ຜູ້ດຳເນີນການ</a><i data-lucide="chevron-right"></i><span>ເສັ້ນທາງ</span></div>
+            <h2 style="margin: 4px 0 4px; font-size: 18px; font-weight: 800;">ການວາງແຜນເສັ້ນທາງ</h2>
+            <p class="text-text-3" style="font-size: 12px; margin: 0;">ຮັບສົ່ງເຖິງປະຕູ. ປັບປຸງໄລຍະທາງໃຫ້ສັ້ນທີ່ສຸດເຖິງແຕ່ລະໂຮງຮຽນ.</p>
+            <button id="newRoute" class="sr-btn sr-btn-primary" style="margin-top: 12px; width: 100%;"><i data-lucide="plus"></i>ເສັ້ນທາງໃໝ່</button>
           </div>
 
           <div style="overflow-y: auto; flex: 1; padding: 8px 12px;">
-            <div class="text-text-3" style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 8px 8px 4px;">All routes</div>
+            <div class="text-text-3" style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 8px 8px 4px;">ເສັ້ນທາງທັງໝົດ</div>
             <div id="routesList"></div>
           </div>
 
@@ -46,8 +46,8 @@
         <main style="position: relative;">
           <div id="map" style="height: 100%;"></div>
           <div style="position: absolute; top: 14px; left: 14px; background: white; padding: 10px 14px; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.1); font-size: 11px; z-index: 999;">
-            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;"><span class="stop-num" style="width: 14px; height: 14px; font-size: 9px;">1</span> Pickup stop</div>
-            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;"><span class="house-pin" style="width: 14px; height: 14px; font-size: 9px;">🏠</span> Student house</div>
+            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;"><span class="stop-num" style="width: 14px; height: 14px; font-size: 9px;">1</span> ຈຸດຮັບ</div>
+            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;"><span class="house-pin" style="width: 14px; height: 14px; font-size: 9px;">🏠</span> ບ້ານນັກຮຽນ</div>
             <div style="display: flex; align-items: center; gap: 6px;"><span class="school-marker-div" style="font-size: 9px; padding: 1px 4px;">🏫</span> School</div>
           </div>
         </main>
@@ -124,18 +124,18 @@ function renderDetail() {
     </div>
     <div class="sr-grid sr-cols-3" style="gap: 6px; margin: 12px 0;">
       <div style="background: white; border: 1px solid var(--sr-border); padding: 8px; border-radius: 6px; text-align: center;">
-        <div class="text-text-3" style="font-size: 10px;">DIST</div><div style="font-weight: 800;" id="d-km">${km.toFixed(1)} km</div>
+        <div class="text-text-3" style="font-size: 10px;">ໄລຍະ</div><div style="font-weight: 800;" id="d-km">${km.toFixed(1)} km</div>
       </div>
       <div style="background: white; border: 1px solid var(--sr-border); padding: 8px; border-radius: 6px; text-align: center;">
-        <div class="text-text-3" style="font-size: 10px;">TIME</div><div style="font-weight: 800;" id="d-min">${min} min</div>
+        <div class="text-text-3" style="font-size: 10px;">ເວລາ</div><div style="font-weight: 800;" id="d-min">${min} min</div>
       </div>
       <div style="background: white; border: 1px solid var(--sr-border); padding: 8px; border-radius: 6px; text-align: center;">
-        <div class="text-text-3" style="font-size: 10px;">KIDS</div><div style="font-weight: 800;">${studentCount}</div>
+        <div class="text-text-3" style="font-size: 10px;">ນັກຮຽນ</div><div style="font-weight: 800;">${studentCount}</div>
       </div>
     </div>
     <button onclick="optimize()" class="sr-btn sr-btn-yellow" style="width: 100%;"><i data-lucide="zap"></i> Optimize</button>
     <div style="margin-top: 14px;">
-      <div class="text-text-3" style="font-size: 10px; font-weight: 700; text-transform: uppercase;">Stops in order</div>
+      <div class="text-text-3" style="font-size: 10px; font-weight: 700; text-transform: uppercase;">ປ້າຍຈອດຕາມລຳດັບ</div>
       <div id="stopsList" style="margin-top: 6px;"></div>
     </div>
   `;
@@ -215,8 +215,8 @@ window.optimize = () => {
   sel.run.stops = order.map(i => stops[i]);
   const after = routeKm(sel.run.stops.map(s => APP_DATA.byId.stop[s.stopId].coords));
   const saved = before - after;
-  if (saved > 0.05) srToast(`⚡ Optimized — ${saved.toFixed(1)} km saved (${Math.round(saved/before*100)}%)`);
-  else srToast('✓ Already optimal');
+  if (saved > 0.05) srToast(`⚡ ປັບປຸງສຳເລັດ — ${saved.toFixed(1)} ກິໂລແມັດປະຢັດ (${Math.round(saved/before*100)}%)`);
+  else srToast('✓ ສັ້ນສຸດແລ້ວ');
   renderDetail(); renderOverlay(); renderList();
 };
 document.getElementById('newRoute').addEventListener('click', () => srToast('Use the existing routes — full builder is coming'));

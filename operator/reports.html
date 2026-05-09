@@ -1,6 +1,6 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SafeRide — Reports</title>
+<html lang="lo"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phetaloun — Reports</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -13,14 +13,14 @@
     <div class="app-content">
       <div class="sr-page-head">
         <div>
-          <div class="sr-breadcrumb"><a href="index.html">Operator</a><i data-lucide="chevron-right"></i><span>Reports</span></div>
-          <h1 class="sr-page-title">Reports</h1>
-          <p class="sr-page-sub">Generate operational, safety, and financial reports.</p>
+          <div class="sr-breadcrumb"><a href="index.html">ຜູ້ດຳເນີນການ</a><i data-lucide="chevron-right"></i><span>ລາຍງານ</span></div>
+          <h1 class="sr-page-title">ລາຍງານ</h1>
+          <p class="sr-page-sub">ສ້າງລາຍງານການດຳເນີນງານ, ຄວາມປອດໄພ ແລະ ການເງິນ.</p>
         </div>
       </div>
 
       <div class="sr-card" style="margin-bottom: 18px;">
-        <div class="sr-card-head"><h3 class="sr-card-title">This week — daily ridership</h3></div>
+        <div class="sr-card-head"><h3 class="sr-card-title">ສັບປະດານີ້ — ການເດີນທາງປະຈຳວັນ</h3></div>
         <div style="position: relative; height: 240px;"><canvas id="rid"></canvas></div>
       </div>
 
@@ -48,7 +48,7 @@ const cats = {
   operations: { label: 'Operations', color: 'blue', icon: 'activity' },
   safety:     { label: 'Safety',     color: 'rose', icon: 'shield' },
   finance:    { label: 'Finance',    color: 'green',icon: 'wallet' },
-  school:     { label: 'School',     color: 'purple',icon: 'school' }
+  school:     { label: 'ໂຮງຮຽນ',     color: 'purple',icon: 'school' }
 };
 document.getElementById('reports').innerHTML = APP_DATA.reportTypes.map(r => {
   const c = cats[r.category];

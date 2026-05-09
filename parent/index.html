@@ -1,6 +1,6 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SafeRide — Parent App</title>
+<html lang="lo"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phetaloun — Parent App</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -11,9 +11,9 @@
 
 <div style="display: flex; flex-direction: column; align-items: center; gap: 18px;">
   <div style="display:flex; align-items: center; gap: 12px; color: white;">
-    <a href="../index.html" style="color: white; text-decoration: none; font-size: 13px;"><i data-lucide="arrow-left" style="vertical-align:middle; width: 16px; height: 16px;"></i> Back to launcher</a>
+    <a href="../index.html" style="color: white; text-decoration: none; font-size: 13px;"><i data-lucide="arrow-left" style="vertical-align:middle; width: 16px; height: 16px;"></i> ກັບໄປໜ້າຫຼັກ</a>
     <span style="opacity: 0.4;">·</span>
-    <span style="font-size: 13px; opacity: 0.7;">Parent app — Mr. Chanthavong</span>
+    <span style="font-size: 13px; opacity: 0.7;">ແອັບຜູ້ປົກຄອງ — Mr. Chanthavong</span>
   </div>
 
   <div class="sr-phone-frame">
@@ -30,8 +30,8 @@
       <div style="padding: 16px 20px 8px;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <div>
-            <div class="text-text-3" style="font-size: 11px;">Saturday, May 9</div>
-            <h2 style="margin: 2px 0 0; font-size: 22px; font-weight: 800;">Hello, Bouasy 👋</h2>
+            <div class="text-text-3" style="font-size: 11px;">ວັນເສົາ 9 ພຶດສະພາ</div>
+            <h2 style="margin: 2px 0 0; font-size: 22px; font-weight: 800;">ສະບາຍດີ, Bouasy 👋</h2>
           </div>
           <a href="notifications.html" style="position: relative; width: 38px; height: 38px; background: var(--sr-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--sr-text); text-decoration: none;">
             <i data-lucide="bell"></i>
@@ -49,8 +49,8 @@
         <!-- Mini map -->
         <div style="margin-top: 16px;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <strong style="font-size: 14px;">Live bus location</strong>
-            <span class="sr-pill success"><span class="dot"></span>Live</span>
+            <strong style="font-size: 14px;">ຕຳແໜ່ງລົດສົດ</strong>
+            <span class="sr-pill success"><span class="dot"></span>ສົດ</span>
           </div>
           <div id="map" style="height: 200px; border-radius: 12px; overflow: hidden; border: 1px solid var(--sr-border);"></div>
         </div>
@@ -59,17 +59,17 @@
         <div style="margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
           <a href="absence.html" style="background: white; border: 1px solid var(--sr-border); border-radius: 12px; padding: 14px; text-align: center; text-decoration: none; color: var(--sr-text);">
             <i data-lucide="calendar-x" style="width: 26px; height: 26px; color: var(--sr-rose); margin-bottom: 4px;"></i>
-            <div style="font-weight: 700; font-size: 13px;">Request absence</div>
+            <div style="font-weight: 700; font-size: 13px;">ຂໍຂາດຮຽນ</div>
           </a>
           <a href="scores.html" style="background: white; border: 1px solid var(--sr-border); border-radius: 12px; padding: 14px; text-align: center; text-decoration: none; color: var(--sr-text);">
             <i data-lucide="award" style="width: 26px; height: 26px; color: var(--sr-purple); margin-bottom: 4px;"></i>
-            <div style="font-weight: 700; font-size: 13px;">View scores</div>
+            <div style="font-weight: 700; font-size: 13px;">ເບິ່ງຄະແນນ</div>
           </a>
         </div>
 
         <!-- Today's events -->
         <div style="margin-top: 18px;">
-          <strong style="font-size: 14px;">Today</strong>
+          <strong style="font-size: 14px;">ມື້ນີ້</strong>
           <div id="timeline" style="margin-top: 8px;"></div>
         </div>
 
@@ -77,11 +77,11 @@
 
       <!-- Bottom tabs -->
       <nav class="sr-tabbar">
-        <a href="index.html"          class="sr-tab active"><i data-lucide="home"></i><span>Home</span></a>
-        <a href="child.html?id=S-1001" class="sr-tab"><i data-lucide="users"></i><span>Children</span></a>
-        <a href="scores.html"          class="sr-tab"><i data-lucide="award"></i><span>Scores</span></a>
-        <a href="absence.html"         class="sr-tab"><i data-lucide="calendar-x"></i><span>Absence</span></a>
-        <a href="settings.html"        class="sr-tab"><i data-lucide="user"></i><span>Profile</span></a>
+        <a href="index.html"          class="sr-tab active"><i data-lucide="home"></i><span>ໜ້າຫຼັກ</span></a>
+        <a href="child.html?id=S-1001" class="sr-tab"><i data-lucide="users"></i><span>ລູກ</span></a>
+        <a href="scores.html"          class="sr-tab"><i data-lucide="award"></i><span>ຄະແນນ</span></a>
+        <a href="absence.html"         class="sr-tab"><i data-lucide="calendar-x"></i><span>ຂາດຮຽນ</span></a>
+        <a href="settings.html"        class="sr-tab"><i data-lucide="user"></i><span>ໂປຣໄຟລ໌</span></a>
       </nav>
     </div>
   </div>

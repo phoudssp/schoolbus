@@ -1,6 +1,6 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SafeRide Parent — Scores</title>
+<html lang="lo"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phetaloun Parent — Scores</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -8,10 +8,10 @@
 <style>body { background: linear-gradient(180deg, #0F1E3D 0%, #182B57 100%); display: flex; justify-content: center; padding: 28px 14px; min-height: 100vh; }</style>
 </head><body>
 <div style="display: flex; flex-direction: column; align-items: center; gap: 18px;">
-  <a href="index.html" style="color: white; text-decoration: none; font-size: 13px;"><i data-lucide="arrow-left" style="vertical-align:middle; width:16px;height:16px;"></i> Home</a>
+  <a href="index.html" style="color: white; text-decoration: none; font-size: 13px;"><i data-lucide="arrow-left" style="vertical-align:middle; width:16px;height:16px;"></i> ກັບໄປໜ້າຫຼັກ</a>
   <div class="sr-phone-frame"><div class="sr-phone-notch"></div><div class="sr-phone-screen" style="display:flex; flex-direction: column;">
     <div style="padding: 14px 24px 0; display: flex; justify-content: space-between; font-size: 12px; font-weight: 700;"><span>07:08</span><span><i data-lucide="battery-full" style="width:18px;height:13px;"></i></span></div>
-    <div style="padding: 12px 20px 4px;"><strong style="font-size: 18px;">Scores</strong><div class="text-text-3" style="font-size: 11px; margin-top: 2px;">From your child's school</div></div>
+    <div style="padding: 12px 20px 4px;"><strong style="font-size: 18px;">ຄະແນນ</strong><div class="text-text-3" style="font-size: 11px; margin-top: 2px;">ຈາກໂຮງຮຽນຂອງລູກ</div></div>
 
     <div style="padding: 8px 20px 0; display: flex; gap: 6px;" id="kidPills"></div>
 
@@ -23,17 +23,17 @@
         <canvas id="chart"></canvas>
       </div>
 
-      <strong style="font-size: 13px;">Recent assessments</strong>
+      <strong style="font-size: 13px;">ການປະເມີນລ່າສຸດ</strong>
       <div id="list" style="margin-top: 8px;"></div>
 
     </div>
 
     <nav class="sr-tabbar">
-      <a href="index.html" class="sr-tab"><i data-lucide="home"></i><span>Home</span></a>
-      <a href="child.html?id=S-1001" class="sr-tab"><i data-lucide="users"></i><span>Children</span></a>
-      <a href="scores.html" class="sr-tab active"><i data-lucide="award"></i><span>Scores</span></a>
-      <a href="absence.html" class="sr-tab"><i data-lucide="calendar-x"></i><span>Absence</span></a>
-      <a href="settings.html" class="sr-tab"><i data-lucide="user"></i><span>Profile</span></a>
+      <a href="index.html" class="sr-tab"><i data-lucide="home"></i><span>ໜ້າຫຼັກ</span></a>
+      <a href="child.html?id=S-1001" class="sr-tab"><i data-lucide="users"></i><span>ລູກ</span></a>
+      <a href="scores.html" class="sr-tab active"><i data-lucide="award"></i><span>ຄະແນນ</span></a>
+      <a href="absence.html" class="sr-tab"><i data-lucide="calendar-x"></i><span>ຂາດຮຽນ</span></a>
+      <a href="settings.html" class="sr-tab"><i data-lucide="user"></i><span>ໂປຣໄຟລ໌</span></a>
     </nav>
   </div></div>
 </div>
@@ -61,7 +61,7 @@ function render() {
   document.getElementById('summary').innerHTML = `
     <div style="display: flex; align-items: center; justify-content: space-between;">
       <div>
-        <div style="font-size: 11px; color: var(--sr-text-3); text-transform: uppercase; letter-spacing: 0.05em;">Overall average</div>
+        <div style="font-size: 11px; color: var(--sr-text-3); text-transform: uppercase; letter-spacing: 0.05em;">ຄະແນນສະເລ່ຍລວມ</div>
         <div style="font-size: 32px; font-weight: 900; color: var(--sr-navy);">${avg}<span style="font-size: 14px; color: var(--sr-text-3); font-weight: 500;">/100</span></div>
         <div style="font-size: 11px; color: ${sch.color}; font-weight: 700; margin-top: 2px;">${srEscape(sch.shortName)} · ${srEscape(kid.grade)}</div>
       </div>

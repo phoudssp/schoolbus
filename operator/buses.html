@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="lo">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SafeRide — Buses</title>
+  <title>Phetaloun — Buses</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
   <link rel="stylesheet" href="../shared/style.css">
@@ -16,11 +16,11 @@
     <div class="app-content">
       <div class="sr-page-head">
         <div>
-          <div class="sr-breadcrumb"><a href="index.html">Operator</a><i data-lucide="chevron-right"></i><span>Buses</span></div>
-          <h1 class="sr-page-title">Fleet</h1>
-          <p class="sr-page-sub">Your fleet — plates, capacity, status, last service date.</p>
+          <div class="sr-breadcrumb"><a href="index.html">ຜູ້ດຳເນີນການ</a><i data-lucide="chevron-right"></i><span>ລົດ</span></div>
+          <h1 class="sr-page-title">ກອງລົດ</h1>
+          <p class="sr-page-sub">ກອງລົດຂອງທ່ານ — ປ້າຍທະບຽນ, ຄວາມຈຸ, ສະຖານະ ແລະ ບຳລຸງຫຼ້າສຸດ.</p>
         </div>
-        <button id="addBtn" class="sr-btn sr-btn-primary"><i data-lucide="plus"></i>Add bus</button>
+        <button id="addBtn" class="sr-btn sr-btn-primary"><i data-lucide="plus"></i>ເພີ່ມລົດ</button>
       </div>
       <div class="sr-grid sr-cols-3" id="cards"></div>
     </div>
@@ -44,9 +44,9 @@ function render() {
           <span class="sr-pill ${cls}"><span class="dot"></span>${lp ? lp.status.replace('_',' ') : 'idle'}</span>
         </div>
         <div class="sr-grid" style="grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-top: 14px; padding: 12px; background: var(--sr-bg); border-radius: 8px;">
-          <div><div class="text-text-3" style="font-size: 10px;">CAPACITY</div><div style="font-weight: 800;">${b.capacity}</div></div>
-          <div><div class="text-text-3" style="font-size: 10px;">YEAR</div><div style="font-weight: 800;">${b.year || '—'}</div></div>
-          <div><div class="text-text-3" style="font-size: 10px;">SERVICE</div><div style="font-weight: 800; font-size: 11px;">${srFmtDate(b.lastService) || '—'}</div></div>
+          <div><div class="text-text-3" style="font-size: 10px;">ຄວາມຈຸ</div><div style="font-weight: 800;">${b.capacity}</div></div>
+          <div><div class="text-text-3" style="font-size: 10px;">ປີ</div><div style="font-weight: 800;">${b.year || '—'}</div></div>
+          <div><div class="text-text-3" style="font-size: 10px;">ບຳລຸງ</div><div style="font-weight: 800; font-size: 11px;">${srFmtDate(b.lastService) || '—'}</div></div>
         </div>
         ${b.notes ? `<div class="text-text-3" style="font-size: 11px; margin-top: 10px;"><i data-lucide="info" style="width:11px;height:11px; vertical-align: middle;"></i> ${srEscape(b.notes)}</div>` : ''}
         <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--sr-border); text-align: right;">
@@ -59,19 +59,19 @@ function render() {
   srIcons();
 }
 function fields() { return [
-  { key: 'id', label: 'Bus ID', type: 'text', required: true, placeholder: 'B-107' },
-  { key: 'plate', label: 'Plate', type: 'text', required: true, placeholder: 'ບກ-3000' },
-  { key: 'capacity', label: 'Capacity', type: 'number', required: true, default: 40 },
-  { key: 'year', label: 'Year', type: 'number', default: 2024 },
-  { key: 'lastService', label: 'Last service', type: 'date', default: '2026-04-15' },
-  { key: 'status', label: 'Status', type: 'select', default: 'active', options: [{value:'active',label:'Active'},{value:'idle',label:'Idle / spare'},{value:'maintenance',label:'In maintenance'}] },
-  { key: 'notes', label: 'Notes', type: 'textarea' }
+  { key: 'id', label: 'ລະຫັດລົດ', type: 'text', required: true, placeholder: 'B-107' },
+  { key: 'plate', label: 'ປ້າຍທະບຽນ', type: 'text', required: true, placeholder: 'ບກ-3000' },
+  { key: 'capacity', label: 'ຄວາມຈຸ', type: 'number', required: true, default: 40 },
+  { key: 'year', label: 'ປີ', type: 'number', default: 2024 },
+  { key: 'lastService', label: 'ບຳລຸງຫຼ້າສຸດ', type: 'date', default: '2026-04-15' },
+  { key: 'status', label: 'ສະຖານະ', type: 'select', default: 'active', options: [{value:'active',label:'Active'},{value:'idle',label:'Idle / spare'},{value:'maintenance',label:'In maintenance'}] },
+  { key: 'notes', label: 'ໝາຍເຫດ', type: 'textarea' }
 ];}
-document.getElementById('addBtn').addEventListener('click', () => srModal({ title: 'Add bus', fields: fields(),
-  onSave: data => { if (APP_DATA.byId.bus[data.id]) { alert('ID exists'); return false; } APP_DATA.buses.push(data); APP_DATA.byId.bus[data.id] = data; srToast('✓ Bus added'); render(); }}));
-window.edit = id => { const b = APP_DATA.byId.bus[id]; srModal({ title: 'Edit ' + id, fields: fields().map(f => f.key === 'id' ? { ...f, readonly: true } : f), values: b, onSave: data => { Object.assign(b, data); srToast('✓ Saved'); render(); } }); };
-window.del = id => srConfirm({ title: 'Delete bus?', message: 'Routes assigned to this bus will need reassignment.', danger: true,
-  onYes: () => { APP_DATA.buses = APP_DATA.buses.filter(x => x.id !== id); delete APP_DATA.byId.bus[id]; srToast('✓ Deleted'); render(); } });
+document.getElementById('addBtn').addEventListener('click', () => srModal({ title: 'ເພີ່ມລົດ', fields: fields(),
+  onSave: data => { if (APP_DATA.byId.bus[data.id]) { alert('ID exists'); return false; } APP_DATA.buses.push(data); APP_DATA.byId.bus[data.id] = data; srToast('✓ ເພີ່ມລົດແລ້ວ'); render(); }}));
+window.edit = id => { const b = APP_DATA.byId.bus[id]; srModal({ title: 'ແກ້ໄຂ ' + id, fields: fields().map(f => f.key === 'id' ? { ...f, readonly: true } : f), values: b, onSave: data => { Object.assign(b, data); srToast('✓ ບັນທຶກແລ້ວ'); render(); } }); };
+window.del = id => srConfirm({ title: 'Delete bus?', message: 'ເສັ້ນທາງທີ່ມອບໝາຍໃຫ້ລົດນີ້ຈະຕ້ອງມອບໃໝ່.', danger: true,
+  onYes: () => { APP_DATA.buses = APP_DATA.buses.filter(x => x.id !== id); delete APP_DATA.byId.bus[id]; srToast('✓ ລຶບແລ້ວ'); render(); } });
 render();
 </script>
 </body>

@@ -1,6 +1,6 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SafeRide — Billing</title>
+<html lang="lo"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phetaloun — Billing</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -13,17 +13,17 @@
     <div class="app-content">
       <div class="sr-page-head">
         <div>
-          <div class="sr-breadcrumb"><a href="index.html">Operator</a><i data-lucide="chevron-right"></i><span>Billing</span></div>
+          <div class="sr-breadcrumb"><a href="index.html">ຜູ້ດຳເນີນການ</a><i data-lucide="chevron-right"></i><span>ການເງິນ</span></div>
           <h1 class="sr-page-title">Billing & subscriptions</h1>
-          <p class="sr-page-sub">School subscriptions, monthly invoices, and revenue trends.</p>
+          <p class="sr-page-sub">ການສະໝັກໂຮງຮຽນ, ໃບແຈ້ງໜີ້ປະຈຳເດືອນ ແລະ ແນວໂນ້ມລາຍຮັບ.</p>
         </div>
       </div>
 
       <div class="sr-grid sr-cols-4" style="margin-bottom: 18px;">
-        <div class="sr-kpi"><div class="sr-kpi-icon green"><i data-lucide="trending-up"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">MRR</div><div class="sr-kpi-val" id="kpi-mrr">—</div><span class="sr-kpi-trend up"><i data-lucide="arrow-up"></i>+1.6%</span></div></div>
-        <div class="sr-kpi"><div class="sr-kpi-icon blue"><i data-lucide="package"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">Active subs</div><div class="sr-kpi-val" id="kpi-subs">—</div></div></div>
-        <div class="sr-kpi"><div class="sr-kpi-icon amber"><i data-lucide="receipt"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">Outstanding</div><div class="sr-kpi-val" id="kpi-out">—</div></div></div>
-        <div class="sr-kpi"><div class="sr-kpi-icon purple"><i data-lucide="users"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">Students billed</div><div class="sr-kpi-val" id="kpi-stu">—</div></div></div>
+        <div class="sr-kpi"><div class="sr-kpi-icon green"><i data-lucide="trending-up"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">ລາຍຮັບປະຈຳເດືອນ</div><div class="sr-kpi-val" id="kpi-mrr">—</div><span class="sr-kpi-trend up"><i data-lucide="arrow-up"></i>+1.6%</span></div></div>
+        <div class="sr-kpi"><div class="sr-kpi-icon blue"><i data-lucide="package"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">ການສະໝັກໃຊ້ງານ</div><div class="sr-kpi-val" id="kpi-subs">—</div></div></div>
+        <div class="sr-kpi"><div class="sr-kpi-icon amber"><i data-lucide="receipt"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">ຄ້າງຊຳລະ</div><div class="sr-kpi-val" id="kpi-out">—</div></div></div>
+        <div class="sr-kpi"><div class="sr-kpi-icon purple"><i data-lucide="users"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">ນັກຮຽນທີ່ຄິດໄລ່</div><div class="sr-kpi-val" id="kpi-stu">—</div></div></div>
       </div>
 
       <div class="sr-grid sr-cols-12" style="margin-bottom: 18px;">
@@ -32,15 +32,15 @@
           <div style="position: relative; height: 260px;"><canvas id="rev"></canvas></div>
         </div>
         <div class="sr-card" style="grid-column: span 4;">
-          <div class="sr-card-head"><h3 class="sr-card-title">School subscriptions</h3></div>
+          <div class="sr-card-head"><h3 class="sr-card-title">ການສະໝັກໂຮງຮຽນ</h3></div>
           <div id="subList"></div>
         </div>
       </div>
 
       <div class="sr-card">
-        <div class="sr-card-head"><h3 class="sr-card-title">Recent invoices</h3></div>
+        <div class="sr-card-head"><h3 class="sr-card-title">ໃບແຈ້ງໜີ້ລ່າສຸດ</h3></div>
         <div style="margin: 0 -20px -20px;"><table class="sr-table">
-          <thead><tr><th>Invoice</th><th>School</th><th>Period</th><th>Amount</th><th>Due</th><th>Status</th><th></th></tr></thead>
+          <thead><tr><th>ໃບແຈ້ງໜີ້</th><th>ໂຮງຮຽນ</th><th>ໄລຍະ</th><th>ຈຳນວນ</th><th>ກຳນົດ</th><th>ສະຖານະ</th><th></th></tr></thead>
           <tbody id="invRows"></tbody>
         </table></div>
       </div>

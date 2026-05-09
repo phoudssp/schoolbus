@@ -1,6 +1,6 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SafeRide — Driver Tablet</title>
+<html lang="lo"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phetaloun — Driver Tablet</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <link rel="stylesheet" href="../shared/style.css">
@@ -22,9 +22,9 @@
 </head><body>
 
 <div style="display:flex; align-items: center; gap: 12px; color: white;">
-  <a href="../index.html" style="color: white; text-decoration: none; font-size: 13px;"><i data-lucide="arrow-left" style="vertical-align:middle; width: 16px; height: 16px;"></i> Back</a>
+  <a href="../index.html" style="color: white; text-decoration: none; font-size: 13px;"><i data-lucide="arrow-left" style="vertical-align:middle; width: 16px; height: 16px;"></i> ກັບຄືນ</a>
   <span style="opacity:0.4;">·</span>
-  <span style="font-size: 13px; opacity: 0.7;">Driver tablet — Bus B-101</span>
+  <span style="font-size: 13px; opacity: 0.7;">ແທັບເລັດຄົນຂັບ — ລົດ B-101</span>
 </div>
 
 <div class="sr-tablet-frame">
@@ -53,22 +53,22 @@
       <!-- LEFT: stop timeline -->
       <aside style="border-right: 1px solid var(--sr-border); padding: 16px; overflow-y: auto; background: white;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-          <strong style="font-size: 14px;">Stops</strong>
+          <strong style="font-size: 14px;">ປ້າຍຈອດ</strong>
           <span class="text-text-3" style="font-size: 12px;" id="stopProgress">3/5</span>
         </div>
         <div id="stopsTimeline" style="display: flex; flex-direction: column; gap: 4px;"></div>
 
         <div style="margin-top: 16px; padding: 12px; background: var(--sr-bg); border-radius: 10px; font-size: 12px;">
           <div style="display: flex; justify-content: space-between; padding: 4px 0;">
-            <span class="text-text-3">On board</span>
+            <span class="text-text-3">ຢູ່ໃນລົດ</span>
             <strong id="onBoard">7</strong>
           </div>
           <div style="display: flex; justify-content: space-between; padding: 4px 0;">
-            <span class="text-text-3">Expected total</span>
+            <span class="text-text-3">ຄາດໝາຍທັງໝົດ</span>
             <strong id="expectedTotal">8</strong>
           </div>
           <div style="display: flex; justify-content: space-between; padding: 4px 0;">
-            <span class="text-text-3">ETA next stop</span>
+            <span class="text-text-3">ເວລາມາຮອດປ້າຍຕໍ່ໄປ</span>
             <strong id="etaText">3 min</strong>
           </div>
         </div>
@@ -79,28 +79,28 @@
         <div style="background: #FFFBEA; padding: 14px 22px; border-bottom: 1px solid #FFE45A;">
           <div style="display: flex; align-items: end; justify-content: space-between;">
             <div>
-              <div style="font-size: 11px; font-weight: 800; color: #92400E; text-transform: uppercase; letter-spacing: 0.06em;">Next stop</div>
+              <div style="font-size: 11px; font-weight: 800; color: #92400E; text-transform: uppercase; letter-spacing: 0.06em;">ປ້າຍຈອດຕໍ່ໄປ</div>
               <div style="font-size: 22px; font-weight: 800; color: var(--sr-navy);" id="currentStopName">Mekong Port</div>
               <div style="font-size: 12px; color: var(--sr-text-2);" id="currentStopMeta">07:08 · 1 expected</div>
             </div>
-            <div style="text-align: right;"><div style="font-size: 28px; font-weight: 900; color: var(--sr-navy);" id="stopScanCount">0/1</div><div style="font-size: 10px; color: var(--sr-text-3); text-transform: uppercase;">scanned</div></div>
+            <div style="text-align: right;"><div style="font-size: 28px; font-weight: 900; color: var(--sr-navy);" id="stopScanCount">0/1</div><div style="font-size: 10px; color: var(--sr-text-3); text-transform: uppercase;">ສະແກນແລ້ວ</div></div>
           </div>
         </div>
 
         <div style="flex: 1; padding: 16px 22px; overflow-y: auto;">
-          <div style="font-size: 11px; font-weight: 700; color: var(--sr-text-3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px;">Stop manifest</div>
+          <div style="font-size: 11px; font-weight: 700; color: var(--sr-text-3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px;">ລາຍຊື່ນັກຮຽນປ້າຍຈອດ</div>
           <div id="manifest" style="display: flex; flex-direction: column; gap: 6px;"></div>
         </div>
 
         <!-- Scan buttons -->
         <div style="padding: 14px 22px; background: white; border-top: 1px solid var(--sr-border);">
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-            <button id="qrBtn" class="scan-btn scan-qr"><i data-lucide="scan-line"></i><span>QR scan</span></button>
-            <button id="nfcBtn" class="scan-btn scan-nfc"><i data-lucide="nfc"></i><span>NFC tap</span></button>
+            <button id="qrBtn" class="scan-btn scan-qr"><i data-lucide="scan-line"></i><span>ສະແກນ QR</span></button>
+            <button id="nfcBtn" class="scan-btn scan-nfc"><i data-lucide="nfc"></i><span>ແຕະ NFC</span></button>
           </div>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px;">
-            <button id="manualBtn" class="sr-btn sr-btn-ghost"><i data-lucide="user-plus"></i>Manual board (forgot card)</button>
-            <button id="nextStopBtn" class="sr-btn sr-btn-primary" disabled><i data-lucide="check"></i>Mark stop done · next</button>
+            <button id="manualBtn" class="sr-btn sr-btn-ghost"><i data-lucide="user-plus"></i>ຂຶ້ນລົດແບບກຳມື (ລືມບັດ)</button>
+            <button id="nextStopBtn" class="sr-btn sr-btn-primary" disabled><i data-lucide="check"></i>ສຳເລັດປ້າຍ · ຕໍ່ໄປ</button>
           </div>
         </div>
 
@@ -125,12 +125,12 @@
   <div class="sr-modal" style="max-width: 420px;">
     <div class="sr-modal-body" style="text-align: center;">
       <div style="font-size: 48px; margin-bottom: 12px;">🚌</div>
-      <h3 style="margin: 0 0 6px; font-size: 18px; font-weight: 800;">Walk the bus</h3>
-      <p style="margin: 0; font-size: 13px; color: var(--sr-text-3);">I confirm I have walked through the bus. No children remain on board.</p>
+      <h3 style="margin: 0 0 6px; font-size: 18px; font-weight: 800;">ກວດກາພາຍໃນລົດ</h3>
+      <p style="margin: 0; font-size: 13px; color: var(--sr-text-3);">ຂ້ອຍຢືນຢັນວ່າໄດ້ກວດເບິ່ງລົດແລ້ວ. ບໍ່ມີນັກຮຽນຄ້າງຢູ່ໃນລົດ.</p>
     </div>
     <div class="sr-modal-foot">
-      <button class="sr-btn sr-btn-ghost" data-close>Cancel</button>
-      <button class="sr-btn sr-btn-success" id="walkConfirm"><i data-lucide="check"></i>Complete run</button>
+      <button class="sr-btn sr-btn-ghost" data-close>ຍົກເລີກ</button>
+      <button class="sr-btn sr-btn-success" id="walkConfirm"><i data-lucide="check"></i>ສຳເລັດເສັ້ນທາງ</button>
     </div>
   </div>
 </div>
@@ -190,7 +190,7 @@ function renderStop() {
       <div style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: white; border: 1px solid var(--sr-border); border-radius: 10px; ${done ? 'opacity: 0.55;' : ''}">
         <div class="sr-avatar" style="background:${sch.color}22; color:${sch.color};">${srInitials(stu.name)}</div>
         <div style="flex: 1;"><div style="font-weight: 700; font-size: 13px;">${srEscape(stu.name)}</div><div class="text-text-3" style="font-size: 11px;">${srEscape(stu.grade)} · ${srEscape(sch.shortName)}</div></div>
-        ${done ? '<i data-lucide="check-circle-2" style="color: var(--sr-green); width: 22px; height: 22px;"></i>' : '<span class="sr-pill neutral">Expected</span>'}
+        ${done ? '<i data-lucide="check-circle-2" style="color: var(--sr-green); width: 22px; height: 22px;"></i>' : '<span class="sr-pill neutral">ຄາດໝາຍ</span>'}
       </div>
     `;
   }).join('');

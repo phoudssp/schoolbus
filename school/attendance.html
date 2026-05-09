@@ -1,6 +1,6 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SafeRide School — Attendance</title>
+<html lang="lo"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phetaloun School — Attendance</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <link rel="stylesheet" href="../shared/style.css">
@@ -11,9 +11,9 @@
     <header class="sr-topbar"></header>
     <div class="app-content">
       <div class="sr-page-head"><div>
-        <div class="sr-breadcrumb"><a href="index.html">School</a><i data-lucide="chevron-right"></i><span>Attendance</span></div>
+        <div class="sr-breadcrumb"><a href="index.html">ໂຮງຮຽນ</a><i data-lucide="chevron-right"></i><span>ການເຂົ້າຮຽນ</span></div>
         <h1 class="sr-page-title">Attendance & absences</h1>
-        <p class="sr-page-sub">Today's bus check-ins and parent-requested absences awaiting your approval.</p>
+        <p class="sr-page-sub">ການເຂົ້າຮຽນຜ່ານລົດມື້ນີ້ ແລະ ການຂາດຮຽນທີ່ຜູ້ປົກຄອງຮ້ອງຂໍ.</p>
       </div></div>
 
       <div class="sr-tab-pills" style="display: inline-flex; margin-bottom: 18px;">
@@ -23,19 +23,19 @@
 
       <div id="pane-today">
         <div class="sr-grid sr-cols-3" style="margin-bottom: 18px;">
-          <div class="sr-kpi"><div class="sr-kpi-icon green"><i data-lucide="user-check"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">Present (bus)</div><div class="sr-kpi-val" id="k-pres">—</div></div></div>
-          <div class="sr-kpi"><div class="sr-kpi-icon amber"><i data-lucide="hourglass"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">Pending</div><div class="sr-kpi-val" id="k-pend">—</div></div></div>
-          <div class="sr-kpi"><div class="sr-kpi-icon rose"><i data-lucide="calendar-x"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">Absent (approved)</div><div class="sr-kpi-val" id="k-abs">—</div></div></div>
+          <div class="sr-kpi"><div class="sr-kpi-icon green"><i data-lucide="user-check"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">ມາ (ລົດ)</div><div class="sr-kpi-val" id="k-pres">—</div></div></div>
+          <div class="sr-kpi"><div class="sr-kpi-icon amber"><i data-lucide="hourglass"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">ກຳລັງລໍ</div><div class="sr-kpi-val" id="k-pend">—</div></div></div>
+          <div class="sr-kpi"><div class="sr-kpi-icon rose"><i data-lucide="calendar-x"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">ຂາດ (ອະນຸມັດແລ້ວ)</div><div class="sr-kpi-val" id="k-abs">—</div></div></div>
         </div>
         <div class="sr-table-wrap"><table class="sr-table">
-          <thead><tr><th>Student</th><th>Grade</th><th>Bus</th><th>Boarded</th><th>Status</th></tr></thead>
+          <thead><tr><th>ນັກຮຽນ</th><th>ລະດັບ</th><th>ລົດ</th><th>ຂຶ້ນລົດ</th><th>ສະຖານະ</th></tr></thead>
           <tbody id="rowsToday"></tbody>
         </table></div>
       </div>
 
       <div id="pane-absences" style="display: none;">
         <div class="sr-table-wrap"><table class="sr-table">
-          <thead><tr><th>Student</th><th>Date</th><th>Reason</th><th>Requested by</th><th>Status</th><th></th></tr></thead>
+          <thead><tr><th>ນັກຮຽນ</th><th>ວັນທີ</th><th>ເຫດຜົນ</th><th>Requested by</th><th>ສະຖານະ</th><th></th></tr></thead>
           <tbody id="rowsAbs"></tbody>
         </table></div>
       </div>
@@ -76,7 +76,7 @@ function renderToday() {
     const busId = findBus(s.id);
     if (e) { pres++; return `<tr><td>${student(s)}</td><td>${srEscape(s.grade)}</td><td><strong>${e.busId}</strong></td><td>${srFmtTime(e.timestamp)}</td><td><span class="sr-pill success"><span class="dot"></span>Present</span></td></tr>`; }
     pend++;
-    return `<tr><td>${student(s)}</td><td>${srEscape(s.grade)}</td><td>${busId || '—'}</td><td>—</td><td><span class="sr-pill warn"><span class="dot"></span>Pending</span></td></tr>`;
+    return `<tr><td>${student(s)}</td><td>${srEscape(s.grade)}</td><td>${busId || '—'}</td><td>—</td><td><span class="sr-pill warn"><span class="dot"></span>ກຳລັງລໍ</span></td></tr>`;
   }).join('');
   document.getElementById('rowsToday').innerHTML = rows;
   document.getElementById('k-pres').textContent = pres;
@@ -108,8 +108,8 @@ function renderAbs() {
         <td><span class="sr-pill ${cls}"><span class="dot"></span>${a.status}</span></td>
         <td style="text-align:right;">
           ${a.status === 'requested' ? `
-            <button class="sr-btn sr-btn-sm sr-btn-success" onclick="approve('${a.id}')"><i data-lucide="check"></i>Approve</button>
-            <button class="sr-btn sr-btn-sm sr-btn-ghost" onclick="deny('${a.id}')"><i data-lucide="x"></i>Deny</button>` : '—'}
+            <button class="sr-btn sr-btn-sm sr-btn-success" onclick="approve('${a.id}')"><i data-lucide="check"></i>ອະນຸມັດ</button>
+            <button class="sr-btn sr-btn-sm sr-btn-ghost" onclick="deny('${a.id}')"><i data-lucide="x"></i>ປະຕິເສດ</button>` : '—'}
         </td>
       </tr>
     `;
@@ -117,8 +117,8 @@ function renderAbs() {
   document.getElementById('absBadge').textContent = myAbsences.filter(a => a.status === 'requested').length;
   srIcons();
 }
-window.approve = id => { APP_DATA.byId.absence[id].status = 'approved'; srToast('✓ Absence approved'); renderAbs(); renderToday(); };
-window.deny    = id => { APP_DATA.byId.absence[id].status = 'denied';   srToast('✗ Absence denied');   renderAbs(); };
+window.approve = id => { APP_DATA.byId.absence[id].status = 'approved'; srToast('✓ ອະນຸມັດການຂາດຮຽນແລ້ວ'); renderAbs(); renderToday(); };
+window.deny    = id => { APP_DATA.byId.absence[id].status = 'denied';   srToast('✗ ປະຕິເສດການຂາດຮຽນ');   renderAbs(); };
 
 renderToday();
 renderAbs();

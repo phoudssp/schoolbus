@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="lo">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SafeRide — Schools</title>
+  <title>Phetaloun — Schools</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
   <link rel="stylesheet" href="../shared/style.css">
@@ -17,11 +17,11 @@
 
       <div class="sr-page-head">
         <div>
-          <div class="sr-breadcrumb"><a href="index.html">Operator</a><i data-lucide="chevron-right"></i><span>Schools</span></div>
-          <h1 class="sr-page-title">Schools</h1>
-          <p class="sr-page-sub">Schools that subscribe to SafeRide. Manage their addresses, bell times, and contact info.</p>
+          <div class="sr-breadcrumb"><a href="index.html">ຜູ້ດຳເນີນການ</a><i data-lucide="chevron-right"></i><span>ໂຮງຮຽນ</span></div>
+          <h1 class="sr-page-title">ໂຮງຮຽນ</h1>
+          <p class="sr-page-sub">ໂຮງຮຽນທີ່ສະໝັກໃຊ້ Phetaloun. ຈັດການທີ່ຢູ່, ເວລາກິ່ງ ແລະ ການຕິດຕໍ່.</p>
         </div>
-        <button id="addBtn" class="sr-btn sr-btn-primary"><i data-lucide="plus"></i>Add school</button>
+        <button id="addBtn" class="sr-btn sr-btn-primary"><i data-lucide="plus"></i>ເພີ່ມໂຮງຮຽນ</button>
       </div>
 
       <div class="sr-grid sr-cols-3" id="cards"></div>
@@ -52,7 +52,7 @@ function render() {
             <span class="sr-pill ${s.status === 'active' ? 'success' : 'neutral'}"><span class="dot"></span>${s.status}</span>
           </div>
           <div class="sr-grid" style="grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 14px; padding: 12px; background: var(--sr-bg); border-radius: 8px;">
-            <div><div class="text-text-3" style="font-size: 10px; text-transform: uppercase;">Students</div><div style="font-weight: 800;">${s.students}</div></div>
+            <div><div class="text-text-3" style="font-size: 10px; text-transform: uppercase;">ນັກຮຽນ</div><div style="font-weight: 800;">${s.students}</div></div>
             <div><div class="text-text-3" style="font-size: 10px; text-transform: uppercase;">Bell AM</div><div style="font-weight: 800;">${s.bellAm}</div></div>
             <div><div class="text-text-3" style="font-size: 10px; text-transform: uppercase;">Bell PM</div><div style="font-weight: 800;">${s.bellPm}</div></div>
           </div>
@@ -72,34 +72,34 @@ function render() {
 
 function fields() {
   return [
-    { key: 'name', label: 'School name', type: 'text', required: true, placeholder: 'Houayxay International School' },
-    { key: 'nameLo', label: 'Lao name', type: 'text', placeholder: 'ໂຮງຮຽນສາກົນຫ້ວຍຊາຍ' },
-    { key: 'shortName', label: 'Short name', type: 'text', required: true, placeholder: 'HIS' },
-    { key: 'address', label: 'Address', type: 'text', required: true },
-    { key: 'bellAm', label: 'AM bell', type: 'time', required: true, default: '07:30' },
-    { key: 'bellPm', label: 'PM bell', type: 'time', required: true, default: '14:30' },
-    { key: 'students', label: 'Number of students', type: 'number', required: true, default: 100 },
-    { key: 'color', label: 'Map color', type: 'color', default: '#2563EB' },
-    { key: 'status', label: 'Status', type: 'select', default: 'active', options: ['active', 'inactive'] }
+    { key: 'name', label: 'ຊື່ໂຮງຮຽນ', type: 'text', required: true, placeholder: 'ໂຮງຮຽນສາກົນຫ້ວຍຊາຍ' },
+    { key: 'nameLo', label: 'ຊື່ລາວ', type: 'text', placeholder: 'ໂຮງຮຽນສາກົນຫ້ວຍຊາຍ' },
+    { key: 'shortName', label: 'ຊື່ຫຍໍ້', type: 'text', required: true, placeholder: 'HIS' },
+    { key: 'address', label: 'ທີ່ຢູ່', type: 'text', required: true },
+    { key: 'bellAm', label: 'ກິ່ງເຊົ້າ', type: 'time', required: true, default: '07:30' },
+    { key: 'bellPm', label: 'ກິ່ງບ່າຍ', type: 'time', required: true, default: '14:30' },
+    { key: 'students', label: 'ຈຳນວນນັກຮຽນ', type: 'number', required: true, default: 100 },
+    { key: 'color', label: 'ສີໃນແຜນທີ່', type: 'color', default: '#2563EB' },
+    { key: 'status', label: 'ສະຖານະ', type: 'select', default: 'active', options: ['active', 'inactive'] }
   ];
 }
 document.getElementById('addBtn').addEventListener('click', () => srModal({
-  title: 'Add school', fields: fields(),
+  title: 'ເພີ່ມໂຮງຮຽນ', fields: fields(),
   onSave: data => {
     const id = (data.shortName || 'sch').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 4);
     const newS = { id, ...data, coords: APP_DATA.operator.center };
     APP_DATA.schools.push(newS);
     APP_DATA.byId.school[id] = newS;
-    srToast('✓ School added'); render();
+    srToast('✓ ເພີ່ມໂຮງຮຽນແລ້ວ'); render();
   }
 }));
 window.edit = id => {
   const s = APP_DATA.byId.school[id];
-  srModal({ title: 'Edit ' + s.name, fields: fields(), values: s,
-    onSave: data => { Object.assign(s, data); srToast('✓ Saved'); render(); } });
+  srModal({ title: 'ແກ້ໄຂ ' + s.name, fields: fields(), values: s,
+    onSave: data => { Object.assign(s, data); srToast('✓ ບັນທຶກແລ້ວ'); render(); } });
 };
-window.del = id => srConfirm({ title: 'Delete school?', message: 'Linked students and routes will be unaffected but show "removed school".', danger: true,
-  onYes: () => { APP_DATA.schools = APP_DATA.schools.filter(x => x.id !== id); delete APP_DATA.byId.school[id]; srToast('✓ Deleted'); render(); } });
+window.del = id => srConfirm({ title: 'Delete school?', message: 'ນັກຮຽນ ແລະ ເສັ້ນທາງທີ່ຜູກໄວ້ຈະບໍ່ໄດ້ຮັບຜົນກະທົບ.', danger: true,
+  onYes: () => { APP_DATA.schools = APP_DATA.schools.filter(x => x.id !== id); delete APP_DATA.byId.school[id]; srToast('✓ ລຶບແລ້ວ'); render(); } });
 
 render();
 </script>

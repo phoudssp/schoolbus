@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="lo">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SafeRide — Operator Dashboard</title>
+  <title>Phetaloun — Operator Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -24,16 +24,16 @@
         <div>
           <div class="sr-breadcrumb">
             <i data-lucide="layout-dashboard"></i>
-            <span>Operator</span>
+            <span>ຜູ້ດຳເນີນການ</span>
             <i data-lucide="chevron-right"></i>
-            <span>Dashboard</span>
+            <span>ໜ້າຄວບຄຸມ</span>
           </div>
-          <h1 class="sr-page-title">Welcome back, Souvanh 👋</h1>
-          <p class="sr-page-sub">Saturday, May 9 · Houayxay, Bokeo · Operations are running smoothly.</p>
+          <h1 class="sr-page-title">ຍິນດີຕ້ອນຮັບ Souvanh 👋</h1>
+          <p class="sr-page-sub">ວັນເສົາ 9 ພຶດສະພາ · ຫ້ວຍຊາຍ, ບໍ່ແກ້ວ · ການດຳເນີນງານກຳລັງເປັນໄປຢ່າງລາບລື່ນ.</p>
         </div>
         <div style="display: flex; gap: 8px;">
-          <button class="sr-btn sr-btn-ghost"><i data-lucide="download"></i>Export</button>
-          <a href="monitoring.html" class="sr-btn sr-btn-primary"><i data-lucide="radar"></i>Open Live Monitor</a>
+          <button class="sr-btn sr-btn-ghost"><i data-lucide="download"></i>ສົ່ງອອກ</button>
+          <a href="monitoring.html" class="sr-btn sr-btn-primary"><i data-lucide="radar"></i>ເປີດການຕິດຕາມສົດ</a>
         </div>
       </div>
 
@@ -42,33 +42,33 @@
         <div class="sr-kpi">
           <div class="sr-kpi-icon blue"><i data-lucide="users"></i></div>
           <div class="sr-kpi-body">
-            <div class="sr-kpi-label">Active students</div>
+            <div class="sr-kpi-label">ນັກຮຽນທີ່ໃຊ້ງານ</div>
             <div class="sr-kpi-val" id="kpi-students">—</div>
-            <span class="sr-kpi-trend up"><i data-lucide="trending-up"></i>+4.2% this month</span>
+            <span class="sr-kpi-trend up"><i data-lucide="trending-up"></i>+4.2% ເດືອນນີ້</span>
           </div>
         </div>
         <div class="sr-kpi">
           <div class="sr-kpi-icon yellow"><i data-lucide="bus"></i></div>
           <div class="sr-kpi-body">
-            <div class="sr-kpi-label">Active buses</div>
+            <div class="sr-kpi-label">ລົດທີ່ໃຊ້ງານ</div>
             <div class="sr-kpi-val" id="kpi-buses">—</div>
-            <span class="sr-kpi-trend flat"><i data-lucide="minus"></i>1 in maintenance</span>
+            <span class="sr-kpi-trend flat"><i data-lucide="minus"></i>1 ກຳລັງບຳລຸງ</span>
           </div>
         </div>
         <div class="sr-kpi">
           <div class="sr-kpi-icon green"><i data-lucide="clock-check"></i></div>
           <div class="sr-kpi-body">
-            <div class="sr-kpi-label">On-time rate</div>
+            <div class="sr-kpi-label">ອັດຕາມາຕາມເວລາ</div>
             <div class="sr-kpi-val">96%</div>
-            <span class="sr-kpi-trend up"><i data-lucide="trending-up"></i>+1.5% vs last week</span>
+            <span class="sr-kpi-trend up"><i data-lucide="trending-up"></i>+1.5% ທຽບກັບອາທິດແລ້ວ</span>
           </div>
         </div>
         <div class="sr-kpi">
           <div class="sr-kpi-icon purple"><i data-lucide="wallet"></i></div>
           <div class="sr-kpi-body">
-            <div class="sr-kpi-label">Monthly revenue</div>
+            <div class="sr-kpi-label">ລາຍຮັບປະຈຳເດືອນ</div>
             <div class="sr-kpi-val" id="kpi-mrr">—</div>
-            <span class="sr-kpi-trend up"><i data-lucide="trending-up"></i>+1.6% vs last month</span>
+            <span class="sr-kpi-trend up"><i data-lucide="trending-up"></i>+1.6% ທຽບກັບເດືອນແລ້ວ</span>
           </div>
         </div>
       </div>
@@ -79,8 +79,8 @@
         <div class="sr-card" style="grid-column: span 8;">
           <div class="sr-card-head">
             <div>
-              <h3 class="sr-card-title">Live fleet</h3>
-              <p class="text-text-3" style="font-size: 12px; margin: 2px 0 0;"><span class="sr-live-dot" style="display:inline-block; vertical-align:middle; margin-right:6px;"></span>Real-time bus positions across Bokeo</p>
+              <h3 class="sr-card-title">ກອງລົດສົດ</h3>
+              <p class="text-text-3" style="font-size: 12px; margin: 2px 0 0;"><span class="sr-live-dot" style="display:inline-block; vertical-align:middle; margin-right:6px;"></span>ຕຳແໜ່ງລົດສົດໆທົ່ວແຂວງບໍ່ແກ້ວ</p>
             </div>
             <a href="monitoring.html" class="sr-btn sr-btn-sm sr-btn-ghost">View all <i data-lucide="arrow-up-right"></i></a>
           </div>
@@ -90,7 +90,7 @@
         <!-- Recent alerts -->
         <div class="sr-card" style="grid-column: span 4;">
           <div class="sr-card-head">
-            <h3 class="sr-card-title">Recent alerts</h3>
+            <h3 class="sr-card-title">ການແຈ້ງເຕືອນລ່າສຸດ</h3>
             <span class="sr-pill warn"><i data-lucide="alert-triangle" style="width:11px;height:11px;"></i> 2 active</span>
           </div>
           <div id="alertsList"></div>
@@ -103,8 +103,8 @@
         <div class="sr-card" style="grid-column: span 8;">
           <div class="sr-card-head">
             <div>
-              <h3 class="sr-card-title">Daily ridership</h3>
-              <p class="text-text-3" style="font-size: 12px; margin: 2px 0 0;">Boarded vs exited — last 7 days</p>
+              <h3 class="sr-card-title">ການຂຶ້ນລົດປະຈຳວັນ</h3>
+              <p class="text-text-3" style="font-size: 12px; margin: 2px 0 0;">ຂຶ້ນລົດ ທຽບກັບ ລົງລົດ — 7 ມື້ຫຼ້າສຸດ</p>
             </div>
             <div class="sr-tab-pills">
               <button class="sr-tab-pill active">Week</button>
@@ -119,18 +119,18 @@
         <!-- Quick actions -->
         <div class="sr-card" style="grid-column: span 4;">
           <div class="sr-card-head">
-            <h3 class="sr-card-title">Quick actions</h3>
+            <h3 class="sr-card-title">ການກະທຳດ່ວນ</h3>
           </div>
           <div style="display: flex; flex-direction: column; gap: 8px;">
-            <a href="students.html" class="sr-btn sr-btn-ghost" style="justify-content: flex-start;"><i data-lucide="user-plus"></i>Register student</a>
-            <a href="parents.html" class="sr-btn sr-btn-ghost" style="justify-content: flex-start;"><i data-lucide="mail-plus"></i>Invite parent</a>
-            <a href="routes.html" class="sr-btn sr-btn-ghost" style="justify-content: flex-start;"><i data-lucide="route"></i>Plan a new route</a>
-            <a href="schools.html" class="sr-btn sr-btn-ghost" style="justify-content: flex-start;"><i data-lucide="building-2"></i>Add school customer</a>
-            <a href="users.html" class="sr-btn sr-btn-ghost" style="justify-content: flex-start;"><i data-lucide="user-cog"></i>Add admin user</a>
+            <a href="students.html" class="sr-btn sr-btn-ghost" style="justify-content: flex-start;"><i data-lucide="user-plus"></i>ລົງທະບຽນນັກຮຽນ</a>
+            <a href="parents.html" class="sr-btn sr-btn-ghost" style="justify-content: flex-start;"><i data-lucide="mail-plus"></i>ເຊີນຜູ້ປົກຄອງ</a>
+            <a href="routes.html" class="sr-btn sr-btn-ghost" style="justify-content: flex-start;"><i data-lucide="route"></i>ວາງແຜນເສັ້ນທາງໃໝ່</a>
+            <a href="schools.html" class="sr-btn sr-btn-ghost" style="justify-content: flex-start;"><i data-lucide="building-2"></i>ເພີ່ມໂຮງຮຽນລູກຄ້າ</a>
+            <a href="users.html" class="sr-btn sr-btn-ghost" style="justify-content: flex-start;"><i data-lucide="user-cog"></i>ເພີ່ມຜູ້ໃຊ້ລະບົບ</a>
           </div>
           <div class="sr-divider"></div>
           <div>
-            <div class="text-text-3" style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Today's schedule</div>
+            <div class="text-text-3" style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">ຕາຕະລາງມື້ນີ້</div>
             <div id="scheduleList" style="display: flex; flex-direction: column; gap: 6px;"></div>
           </div>
         </div>
@@ -140,18 +140,18 @@
       <div class="sr-card">
         <div class="sr-card-head">
           <div>
-            <h3 class="sr-card-title">Latest events</h3>
-            <p class="text-text-3" style="font-size: 12px; margin: 2px 0 0;">Boarding, alighting, and absences across the fleet</p>
+            <h3 class="sr-card-title">ເຫດການລ່າສຸດ</h3>
+            <p class="text-text-3" style="font-size: 12px; margin: 2px 0 0;">ການຂຶ້ນ, ລົງລົດ ແລະ ການຂາດຮຽນທົ່ວກອງລົດ</p>
           </div>
-          <a href="reports.html" class="sr-btn sr-btn-sm sr-btn-ghost">All events <i data-lucide="arrow-up-right"></i></a>
+          <a href="reports.html" class="sr-btn sr-btn-sm sr-btn-ghost">ເຫດການທັງໝົດ <i data-lucide="arrow-up-right"></i></a>
         </div>
         <div style="margin: 0 -20px -20px;">
           <table class="sr-table">
             <thead>
               <tr>
-                <th>Student</th>
+                <th>ນັກຮຽນ</th>
                 <th>Event</th>
-                <th>Bus</th>
+                <th>ລົດ</th>
                 <th>Stop</th>
                 <th>Time</th>
                 <th></th>

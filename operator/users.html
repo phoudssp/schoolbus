@@ -1,6 +1,6 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SafeRide — Admin Users</title>
+<html lang="lo"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phetaloun — Admin Users</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <link rel="stylesheet" href="../shared/style.css">
@@ -12,22 +12,22 @@
     <div class="app-content">
       <div class="sr-page-head">
         <div>
-          <div class="sr-breadcrumb"><a href="index.html">Operator</a><i data-lucide="chevron-right"></i><span>Admin Users</span></div>
+          <div class="sr-breadcrumb"><a href="index.html">ຜູ້ດຳເນີນການ</a><i data-lucide="chevron-right"></i><span>ຜູ້ໃຊ້ລະບົບ</span></div>
           <h1 class="sr-page-title">Admin user management</h1>
-          <p class="sr-page-sub">Staff accounts with role-based access. Super Admins, Admins, Dispatchers, and School Admins.</p>
+          <p class="sr-page-sub">ບັນຊີພະນັກງານ ທີ່ມີສິດແຍກຕາມບົດບາດ. ຜູ້ດູແລສູງສຸດ, ຜູ້ດູແລ, ຜູ້ຄວບຄຸມ ແລະ ຜູ້ດູແລໂຮງຮຽນ.</p>
         </div>
-        <button id="addBtn" class="sr-btn sr-btn-primary"><i data-lucide="user-plus"></i>Add user</button>
+        <button id="addBtn" class="sr-btn sr-btn-primary"><i data-lucide="user-plus"></i>ເພີ່ມຜູ້ໃຊ້</button>
       </div>
 
       <div class="sr-grid sr-cols-4" style="margin-bottom: 18px;">
-        <div class="sr-kpi"><div class="sr-kpi-icon yellow"><i data-lucide="crown"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">Super Admins</div><div class="sr-kpi-val" id="cnt-super">—</div></div></div>
-        <div class="sr-kpi"><div class="sr-kpi-icon blue"><i data-lucide="shield"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">Admins</div><div class="sr-kpi-val" id="cnt-admin">—</div></div></div>
-        <div class="sr-kpi"><div class="sr-kpi-icon green"><i data-lucide="radar"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">Dispatchers</div><div class="sr-kpi-val" id="cnt-dispatch">—</div></div></div>
-        <div class="sr-kpi"><div class="sr-kpi-icon purple"><i data-lucide="school"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">School Admins</div><div class="sr-kpi-val" id="cnt-school">—</div></div></div>
+        <div class="sr-kpi"><div class="sr-kpi-icon yellow"><i data-lucide="crown"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">ຜູ້ດູແລສູງສຸດ</div><div class="sr-kpi-val" id="cnt-super">—</div></div></div>
+        <div class="sr-kpi"><div class="sr-kpi-icon blue"><i data-lucide="shield"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">ຜູ້ດູແລ</div><div class="sr-kpi-val" id="cnt-admin">—</div></div></div>
+        <div class="sr-kpi"><div class="sr-kpi-icon green"><i data-lucide="radar"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">ຜູ້ຄວບຄຸມ</div><div class="sr-kpi-val" id="cnt-dispatch">—</div></div></div>
+        <div class="sr-kpi"><div class="sr-kpi-icon purple"><i data-lucide="school"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">ຜູ້ດູແລໂຮງຮຽນ</div><div class="sr-kpi-val" id="cnt-school">—</div></div></div>
       </div>
 
       <div class="sr-table-wrap"><table class="sr-table">
-        <thead><tr><th>User</th><th>Role</th><th>Email</th><th>Scope</th><th>Status</th><th>Last login</th><th></th></tr></thead>
+        <thead><tr><th>User</th><th>ບົດບາດ</th><th>ອີເມລ</th><th>Scope</th><th>ສະຖານະ</th><th>ເຂົ້າຊົມລ່າສຸດ</th><th></th></tr></thead>
         <tbody id="rows"></tbody>
       </table></div>
     </div>
@@ -79,21 +79,21 @@ function render() {
   srIcons();
 }
 function fields() { return [
-  { key: 'name', label: 'Full name', type: 'text', required: true },
-  { key: 'email', label: 'Email', type: 'email', required: true },
-  { key: 'role', label: 'Role', type: 'select', required: true, default: 'admin', options: [
-    { value: 'super_admin', label: 'Super Admin (full access)' },
-    { value: 'admin',       label: 'Admin (operator-wide CRUD)' },
-    { value: 'dispatcher',  label: 'Dispatcher (live ops only)' },
-    { value: 'school_admin',label: 'School Admin (one school)' }
+  { key: 'name', label: 'ຊື່ເຕັມ', type: 'text', required: true },
+  { key: 'email', label: 'ອີເມລ', type: 'email', required: true },
+  { key: 'role', label: 'ບົດບາດ', type: 'select', required: true, default: 'admin', options: [
+    { value: 'super_admin', label: 'ຜູ້ດູແລສູງສຸດ (ສິດເຕັມ)' },
+    { value: 'admin',       label: 'ຜູ້ດູແລ (ຈັດການທົ່ວບໍລິສັດ)' },
+    { value: 'dispatcher',  label: 'ຜູ້ຄວບຄຸມ (ຕິດຕາມສົດເທົ່ານັ້ນ)' },
+    { value: 'school_admin',label: 'ຜູ້ດູແລໂຮງຮຽນ (ໜຶ່ງໂຮງຮຽນ)' }
   ]},
-  { key: 'schoolId', label: 'School (only for School Admin)', type: 'select', placeholder: '— Operator-wide —', options: APP_DATA.schools.map(s => ({ value: s.id, label: s.name })) },
-  { key: 'status', label: 'Status', type: 'select', default: 'invited', options: ['active', 'invited', 'suspended'] }
+  { key: 'schoolId', label: 'ໂຮງຮຽນ (ສະເພາະຜູ້ດູແລໂຮງຮຽນ)', type: 'select', placeholder: '— Operator-wide —', options: APP_DATA.schools.map(s => ({ value: s.id, label: s.name })) },
+  { key: 'status', label: 'ສະຖານະ', type: 'select', default: 'invited', options: ['active', 'invited', 'suspended'] }
 ];}
-document.getElementById('addBtn').addEventListener('click', () => srModal({ title: 'Add user', fields: fields(),
+document.getElementById('addBtn').addEventListener('click', () => srModal({ title: 'ເພີ່ມຜູ້ໃຊ້', fields: fields(),
   onSave: data => { const id = srNewId('U', APP_DATA.adminUsers); const u = { id, ...data, lastLogin: null, avatar: '🛡️' }; APP_DATA.adminUsers.push(u); APP_DATA.byId.adminUser[id] = u; srToast('✓ Invitation sent to ' + u.email); render(); }}));
-window.edit = id => { const u = APP_DATA.byId.adminUser[id]; srModal({ title: 'Edit ' + u.name, fields: fields(), values: u, onSave: data => { Object.assign(u, data); srToast('✓ Saved'); render(); }}); };
-window.del = id => srConfirm({ title: 'Delete user?', message: 'Their access is revoked immediately.', danger: true, onYes: () => { APP_DATA.adminUsers = APP_DATA.adminUsers.filter(x => x.id !== id); delete APP_DATA.byId.adminUser[id]; srToast('✓ Deleted'); render(); }});
-window.reset = id => srToast('🔑 Password reset link sent to ' + APP_DATA.byId.adminUser[id].email);
+window.edit = id => { const u = APP_DATA.byId.adminUser[id]; srModal({ title: 'ແກ້ໄຂ ' + u.name, fields: fields(), values: u, onSave: data => { Object.assign(u, data); srToast('✓ ບັນທຶກແລ້ວ'); render(); }}); };
+window.del = id => srConfirm({ title: 'Delete user?', message: 'Their access is revoked immediately.', danger: true, onYes: () => { APP_DATA.adminUsers = APP_DATA.adminUsers.filter(x => x.id !== id); delete APP_DATA.byId.adminUser[id]; srToast('✓ ລຶບແລ້ວ'); render(); }});
+window.reset = id => srToast('🔑 ສົ່ງລິ້ງຣີເຊັດລະຫັດໄປຫາ ' + APP_DATA.byId.adminUser[id].email);
 render();
 </script></body></html>

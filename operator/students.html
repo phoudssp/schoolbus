@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="lo">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SafeRide — Students</title>
+  <title>Phetaloun — Students</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -22,16 +22,16 @@
       <div class="sr-page-head">
         <div>
           <div class="sr-breadcrumb">
-            <a href="index.html">Operator</a>
+            <a href="index.html">ຜູ້ດຳເນີນການ</a>
             <i data-lucide="chevron-right"></i>
-            <span>Students</span>
+            <span>ນັກຮຽນ</span>
           </div>
-          <h1 class="sr-page-title">Students</h1>
+          <h1 class="sr-page-title">ນັກຮຽນ</h1>
           <p class="sr-page-sub">All registered students with assigned bus stops, parent links, and home location pins.</p>
         </div>
         <div style="display: flex; gap: 8px;">
-          <button class="sr-btn sr-btn-ghost"><i data-lucide="upload"></i>Import CSV</button>
-          <button id="addBtn" class="sr-btn sr-btn-primary"><i data-lucide="user-plus"></i>Register student</button>
+          <button class="sr-btn sr-btn-ghost"><i data-lucide="upload"></i>ນຳເຂົ້າ CSV</button>
+          <button id="addBtn" class="sr-btn sr-btn-primary"><i data-lucide="user-plus"></i>ລົງທະບຽນນັກຮຽນ</button>
         </div>
       </div>
 
@@ -40,13 +40,13 @@
         <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
           <div class="sr-search" style="flex: 1; max-width: 300px;">
             <i data-lucide="search"></i>
-            <input id="search" placeholder="Search by name or ID…">
+            <input id="search" placeholder="ຄົ້ນຫາຕາມຊື່ ຫຼື ລະຫັດ…">
           </div>
           <select id="schoolFilter" class="sr-select" style="max-width: 200px;">
-            <option value="">All schools</option>
+            <option value="">ໂຮງຮຽນທັງໝົດ</option>
           </select>
           <select id="gradeFilter" class="sr-select" style="max-width: 160px;">
-            <option value="">All grades</option>
+            <option value="">ລະດັບທັງໝົດ</option>
           </select>
           <span style="margin-left: auto;" class="text-text-3" id="countLabel">— students</span>
         </div>
@@ -57,12 +57,12 @@
         <table class="sr-table">
           <thead>
             <tr>
-              <th>Student</th>
-              <th>School</th>
-              <th>Guardian</th>
-              <th>Home stop</th>
-              <th>House location</th>
-              <th>Card</th>
+              <th>ນັກຮຽນ</th>
+              <th>ໂຮງຮຽນ</th>
+              <th>ຜູ້ປົກຄອງ</th>
+              <th>ຈຸດຮັບທີ່ບ້ານ</th>
+              <th>ຕຳແໜ່ງເຮືອນ</th>
+              <th>ບັດ</th>
               <th></th>
             </tr>
           </thead>
@@ -146,16 +146,16 @@ function render() {
 function studentFields(s) {
   const stops = Object.entries(APP_DATA.stops).filter(([id, stop]) => !stop.isSchool).map(([id, stop]) => ({ value: id, label: stop.name }));
   return [
-    { key: 'name',  label: 'Full name', type: 'text', required: true, placeholder: 'Noi Chanthavong' },
-    { key: 'grade', label: 'Grade', type: 'select', required: true, options: ['Grade 1','Grade 2','Grade 3','Grade 4','Grade 5','Grade 6'], default: 'Grade 1' },
-    { key: 'schoolId', label: 'School', type: 'select', required: true, options: APP_DATA.schools.map(x => ({ value: x.id, label: x.name })) },
-    { key: 'stopId',   label: 'Home pickup stop', type: 'select', required: true, options: stops },
-    { key: 'guardianId', label: 'Guardian', type: 'select', placeholder: 'Pick a parent', options: APP_DATA.guardians.map(g => ({ value: g.id, label: g.name + ' · ' + g.phone })) }
+    { key: 'name',  label: 'ຊື່ເຕັມ', type: 'text', required: true, placeholder: 'ຊື່ນັກຮຽນ' },
+    { key: 'grade', label: 'ລະດັບ', type: 'select', required: true, options: ['Grade 1','Grade 2','Grade 3','Grade 4','Grade 5','Grade 6'], default: 'Grade 1' },
+    { key: 'schoolId', label: 'ໂຮງຮຽນ', type: 'select', required: true, options: APP_DATA.schools.map(x => ({ value: x.id, label: x.name })) },
+    { key: 'stopId',   label: 'ຈຸດຮັບທີ່ບ້ານ', type: 'select', required: true, options: stops },
+    { key: 'guardianId', label: 'ຜູ້ປົກຄອງ', type: 'select', placeholder: 'Pick a parent', options: APP_DATA.guardians.map(g => ({ value: g.id, label: g.name + ' · ' + g.phone })) }
   ];
 }
 document.getElementById('addBtn').addEventListener('click', () => {
   srModal({
-    title: 'Register student',
+    title: 'ລົງທະບຽນນັກຮຽນ',
     fields: studentFields(),
     onSave: data => {
       if (!data.name) return false;
@@ -178,7 +178,7 @@ document.getElementById('addBtn').addEventListener('click', () => {
         const g = APP_DATA.byId.guardian[data.guardianId];
         if (g && !g.studentIds.includes(id)) g.studentIds.push(id);
       }
-      srToast('✓ Student registered — card auto-issued (NFC + QR)');
+      srToast('✓ ລົງທະບຽນນັກຮຽນແລ້ວ — ອອກບັດອັດຕະໂນມັດ (NFC + QR)');
       render();
       setTimeout(() => pinHouse(id), 400);
     }
@@ -193,7 +193,7 @@ window.editStudent = function(id) {
     values: s,
     onSave: data => {
       Object.assign(s, { name: data.name, grade: data.grade, schoolId: data.schoolId, stopId: data.stopId, guardianId: data.guardianId || null });
-      srToast('✓ Saved');
+      srToast('✓ ບັນທຶກແລ້ວ');
       render();
     }
   });
@@ -201,8 +201,8 @@ window.editStudent = function(id) {
 
 window.deleteStudent = function(id) {
   const s = APP_DATA.byId.student[id];
-  srConfirm({ title: 'Delete ' + s.name + '?', message: 'This will remove the student and all linked records.', danger: true,
-    onYes: () => { APP_DATA.students = APP_DATA.students.filter(x => x.id !== id); delete APP_DATA.byId.student[id]; srToast('✓ Deleted'); render(); }
+  srConfirm({ title: 'ລຶບ ' + s.name + '?', message: 'ລະບົບຈະລຶບນັກຮຽນ ແລະ ຂໍ້ມູນທີ່ກ່ຽວຂ້ອງ.', danger: true,
+    onYes: () => { APP_DATA.students = APP_DATA.students.filter(x => x.id !== id); delete APP_DATA.byId.student[id]; srToast('✓ ລຶບແລ້ວ'); render(); }
   });
 };
 
@@ -230,7 +230,7 @@ window.pinHouse = function(id) {
         </div>
       </div>
       <div class="sr-modal-foot">
-        <button class="sr-btn sr-btn-ghost" data-close>Cancel</button>
+        <button class="sr-btn sr-btn-ghost" data-close>ຍົກເລີກ</button>
         <button class="sr-btn sr-btn-primary" id="savePin"><i data-lucide="save"></i> Save pin</button>
       </div>
     </div>
@@ -255,7 +255,7 @@ window.pinHouse = function(id) {
     const ll = pinMarker.getLatLng();
     s.house = { coords: [ll.lat, ll.lng], addressLine: document.getElementById('pinAddr').value || (stop ? stop.name : '') };
     overlay.remove();
-    srToast('✓ House pinned for ' + s.name);
+    srToast('✓ ປັກໝຸດເຮືອນສຳເລັດ ' + s.name);
     render();
   });
   setTimeout(() => pmap.invalidateSize(), 100);
@@ -277,7 +277,7 @@ window.viewCard = function(id) {
         <div style="display:flex; gap: 24px; flex-wrap: wrap; justify-content: center;">
           <!-- Front -->
           <div style="text-align:center;">
-            <div class="text-text-3" style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; margin-bottom: 8px;">FRONT</div>
+            <div class="text-text-3" style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; margin-bottom: 8px;">ດ້ານໜ້າ</div>
             <div style="width: 320px; aspect-ratio: 1.586/1; border-radius: 14px; padding: 16px 18px; background: linear-gradient(135deg, #0F1E3D, #2A3F75); color: white; box-shadow: 0 14px 30px rgba(15,30,61,0.2); display: grid; grid-template-rows: auto 1fr auto;">
               <div style="display:flex; align-items: center; justify-content: space-between;">
                 <div style="display:flex; align-items: center; gap: 6px; font-weight: 800; font-size: 12px;">
@@ -309,7 +309,7 @@ window.viewCard = function(id) {
           </div>
           <!-- Back -->
           <div style="text-align:center;">
-            <div class="text-text-3" style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; margin-bottom: 8px;">BACK</div>
+            <div class="text-text-3" style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; margin-bottom: 8px;">ດ້ານຫຼັງ</div>
             <div style="width: 320px; aspect-ratio: 1.586/1; border-radius: 14px; padding: 16px 18px; background: white; box-shadow: 0 14px 30px rgba(15,30,61,0.18); display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: center; position: relative;">
               <div style="position:absolute; top: 22px; left: 0; right: 0; height: 26px; background: var(--sr-navy);"></div>
               <div style="background: white; padding: 6px; border-radius: 8px; border: 1px solid #E2E8F0; position: relative; z-index: 1;">
@@ -319,7 +319,7 @@ window.viewCard = function(id) {
                 <div style="font-weight: 800; font-size: 12px; color: var(--sr-navy);">${srEscape(school.name)}</div>
                 <div style="color: var(--sr-text-3); margin-top: 4px;">Tap reader OR scan QR to board.</div>
                 <div style="display:flex; justify-content: space-between; margin-top: 6px;">
-                  <span class="text-text-3">Issued</span>
+                  <span class="text-text-3">ອອກ</span>
                   <span style="font-weight: 700;">${srFmtDate(s.cardIssuedAt)}</span>
                 </div>
                 <div style="display:flex; justify-content: space-between;">
@@ -335,7 +335,7 @@ window.viewCard = function(id) {
         </div>
       </div>
       <div class="sr-modal-foot">
-        <button class="sr-btn sr-btn-ghost" data-close>Close</button>
+        <button class="sr-btn sr-btn-ghost" data-close>ປິດ</button>
         <button class="sr-btn sr-btn-yellow" onclick="window.print()"><i data-lucide="printer"></i> Print card</button>
       </div>
     </div>

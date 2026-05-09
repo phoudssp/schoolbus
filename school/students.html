@@ -1,6 +1,6 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SafeRide School — Students</title>
+<html lang="lo"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phetaloun School — Students</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <link rel="stylesheet" href="../shared/style.css">
@@ -11,17 +11,17 @@
     <header class="sr-topbar"></header>
     <div class="app-content">
       <div class="sr-page-head"><div>
-        <div class="sr-breadcrumb"><a href="index.html">School</a><i data-lucide="chevron-right"></i><span>Students</span></div>
-        <h1 class="sr-page-title">All students</h1>
-        <p class="sr-page-sub">Students enrolled at HIS · view bus assignment, attendance and recent scores.</p>
+        <div class="sr-breadcrumb"><a href="index.html">ໂຮງຮຽນ</a><i data-lucide="chevron-right"></i><span>ນັກຮຽນ</span></div>
+        <h1 class="sr-page-title">ນັກຮຽນທັງໝົດ</h1>
+        <p class="sr-page-sub">ນັກຮຽນທີ່ລົງທະບຽນຢູ່ HIS · ເບິ່ງລົດທີ່ມອບໝາຍ, ການເຂົ້າຮຽນ ແລະ ຄະແນນ.</p>
       </div></div>
 
       <div class="sr-card" style="padding: 14px 18px; margin-bottom: 16px;">
-        <div class="sr-search" style="max-width: 320px;"><i data-lucide="search"></i><input id="search" placeholder="Search by name or ID…"></div>
+        <div class="sr-search" style="max-width: 320px;"><i data-lucide="search"></i><input id="search" placeholder="ຄົ້ນຫາຕາມຊື່ ຫຼື ລະຫັດ…"></div>
       </div>
 
       <div class="sr-table-wrap"><table class="sr-table">
-        <thead><tr><th>Student</th><th>Grade</th><th>Bus</th><th>Guardian</th><th>Today's bus status</th><th>Avg score</th><th></th></tr></thead>
+        <thead><tr><th>ນັກຮຽນ</th><th>ລະດັບ</th><th>ລົດ</th><th>ຜູ້ປົກຄອງ</th><th>Today's bus status</th><th>Avg score</th><th></th></tr></thead>
         <tbody id="rows"></tbody>
       </table></div>
     </div>
@@ -65,9 +65,9 @@ function render() {
         <td>${srEscape(s.grade)}</td>
         <td><strong>${busId || '—'}</strong></td>
         <td class="text-text-2" style="font-size: 12px;">${guardian ? srEscape(guardian.name) : '—'}</td>
-        <td>${onBus ? '<span class="sr-pill success"><i data-lucide="log-in" style="width:11px;height:11px;"></i>On bus / arrived</span>' : '<span class="sr-pill neutral"><span class="dot"></span>Not boarded</span>'}</td>
+        <td>${onBus ? '<span class="sr-pill success"><i data-lucide="log-in" style="width:11px;height:11px;"></i>ຢູ່ລົດ / ມາຮອດ</span>' : '<span class="sr-pill neutral"><span class="dot"></span>Not boarded</span>'}</td>
         <td>${avg != null ? `<strong>${avg}</strong><span class="text-text-3" style="font-size:11px;">/100</span>` : '<span class="text-text-4">—</span>'}</td>
-        <td style="text-align:right;"><a href="scores.html" class="sr-btn sr-btn-sm sr-btn-ghost"><i data-lucide="award"></i>Scores</a></td>
+        <td style="text-align:right;"><a href="scores.html" class="sr-btn sr-btn-sm sr-btn-ghost"><i data-lucide="award"></i>ຄະແນນ</a></td>
       </tr>
     `;
   }).join('');
