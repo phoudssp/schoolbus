@@ -274,61 +274,103 @@ window.viewCard = function(id) {
         <button class="sr-icon-btn" data-close><i data-lucide="x"></i></button>
       </div>
       <div class="sr-modal-body" style="background: var(--sr-bg);">
-        <div style="display:flex; gap: 24px; flex-wrap: wrap; justify-content: center;">
-          <!-- Front -->
-          <div style="text-align:center;">
-            <div class="text-text-3" style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; margin-bottom: 8px;">ດ້ານໜ້າ</div>
-            <div style="width: 320px; aspect-ratio: 1.586/1; border-radius: 14px; padding: 16px 18px; background: linear-gradient(135deg, #0F1E3D, #2A3F75); color: white; box-shadow: 0 14px 30px rgba(15,30,61,0.2); display: grid; grid-template-rows: auto 1fr auto;">
-              <div style="display:flex; align-items: center; justify-content: space-between;">
-                <div style="display:flex; align-items: center; gap: 6px; font-weight: 800; font-size: 12px;">
-                  <span style="background: var(--sr-yellow); color: var(--sr-navy); width: 24px; height: 24px; border-radius: 6px; display:flex; align-items:center; justify-content:center; font-weight: 900;">S</span>
-                  SafeRide
+        <style>
+          /* Lanyard cord SVG block sits above the card; the card has a slot for the clip */
+          .lanyard-cord { display:block; margin: 0 auto -2px; }
+          .id-card-portrait {
+            width: 280px; aspect-ratio: 1 / 1.586; border-radius: 14px;
+            position: relative; display: flex; flex-direction: column; overflow: hidden;
+          }
+          .id-card-portrait .lanyard-hole {
+            position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+            width: 44px; height: 6px; border-radius: 999px;
+            background: rgba(0,0,0,0.45);
+            box-shadow: inset 0 1px 1px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.25);
+            z-index: 5;
+          }
+        </style>
+        <div style="display:flex; gap: 28px; flex-wrap: wrap; justify-content: center;">
+          <!-- ============ FRONT ============ -->
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <div class="text-text-3" style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; margin-bottom: 6px;">ດ້ານໜ້າ</div>
+            <!-- Lanyard cord -->
+            <svg class="lanyard-cord" width="140" height="34" viewBox="0 0 140 34">
+              <path d="M 8 8 Q 70 38 132 8" stroke="#29ABE2" stroke-width="3" fill="none" stroke-linecap="round"/>
+              <rect x="62" y="22" width="16" height="10" rx="2" fill="#94A3B8" stroke="#64748B" stroke-width="1"/>
+            </svg>
+            <!-- Card -->
+            <div class="id-card-portrait" style="background: linear-gradient(160deg, #0E4D92, #134AA6 55%, #1A5BB8); color: white; box-shadow: 0 14px 30px rgba(14,77,146,0.3);">
+              <div class="lanyard-hole"></div>
+              <!-- Brand bar -->
+              <div style="margin-top: 30px; padding: 0 14px; display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 6px; font-weight: 800; font-size: 11px;">
+                  <span style="background: white; color: #0E4D92; width: 22px; height: 22px; border-radius: 5px; display:flex; align-items:center; justify-content:center; font-weight: 900; font-size: 13px;">P</span>
+                  Phetaloun
                 </div>
                 <span style="background:${school.color}; color: white; font-size: 10px; padding: 2px 8px; border-radius: 999px; font-weight: 800;">${srEscape(school.shortName)}</span>
               </div>
-              <div style="display: grid; grid-template-columns: 60px 1fr auto; gap: 12px; align-items: center;">
-                <div style="width:60px;height:60px;border-radius:50%; background: rgba(255,255,255,0.12); border: 2px solid var(--sr-yellow); display:flex; align-items:center; justify-content:center; color: var(--sr-yellow); font-weight: 900;">${srInitials(s.name)}</div>
-                <div>
-                  <div style="font-weight: 800; font-size: 15px; line-height: 1.1;">${srEscape(s.name)}</div>
-                  <div style="font-size: 11px; color: rgba(255,255,255,0.72);">${srEscape(s.grade)}</div>
-                </div>
-                <div style="color: var(--sr-yellow); text-align: center; line-height: 1;">
-                  <svg width="32" height="32" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round">
-                    <circle cx="22" cy="50" r="6" fill="currentColor"/>
-                    <path d="M 38 28 Q 56 50 38 72"/>
-                    <path d="M 56 16 Q 84 50 56 84"/>
-                  </svg>
-                  <div style="font-size: 8px; font-weight: 800; margin-top: 2px; letter-spacing: 0.1em;">TAP</div>
-                </div>
+              <!-- Photo -->
+              <div style="margin: 16px auto 8px; width: 96px; height: 96px; border-radius: 50%; background: rgba(255,255,255,0.12); border: 3px solid var(--sr-cyan); display: flex; align-items: center; justify-content: center; color: var(--sr-cyan); font-weight: 900; font-size: 30px;">${srInitials(s.name)}</div>
+              <!-- Name -->
+              <div style="text-align:center; padding: 0 12px;">
+                <div style="font-weight: 800; font-size: 16px; line-height: 1.15;">${srEscape(s.name)}</div>
+                <div style="font-size: 11px; color: rgba(255,255,255,0.78); margin-top: 2px;">${srEscape(s.grade)}</div>
+                <div style="font-size: 10px; color: rgba(255,255,255,0.6); margin-top: 4px; line-height: 1.3;">${srEscape(school.name)}</div>
               </div>
-              <div style="display: flex; align-items: center; justify-content: space-between; font-size: 9px; color: rgba(255,255,255,0.55); letter-spacing: 0.04em;">
+              <!-- Tap zone -->
+              <div style="margin: 14px 14px 0; padding: 8px 12px; background: rgba(41,171,226,0.16); border: 1px solid rgba(41,171,226,0.4); border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <svg width="22" height="22" viewBox="0 0 100 100" fill="none" stroke="#29ABE2" stroke-width="8" stroke-linecap="round">
+                  <circle cx="22" cy="50" r="6" fill="#29ABE2"/>
+                  <path d="M 38 28 Q 56 50 38 72"/>
+                  <path d="M 56 16 Q 84 50 56 84"/>
+                </svg>
+                <span style="color: #29ABE2; font-weight: 800; font-size: 11px; letter-spacing: 0.12em;">TAP HERE</span>
+              </div>
+              <!-- Footer -->
+              <div style="margin-top: auto; padding: 10px 14px; display: flex; justify-content: space-between; font-size: 9px; color: rgba(255,255,255,0.55); letter-spacing: 0.04em;">
                 <span>STUDENT ID</span>
-                <span class="sr-mono" style="color: var(--sr-yellow); font-weight: 700;">${srEscape(s.qrToken)}</span>
+                <span class="sr-mono" style="color: var(--sr-cyan); font-weight: 700;">${srEscape(s.qrToken)}</span>
               </div>
             </div>
           </div>
-          <!-- Back -->
-          <div style="text-align:center;">
-            <div class="text-text-3" style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; margin-bottom: 8px;">ດ້ານຫຼັງ</div>
-            <div style="width: 320px; aspect-ratio: 1.586/1; border-radius: 14px; padding: 16px 18px; background: white; box-shadow: 0 14px 30px rgba(15,30,61,0.18); display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: center; position: relative;">
-              <div style="position:absolute; top: 22px; left: 0; right: 0; height: 26px; background: var(--sr-navy);"></div>
-              <div style="background: white; padding: 6px; border-radius: 8px; border: 1px solid #E2E8F0; position: relative; z-index: 1;">
-                <img id="qrImg" alt="QR" width="110" height="110" style="display:block;">
+
+          <!-- ============ BACK ============ -->
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <div class="text-text-3" style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; margin-bottom: 6px;">ດ້ານຫຼັງ</div>
+            <!-- Lanyard cord -->
+            <svg class="lanyard-cord" width="140" height="34" viewBox="0 0 140 34">
+              <path d="M 8 8 Q 70 38 132 8" stroke="#29ABE2" stroke-width="3" fill="none" stroke-linecap="round"/>
+              <rect x="62" y="22" width="16" height="10" rx="2" fill="#94A3B8" stroke="#64748B" stroke-width="1"/>
+            </svg>
+            <!-- Card -->
+            <div class="id-card-portrait" style="background: white; box-shadow: 0 14px 30px rgba(14,77,146,0.25); border: 1px solid var(--sr-border);">
+              <div class="lanyard-hole" style="background: rgba(0,0,0,0.25);"></div>
+              <!-- School header band -->
+              <div style="background: linear-gradient(135deg, #0E4D92, #134AA6); color: white; padding: 28px 14px 12px; text-align: center;">
+                <div style="font-weight: 800; font-size: 13px; line-height: 1.2;">${srEscape(school.name)}</div>
+                <div style="font-size: 10px; color: rgba(255,255,255,0.75); margin-top: 3px;">${srEscape(school.address)}</div>
               </div>
-              <div style="font-size: 10px; line-height: 1.5; position: relative; z-index: 1;">
-                <div style="font-weight: 800; font-size: 12px; color: var(--sr-navy);">${srEscape(school.name)}</div>
-                <div style="color: var(--sr-text-3); margin-top: 4px;">Tap reader OR scan QR to board.</div>
-                <div style="display:flex; justify-content: space-between; margin-top: 6px;">
-                  <span class="text-text-3">ອອກ</span>
-                  <span style="font-weight: 700;">${srFmtDate(s.cardIssuedAt)}</span>
+              <!-- QR -->
+              <div style="padding: 16px; display: flex; justify-content: center;">
+                <div style="background: white; padding: 8px; border-radius: 8px; border: 1px solid #E2E8F0;">
+                  <img id="qrImg" alt="QR" width="150" height="150" style="display:block;">
+                </div>
+              </div>
+              <!-- Info -->
+              <div style="padding: 0 14px; font-size: 10px; line-height: 1.5;">
+                <div style="text-align: center; color: var(--sr-text-2); padding-bottom: 6px; border-bottom: 1px solid var(--sr-border); margin-bottom: 6px;">ແຕະເຄື່ອງອ່ານ ຫຼື ສະແກນ QR</div>
+                <div style="display:flex; justify-content: space-between;">
+                  <span class="text-text-3">ອອກບັດ</span>
+                  <span style="font-weight: 700; color: var(--sr-text);">${srFmtDate(s.cardIssuedAt)}</span>
                 </div>
                 <div style="display:flex; justify-content: space-between;">
-                  <span class="text-text-3">NFC</span>
-                  <span class="sr-mono" style="font-size: 9px;">${srEscape(s.nfcUid)}</span>
+                  <span class="text-text-3">NFC UID</span>
+                  <span class="sr-mono" style="font-size: 9px; color: var(--sr-text-2);">${srEscape(s.nfcUid)}</span>
                 </div>
-                <div style="margin-top: 8px; padding-top: 6px; border-top: 1px dashed #CBD5E1; color: var(--sr-text-3); font-size: 9px;">
-                  Lost? +856 84 555 0100 · saferide.la
-                </div>
+              </div>
+              <!-- Footer -->
+              <div style="margin-top: auto; padding: 10px 12px; background: var(--sr-bg); border-top: 1px dashed #CBD5E1; text-align: center; font-size: 9px; color: var(--sr-text-3);">
+                ບັດເສຍ? <strong>+856 84 555 0100</strong> · phetaloun.la
               </div>
             </div>
           </div>
@@ -355,6 +397,14 @@ window.viewCard = function(id) {
 };
 
 render();
+
+// Auto-open card view if ?card=ID is present (handy for sharing direct previews)
+(function () {
+  const cardId = new URLSearchParams(location.search).get('card');
+  if (cardId && APP_DATA.byId.student[cardId]) {
+    setTimeout(() => viewCard(cardId), 50);
+  }
+})();
 </script>
 </body>
 </html>
