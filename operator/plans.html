@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SafeRide — Plans</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="../shared/style.css">
+</head><body>
+<div class="app-shell">
+  <aside class="sr-sidebar"></aside>
+  <div class="app-main">
+    <header class="sr-topbar"></header>
+    <div class="app-content">
+      <div class="sr-page-head">
+        <div>
+          <div class="sr-breadcrumb"><a href="index.html">Operator</a><i data-lucide="chevron-right"></i><span>Plans</span></div>
+          <h1 class="sr-page-title">Subscription plans</h1>
+          <p class="sr-page-sub">Pricing tiers your school customers subscribe to.</p>
+        </div>
+        <button id="addBtn" class="sr-btn sr-btn-primary"><i data-lucide="plus"></i>Add plan</button>
+      </div>
+      <div class="sr-grid sr-cols-3" id="cards"></div>
+    </div>
+  </div>
+</div>
+<script src="../shared/data.js"></script>
+<script src="../shared/ui.js"></script>
+<script>
+srMount({ role: 'operator', active: 'plans', user: { name: 'Souvanh P.', role: 'Super Admin', initials: 'SP' } });
+const FEATURES = [
+  { value: 'live_tracking', label: 'Live GPS tracking' },
+  { value: 'parent_app',    label: 'Parent mobile app' },
+  { value: 'reports',       label: 'Reports & exports' },
+  { value: 'sms_fallback',  label: 'SMS notifications' },
+  { value: 'priority_support', label: '24/7 priority support' },
+  { value: 'custom_branding',  label: 'Custom branding' }
+];
+function render() {
+  document.getElementById('cards').innerHTML = Object.values(APP_DATA.plans).map((p, i) => {
+    const onPlan = APP_DATA.subscriptions.filter(s => s.planId === p.id).length;
+    const popular = i === 1;
+    return `
+      <div class="sr-card" style="${popular ? 'border: 2px solid var(--sr-yellow);' : ''}">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <h3 style="margin: 0; font-size: 18px; font-weight: 800;">${srEscape(p.name)}</h3>
+          ${popular ? `<span class="sr-pill warn"><i data-lucide="sparkles" style="width:10px;height:10px;"></i> Popular</span>` : ''}
+        </div>
+        <div style="margin-top: 8px;">
+          <span style="font-size: 28px; font-weight: 900; color: var(--sr-navy);">${fmtMoney(p.perStudent)}</span>
+          <span class="text-text-3" style="font-size: 12px;"> / student / month</span>
+        </div>
+        <ul style="list-style: none; padding: 0; margin: 16px 0 0; font-size: 13px;">
+          ${p.featureLabels.map(f => `<li style="display: flex; align-items: center; gap: 8px; padding: 4px 0;"><i data-lucide="check" style="color: var(--sr-green); width: 14px; height: 14px;"></i>${srEscape(f)}</li>`).join('')}
+        </ul>
+        <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--sr-border); display: flex; justify-content: space-between; align-items: center;">
+          <span class="text-text-3" style="font-size: 12px;">${onPlan} school${onPlan !== 1 ? 's' : ''}</span>
+          <div>
+            <button class="sr-btn sr-btn-sm sr-btn-ghost" onclick="edit('${p.id}')"><i data-lucide="pencil"></i></button>
+            ${onPlan === 0 ? `<button class="sr-btn sr-btn-sm sr-btn-ghost" onclick="del('${p.id}')"><i data-lucide="trash-2"></i></button>` : ''}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+  srIcons();
+}
+function fields(p) { return [
+  { key: 'id', label: 'Plan ID', type: 'text', required: true, readonly: !!p, placeholder: 'pro' },
+  { key: 'name', label: 'Plan name', type: 'text', required: true },
+  { key: 'perStudent', label: 'Price per student / month (₭)', type: 'number', required: true, default: 100000 },
+  { key: 'features', label: 'Features', type: 'checkboxes', options: FEATURES }
+];}
+document.getElementById('addBtn').addEventListener('click', () => srModal({ title: 'Add plan', fields: fields(),
+  onSave: data => { if (APP_DATA.plans[data.id]) { alert('ID exists'); return false; } const p = { ...data, featureLabels: (data.features || []).map(f => FEATURES.find(o => o.value === f)?.label || f) }; APP_DATA.plans[data.id] = p; srToast('✓ Created'); render(); }}));
+window.edit = id => { const p = APP_DATA.plans[id]; srModal({ title: 'Edit ' + p.name, fields: fields(p), values: p, onSave: data => { Object.assign(p, { ...data, featureLabels: (data.features || []).map(f => FEATURES.find(o => o.value === f)?.label || f) }); srToast('✓ Saved'); render(); }}); };
+window.del = id => srConfirm({ title: 'Delete plan?', message: 'Plans with active schools cannot be deleted.', danger: true, onYes: () => { delete APP_DATA.plans[id]; srToast('✓ Deleted'); render(); } });
+render();
+</script></body></html>

@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SafeRide — Students</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+  <link rel="stylesheet" href="../shared/style.css">
+</head>
+<body>
+
+<div class="app-shell">
+  <aside class="sr-sidebar"></aside>
+  <div class="app-main">
+    <header class="sr-topbar"></header>
+    <div class="app-content">
+
+      <div class="sr-page-head">
+        <div>
+          <div class="sr-breadcrumb">
+            <a href="index.html">Operator</a>
+            <i data-lucide="chevron-right"></i>
+            <span>Students</span>
+          </div>
+          <h1 class="sr-page-title">Students</h1>
+          <p class="sr-page-sub">All registered students with assigned bus stops, parent links, and home location pins.</p>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button class="sr-btn sr-btn-ghost"><i data-lucide="upload"></i>Import CSV</button>
+          <button id="addBtn" class="sr-btn sr-btn-primary"><i data-lucide="user-plus"></i>Register student</button>
+        </div>
+      </div>
+
+      <!-- Filter row -->
+      <div class="sr-card" style="padding: 14px 18px; margin-bottom: 16px;">
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+          <div class="sr-search" style="flex: 1; max-width: 300px;">
+            <i data-lucide="search"></i>
+            <input id="search" placeholder="Search by name or ID…">
+          </div>
+          <select id="schoolFilter" class="sr-select" style="max-width: 200px;">
+            <option value="">All schools</option>
+          </select>
+          <select id="gradeFilter" class="sr-select" style="max-width: 160px;">
+            <option value="">All grades</option>
+          </select>
+          <span style="margin-left: auto;" class="text-text-3" id="countLabel">— students</span>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="sr-table-wrap">
+        <table class="sr-table">
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>School</th>
+              <th>Guardian</th>
+              <th>Home stop</th>
+              <th>House location</th>
+              <th>Card</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="../shared/data.js"></script>
+<script src="../shared/ui.js"></script>
+<script>
+srMount({ role: 'operator', active: 'students', user: { name: 'Souvanh P.', role: 'Super Admin', initials: 'SP' } });
+
+// ---------- Filters ----------
+const sf = document.getElementById('schoolFilter');
+APP_DATA.schools.forEach(s => sf.insertAdjacentHTML('beforeend', `<option value="${s.id}">${srEscape(s.name)}</option>`));
+const gf = document.getElementById('gradeFilter');
+['Grade 1','Grade 2','Grade 3','Grade 4','Grade 5','Grade 6'].forEach(g => gf.insertAdjacentHTML('beforeend', `<option value="${g}">${g}</option>`));
+sf.addEventListener('change', render);
+gf.addEventListener('change', render);
+document.getElementById('search').addEventListener('input', render);
+
+const COLOR_BY_SCHOOL = id => (APP_DATA.byId.school[id] || {}).color || '#64748B';
+
+function render() {
+  const q = document.getElementById('search').value.toLowerCase();
+  const fs = sf.value, fg = gf.value;
+  const list = APP_DATA.students.filter(s =>
+    (!fs || s.schoolId === fs) &&
+    (!fg || s.grade === fg) &&
+    (!q || s.name.toLowerCase().includes(q) || s.id.toLowerCase().includes(q))
+  );
+  document.getElementById('countLabel').textContent = list.length + ' student' + (list.length !== 1 ? 's' : '');
+  const tbody = document.getElementById('rows');
+  if (list.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="sr-empty"><i data-lucide="users"></i><div>No students found.</div></div></td></tr>`;
+    srIcons();
+    return;
+  }
+  tbody.innerHTML = list.map(s => {
+    const school = APP_DATA.byId.school[s.schoolId];
+    const guardian = s.guardianId ? APP_DATA.byId.guardian[s.guardianId] : null;
+    const stop = APP_DATA.stops[s.stopId];
+    const hasHouse = !!s.house && !!s.house.coords;
+    return `
+      <tr>
+        <td>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div class="sr-avatar lg" style="background:${school.color}22; color:${school.color};">${srInitials(s.name)}</div>
+            <div>
+              <div style="font-weight: 700;">${srEscape(s.name)}</div>
+              <div class="text-text-3 sr-mono" style="font-size: 11px;">${s.id} · ${srEscape(s.grade)}</div>
+            </div>
+          </div>
+        </td>
+        <td><span style="color:${school.color}; font-weight: 700;">${srEscape(school.shortName)}</span></td>
+        <td>${guardian ? srEscape(guardian.name) : '<span class="text-text-4">—</span>'}</td>
+        <td class="text-text-2" style="font-size: 12px;">${stop ? srEscape(stop.name) : '—'}</td>
+        <td>
+          ${hasHouse
+            ? `<button onclick="pinHouse('${s.id}')" class="sr-btn sr-btn-sm sr-btn-ghost"><i data-lucide="map-pin"></i> Pinned</button>`
+            : `<button onclick="pinHouse('${s.id}')" class="sr-btn sr-btn-sm sr-btn-yellow"><i data-lucide="map-pin-plus"></i> Pin house</button>`}
+        </td>
+        <td>
+          <button onclick="viewCard('${s.id}')" class="sr-btn sr-btn-sm sr-btn-ghost"><i data-lucide="badge"></i> ID card</button>
+        </td>
+        <td style="text-align: right; white-space: nowrap;">
+          <button class="sr-icon-btn" onclick="editStudent('${s.id}')" title="Edit"><i data-lucide="pencil"></i></button>
+          <button class="sr-icon-btn" onclick="deleteStudent('${s.id}')" title="Delete"><i data-lucide="trash-2"></i></button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+  srIcons();
+}
+
+// ---------- Add / Edit ----------
+function studentFields(s) {
+  const stops = Object.entries(APP_DATA.stops).filter(([id, stop]) => !stop.isSchool).map(([id, stop]) => ({ value: id, label: stop.name }));
+  return [
+    { key: 'name',  label: 'Full name', type: 'text', required: true, placeholder: 'Noi Chanthavong' },
+    { key: 'grade', label: 'Grade', type: 'select', required: true, options: ['Grade 1','Grade 2','Grade 3','Grade 4','Grade 5','Grade 6'], default: 'Grade 1' },
+    { key: 'schoolId', label: 'School', type: 'select', required: true, options: APP_DATA.schools.map(x => ({ value: x.id, label: x.name })) },
+    { key: 'stopId',   label: 'Home pickup stop', type: 'select', required: true, options: stops },
+    { key: 'guardianId', label: 'Guardian', type: 'select', placeholder: 'Pick a parent', options: APP_DATA.guardians.map(g => ({ value: g.id, label: g.name + ' · ' + g.phone })) }
+  ];
+}
+document.getElementById('addBtn').addEventListener('click', () => {
+  srModal({
+    title: 'Register student',
+    fields: studentFields(),
+    onSave: data => {
+      if (!data.name) return false;
+      const id = srNewId('S', APP_DATA.students);
+      const school = APP_DATA.byId.school[data.schoolId];
+      const today = new Date().toISOString().slice(0, 10);
+      const newS = {
+        id, name: data.name, grade: data.grade, schoolId: data.schoolId,
+        stopId: data.stopId, guardianId: data.guardianId || null,
+        qrToken: `${school.shortName.toUpperCase().replace(/[^A-Z]/g,'').slice(0,3) || 'SR'}-${id.split('-')[1]}-${Math.random().toString(16).slice(2,6).toUpperCase()}`,
+        nfcUid: nfcUidFor(id),
+        cardIssuedAt: today,
+        photoInitials: srInitials(data.name),
+        registeredAt: today, status: 'active',
+        house: null
+      };
+      APP_DATA.students.push(newS);
+      APP_DATA.byId.student[id] = newS;
+      if (data.guardianId) {
+        const g = APP_DATA.byId.guardian[data.guardianId];
+        if (g && !g.studentIds.includes(id)) g.studentIds.push(id);
+      }
+      srToast('✓ Student registered — card auto-issued (NFC + QR)');
+      render();
+      setTimeout(() => pinHouse(id), 400);
+    }
+  });
+});
+
+window.editStudent = function(id) {
+  const s = APP_DATA.byId.student[id];
+  srModal({
+    title: 'Edit — ' + s.name,
+    fields: studentFields(s),
+    values: s,
+    onSave: data => {
+      Object.assign(s, { name: data.name, grade: data.grade, schoolId: data.schoolId, stopId: data.stopId, guardianId: data.guardianId || null });
+      srToast('✓ Saved');
+      render();
+    }
+  });
+};
+
+window.deleteStudent = function(id) {
+  const s = APP_DATA.byId.student[id];
+  srConfirm({ title: 'Delete ' + s.name + '?', message: 'This will remove the student and all linked records.', danger: true,
+    onYes: () => { APP_DATA.students = APP_DATA.students.filter(x => x.id !== id); delete APP_DATA.byId.student[id]; srToast('✓ Deleted'); render(); }
+  });
+};
+
+// ---------- Pin house location ----------
+window.pinHouse = function(id) {
+  const s = APP_DATA.byId.student[id];
+  const overlay = document.createElement('div');
+  overlay.className = 'sr-modal-bg';
+  overlay.innerHTML = `
+    <div class="sr-modal" style="max-width: 720px;">
+      <div class="sr-modal-head">
+        <div>
+          <h3 class="sr-modal-title">Pin house — ${srEscape(s.name)}</h3>
+          <p class="text-text-3" style="font-size: 12px; margin: 2px 0 0;">Click anywhere on the map to drop the pickup pin. We optimize routes to deliver to the front door.</p>
+        </div>
+        <button class="sr-icon-btn" data-close><i data-lucide="x"></i></button>
+      </div>
+      <div class="sr-modal-body" style="padding: 0;">
+        <div id="pinMap" style="height: 400px;"></div>
+        <div style="padding: 14px 20px; background: var(--sr-muted); border-top: 1px solid var(--sr-border);">
+          <div class="sr-field">
+            <label class="sr-label">Address line</label>
+            <input id="pinAddr" class="sr-input" value="${srEscape(s.house ? s.house.addressLine : '')}" placeholder="e.g. Ban Houayxai, House #42">
+          </div>
+        </div>
+      </div>
+      <div class="sr-modal-foot">
+        <button class="sr-btn sr-btn-ghost" data-close>Cancel</button>
+        <button class="sr-btn sr-btn-primary" id="savePin"><i data-lucide="save"></i> Save pin</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  srIcons();
+  overlay.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', () => overlay.remove()));
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+
+  const stop = APP_DATA.stops[s.stopId];
+  const center = (s.house && s.house.coords) || (stop ? stop.coords : APP_DATA.operator.center);
+  const pmap = L.map('pinMap', { zoomControl: true, attributionControl: false }).setView(center, 16);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(pmap);
+  // Show the assigned stop for reference
+  if (stop) {
+    L.marker(stop.coords, { icon: L.divIcon({ className: '', html: `<div class="bus-marker-div at_stop">🚏 ${stop.name}</div>`, iconSize: [120, 28], iconAnchor: [60, 14] }) }).addTo(pmap);
+  }
+  let pinMarker = L.marker(center, { draggable: true, icon: L.divIcon({ className: '', html: `<div style="font-size: 32px; line-height: 1; transform: translate(-50%, -100%);">🏠</div>`, iconSize: [32, 32], iconAnchor: [16, 32] }) }).addTo(pmap);
+  pmap.on('click', e => pinMarker.setLatLng(e.latlng));
+
+  document.getElementById('savePin').addEventListener('click', () => {
+    const ll = pinMarker.getLatLng();
+    s.house = { coords: [ll.lat, ll.lng], addressLine: document.getElementById('pinAddr').value || (stop ? stop.name : '') };
+    overlay.remove();
+    srToast('✓ House pinned for ' + s.name);
+    render();
+  });
+  setTimeout(() => pmap.invalidateSize(), 100);
+};
+
+// ---------- ID card view (NFC + QR card, 2-sided) ----------
+window.viewCard = function(id) {
+  const s = APP_DATA.byId.student[id];
+  const school = APP_DATA.byId.school[s.schoolId];
+  const overlay = document.createElement('div');
+  overlay.className = 'sr-modal-bg';
+  overlay.innerHTML = `
+    <div class="sr-modal" style="max-width: 760px;">
+      <div class="sr-modal-head">
+        <h3 class="sr-modal-title">ID card — ${srEscape(s.name)}</h3>
+        <button class="sr-icon-btn" data-close><i data-lucide="x"></i></button>
+      </div>
+      <div class="sr-modal-body" style="background: var(--sr-bg);">
+        <div style="display:flex; gap: 24px; flex-wrap: wrap; justify-content: center;">
+          <!-- Front -->
+          <div style="text-align:center;">
+            <div class="text-text-3" style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; margin-bottom: 8px;">FRONT</div>
+            <div style="width: 320px; aspect-ratio: 1.586/1; border-radius: 14px; padding: 16px 18px; background: linear-gradient(135deg, #0F1E3D, #2A3F75); color: white; box-shadow: 0 14px 30px rgba(15,30,61,0.2); display: grid; grid-template-rows: auto 1fr auto;">
+              <div style="display:flex; align-items: center; justify-content: space-between;">
+                <div style="display:flex; align-items: center; gap: 6px; font-weight: 800; font-size: 12px;">
+                  <span style="background: var(--sr-yellow); color: var(--sr-navy); width: 24px; height: 24px; border-radius: 6px; display:flex; align-items:center; justify-content:center; font-weight: 900;">S</span>
+                  SafeRide
+                </div>
+                <span style="background:${school.color}; color: white; font-size: 10px; padding: 2px 8px; border-radius: 999px; font-weight: 800;">${srEscape(school.shortName)}</span>
+              </div>
+              <div style="display: grid; grid-template-columns: 60px 1fr auto; gap: 12px; align-items: center;">
+                <div style="width:60px;height:60px;border-radius:50%; background: rgba(255,255,255,0.12); border: 2px solid var(--sr-yellow); display:flex; align-items:center; justify-content:center; color: var(--sr-yellow); font-weight: 900;">${srInitials(s.name)}</div>
+                <div>
+                  <div style="font-weight: 800; font-size: 15px; line-height: 1.1;">${srEscape(s.name)}</div>
+                  <div style="font-size: 11px; color: rgba(255,255,255,0.72);">${srEscape(s.grade)}</div>
+                </div>
+                <div style="color: var(--sr-yellow); text-align: center; line-height: 1;">
+                  <svg width="32" height="32" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round">
+                    <circle cx="22" cy="50" r="6" fill="currentColor"/>
+                    <path d="M 38 28 Q 56 50 38 72"/>
+                    <path d="M 56 16 Q 84 50 56 84"/>
+                  </svg>
+                  <div style="font-size: 8px; font-weight: 800; margin-top: 2px; letter-spacing: 0.1em;">TAP</div>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: space-between; font-size: 9px; color: rgba(255,255,255,0.55); letter-spacing: 0.04em;">
+                <span>STUDENT ID</span>
+                <span class="sr-mono" style="color: var(--sr-yellow); font-weight: 700;">${srEscape(s.qrToken)}</span>
+              </div>
+            </div>
+          </div>
+          <!-- Back -->
+          <div style="text-align:center;">
+            <div class="text-text-3" style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; margin-bottom: 8px;">BACK</div>
+            <div style="width: 320px; aspect-ratio: 1.586/1; border-radius: 14px; padding: 16px 18px; background: white; box-shadow: 0 14px 30px rgba(15,30,61,0.18); display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: center; position: relative;">
+              <div style="position:absolute; top: 22px; left: 0; right: 0; height: 26px; background: var(--sr-navy);"></div>
+              <div style="background: white; padding: 6px; border-radius: 8px; border: 1px solid #E2E8F0; position: relative; z-index: 1;">
+                <img id="qrImg" alt="QR" width="110" height="110" style="display:block;">
+              </div>
+              <div style="font-size: 10px; line-height: 1.5; position: relative; z-index: 1;">
+                <div style="font-weight: 800; font-size: 12px; color: var(--sr-navy);">${srEscape(school.name)}</div>
+                <div style="color: var(--sr-text-3); margin-top: 4px;">Tap reader OR scan QR to board.</div>
+                <div style="display:flex; justify-content: space-between; margin-top: 6px;">
+                  <span class="text-text-3">Issued</span>
+                  <span style="font-weight: 700;">${srFmtDate(s.cardIssuedAt)}</span>
+                </div>
+                <div style="display:flex; justify-content: space-between;">
+                  <span class="text-text-3">NFC</span>
+                  <span class="sr-mono" style="font-size: 9px;">${srEscape(s.nfcUid)}</span>
+                </div>
+                <div style="margin-top: 8px; padding-top: 6px; border-top: 1px dashed #CBD5E1; color: var(--sr-text-3); font-size: 9px;">
+                  Lost? +856 84 555 0100 · saferide.la
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="sr-modal-foot">
+        <button class="sr-btn sr-btn-ghost" data-close>Close</button>
+        <button class="sr-btn sr-btn-yellow" onclick="window.print()"><i data-lucide="printer"></i> Print card</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  srIcons();
+  overlay.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', () => overlay.remove()));
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+  // Render QR
+  try {
+    const qr = qrcode(0, 'M');
+    qr.addData(s.qrToken);
+    qr.make();
+    const img = overlay.querySelector('#qrImg');
+    if (img) img.src = qr.createDataURL(4, 0);
+  } catch (e) { console.error(e); }
+};
+
+render();
+</script>
+</body>
+</html>

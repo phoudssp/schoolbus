@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SafeRide — Reports</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="../shared/style.css">
+</head><body>
+<div class="app-shell">
+  <aside class="sr-sidebar"></aside>
+  <div class="app-main">
+    <header class="sr-topbar"></header>
+    <div class="app-content">
+      <div class="sr-page-head">
+        <div>
+          <div class="sr-breadcrumb"><a href="index.html">Operator</a><i data-lucide="chevron-right"></i><span>Reports</span></div>
+          <h1 class="sr-page-title">Reports</h1>
+          <p class="sr-page-sub">Generate operational, safety, and financial reports.</p>
+        </div>
+      </div>
+
+      <div class="sr-card" style="margin-bottom: 18px;">
+        <div class="sr-card-head"><h3 class="sr-card-title">This week — daily ridership</h3></div>
+        <div style="position: relative; height: 240px;"><canvas id="rid"></canvas></div>
+      </div>
+
+      <div class="sr-grid sr-cols-3" id="reports"></div>
+    </div>
+  </div>
+</div>
+<script src="../shared/data.js"></script>
+<script src="../shared/ui.js"></script>
+<script>
+srMount({ role: 'operator', active: 'reports', user: { name: 'Souvanh P.', role: 'Super Admin', initials: 'SP' } });
+
+const data = APP_DATA.dailyRidershipPreview;
+new Chart(document.getElementById('rid'), { type: 'line',
+  data: { labels: data.map(d => srFmtDate(d.date)),
+    datasets: [
+      { label: 'Boarded', data: data.map(d => d.boarded), borderColor: '#0F1E3D', backgroundColor: 'rgba(15,30,61,0.05)', tension: 0.3, fill: true, borderWidth: 2 },
+      { label: 'Exited',  data: data.map(d => d.exited),  borderColor: '#FFD60A', backgroundColor: 'rgba(255,214,10,0.1)', tension: 0.3, fill: true, borderWidth: 2 }
+    ]
+  },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { usePointStyle: true } } }, scales: { y: { beginAtZero: true } } }
+});
+
+const cats = {
+  operations: { label: 'Operations', color: 'blue', icon: 'activity' },
+  safety:     { label: 'Safety',     color: 'rose', icon: 'shield' },
+  finance:    { label: 'Finance',    color: 'green',icon: 'wallet' },
+  school:     { label: 'School',     color: 'purple',icon: 'school' }
+};
+document.getElementById('reports').innerHTML = APP_DATA.reportTypes.map(r => {
+  const c = cats[r.category];
+  return `
+    <div class="sr-card">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div class="sr-kpi-icon ${c.color}" style="width: 38px; height: 38px;"><i data-lucide="${c.icon}"></i></div>
+        <span class="sr-pill neutral">${c.label}</span>
+      </div>
+      <h4 style="font-size: 14px; font-weight: 800; margin: 12px 0 4px;">${srEscape(r.name)}</h4>
+      <p class="text-text-3" style="font-size: 12px; margin: 0; min-height: 36px;">${srEscape(r.desc)}</p>
+      <div style="margin-top: 12px; display: flex; gap: 6px;">
+        <button class="sr-btn sr-btn-sm sr-btn-primary" style="flex:1;" onclick="srToast('✓ Generated ${r.id}.pdf')"><i data-lucide="download"></i>PDF</button>
+        <button class="sr-btn sr-btn-sm sr-btn-ghost" onclick="srToast('✓ Generated ${r.id}.csv')">CSV</button>
+        <button class="sr-btn sr-btn-sm sr-btn-ghost" onclick="srToast('✓ Generated ${r.id}.xlsx')">XLS</button>
+      </div>
+    </div>
+  `;
+}).join('');
+srIcons();
+</script></body></html>

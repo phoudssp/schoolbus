@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SafeRide — Operator Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <link rel="stylesheet" href="../shared/style.css">
+</head>
+<body>
+
+<div class="app-shell">
+  <aside class="sr-sidebar"></aside>
+  <div class="app-main">
+    <header class="sr-topbar"></header>
+    <div class="app-content">
+
+      <!-- Page header -->
+      <div class="sr-page-head">
+        <div>
+          <div class="sr-breadcrumb">
+            <i data-lucide="layout-dashboard"></i>
+            <span>Operator</span>
+            <i data-lucide="chevron-right"></i>
+            <span>Dashboard</span>
+          </div>
+          <h1 class="sr-page-title">Welcome back, Souvanh 👋</h1>
+          <p class="sr-page-sub">Saturday, May 9 · Houayxay, Bokeo · Operations are running smoothly.</p>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button class="sr-btn sr-btn-ghost"><i data-lucide="download"></i>Export</button>
+          <a href="monitoring.html" class="sr-btn sr-btn-primary"><i data-lucide="radar"></i>Open Live Monitor</a>
+        </div>
+      </div>
+
+      <!-- KPI strip -->
+      <div class="sr-grid sr-cols-4" style="margin-bottom: 18px;">
+        <div class="sr-kpi">
+          <div class="sr-kpi-icon blue"><i data-lucide="users"></i></div>
+          <div class="sr-kpi-body">
+            <div class="sr-kpi-label">Active students</div>
+            <div class="sr-kpi-val" id="kpi-students">—</div>
+            <span class="sr-kpi-trend up"><i data-lucide="trending-up"></i>+4.2% this month</span>
+          </div>
+        </div>
+        <div class="sr-kpi">
+          <div class="sr-kpi-icon yellow"><i data-lucide="bus"></i></div>
+          <div class="sr-kpi-body">
+            <div class="sr-kpi-label">Active buses</div>
+            <div class="sr-kpi-val" id="kpi-buses">—</div>
+            <span class="sr-kpi-trend flat"><i data-lucide="minus"></i>1 in maintenance</span>
+          </div>
+        </div>
+        <div class="sr-kpi">
+          <div class="sr-kpi-icon green"><i data-lucide="clock-check"></i></div>
+          <div class="sr-kpi-body">
+            <div class="sr-kpi-label">On-time rate</div>
+            <div class="sr-kpi-val">96%</div>
+            <span class="sr-kpi-trend up"><i data-lucide="trending-up"></i>+1.5% vs last week</span>
+          </div>
+        </div>
+        <div class="sr-kpi">
+          <div class="sr-kpi-icon purple"><i data-lucide="wallet"></i></div>
+          <div class="sr-kpi-body">
+            <div class="sr-kpi-label">Monthly revenue</div>
+            <div class="sr-kpi-val" id="kpi-mrr">—</div>
+            <span class="sr-kpi-trend up"><i data-lucide="trending-up"></i>+1.6% vs last month</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main grid -->
+      <div class="sr-grid sr-cols-12" style="margin-bottom: 18px;">
+        <!-- Live mini map -->
+        <div class="sr-card" style="grid-column: span 8;">
+          <div class="sr-card-head">
+            <div>
+              <h3 class="sr-card-title">Live fleet</h3>
+              <p class="text-text-3" style="font-size: 12px; margin: 2px 0 0;"><span class="sr-live-dot" style="display:inline-block; vertical-align:middle; margin-right:6px;"></span>Real-time bus positions across Bokeo</p>
+            </div>
+            <a href="monitoring.html" class="sr-btn sr-btn-sm sr-btn-ghost">View all <i data-lucide="arrow-up-right"></i></a>
+          </div>
+          <div id="miniMap" style="height: 320px; border-radius: 10px; overflow: hidden;"></div>
+        </div>
+
+        <!-- Recent alerts -->
+        <div class="sr-card" style="grid-column: span 4;">
+          <div class="sr-card-head">
+            <h3 class="sr-card-title">Recent alerts</h3>
+            <span class="sr-pill warn"><i data-lucide="alert-triangle" style="width:11px;height:11px;"></i> 2 active</span>
+          </div>
+          <div id="alertsList"></div>
+        </div>
+      </div>
+
+      <!-- Charts row -->
+      <div class="sr-grid sr-cols-12" style="margin-bottom: 18px;">
+        <!-- Ridership chart -->
+        <div class="sr-card" style="grid-column: span 8;">
+          <div class="sr-card-head">
+            <div>
+              <h3 class="sr-card-title">Daily ridership</h3>
+              <p class="text-text-3" style="font-size: 12px; margin: 2px 0 0;">Boarded vs exited — last 7 days</p>
+            </div>
+            <div class="sr-tab-pills">
+              <button class="sr-tab-pill active">Week</button>
+              <button class="sr-tab-pill">Month</button>
+            </div>
+          </div>
+          <div style="position: relative; height: 260px;">
+            <canvas id="ridershipChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Quick actions -->
+        <div class="sr-card" style="grid-column: span 4;">
+          <div class="sr-card-head">
+            <h3 class="sr-card-title">Quick actions</h3>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <a href="students.html" class="sr-btn sr-btn-ghost" style="justify-content: flex-start;"><i data-lucide="user-plus"></i>Register student</a>
+            <a href="parents.html" class="sr-btn sr-btn-ghost" style="justify-content: flex-start;"><i data-lucide="mail-plus"></i>Invite parent</a>
+            <a href="routes.html" class="sr-btn sr-btn-ghost" style="justify-content: flex-start;"><i data-lucide="route"></i>Plan a new route</a>
+            <a href="schools.html" class="sr-btn sr-btn-ghost" style="justify-content: flex-start;"><i data-lucide="building-2"></i>Add school customer</a>
+            <a href="users.html" class="sr-btn sr-btn-ghost" style="justify-content: flex-start;"><i data-lucide="user-cog"></i>Add admin user</a>
+          </div>
+          <div class="sr-divider"></div>
+          <div>
+            <div class="text-text-3" style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Today's schedule</div>
+            <div id="scheduleList" style="display: flex; flex-direction: column; gap: 6px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent activity table -->
+      <div class="sr-card">
+        <div class="sr-card-head">
+          <div>
+            <h3 class="sr-card-title">Latest events</h3>
+            <p class="text-text-3" style="font-size: 12px; margin: 2px 0 0;">Boarding, alighting, and absences across the fleet</p>
+          </div>
+          <a href="reports.html" class="sr-btn sr-btn-sm sr-btn-ghost">All events <i data-lucide="arrow-up-right"></i></a>
+        </div>
+        <div style="margin: 0 -20px -20px;">
+          <table class="sr-table">
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Event</th>
+                <th>Bus</th>
+                <th>Stop</th>
+                <th>Time</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="eventsTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="../shared/data.js"></script>
+<script src="../shared/ui.js"></script>
+<script>
+srMount({ role: 'operator', active: 'dashboard', user: { name: 'Souvanh P.', role: 'Super Admin', initials: 'SP' } });
+
+// ---------- KPI numbers ----------
+document.getElementById('kpi-students').textContent = APP_DATA.students.length.toLocaleString();
+document.getElementById('kpi-buses').textContent    = APP_DATA.buses.filter(b => b.status === 'active').length;
+document.getElementById('kpi-mrr').textContent      = fmtMoney(totalMRR());
+
+// ---------- Mini live map ----------
+const map = L.map('miniMap', { zoomControl: true, attributionControl: false }).setView(APP_DATA.operator.center, 13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+
+APP_DATA.schools.forEach(s => {
+  const icon = L.divIcon({ className: '', html: `<div class="school-marker-div" style="border-color:${s.color}; color:${s.color}">🏫 ${s.shortName}</div>`, iconSize: [110, 28], iconAnchor: [55, 14] });
+  L.marker(s.coords, { icon }).addTo(map).bindPopup(`<b>${s.name}</b><br>${s.address}`);
+});
+
+const busLayers = {};
+function busIconHtml(busId, status) {
+  return `<div class="bus-marker-div ${status}">🚌 ${busId}</div>`;
+}
+Object.entries(APP_DATA.livePositions).forEach(([busId, lp]) => {
+  if (lp.status === 'idle') return;
+  const icon = L.divIcon({ className: '', html: busIconHtml(busId, lp.status), iconSize: [80, 28], iconAnchor: [40, 14] });
+  busLayers[busId] = L.marker(lp.coords, { icon }).addTo(map);
+});
+
+// Subtle live jiggle
+setInterval(() => {
+  Object.entries(APP_DATA.livePositions).forEach(([busId, lp]) => {
+    if (lp.status === 'idle') return;
+    lp.coords = [lp.coords[0] + (Math.random() - 0.5) * 0.0006, lp.coords[1] + (Math.random() - 0.5) * 0.0006];
+    busLayers[busId] && busLayers[busId].setLatLng(lp.coords);
+  });
+}, 4000);
+
+// ---------- Alerts ----------
+const alertsHtml = APP_DATA.alerts.slice(-5).reverse().map(a => {
+  const sev = a.severity === 'warning' ? 'warn' : a.severity === 'error' ? 'danger' : 'info';
+  const ic = a.severity === 'warning' ? 'alert-triangle' : a.severity === 'error' ? 'octagon-alert' : 'info';
+  return `
+    <div class="sr-list-row">
+      <div class="sr-kpi-icon ${sev === 'warn' ? 'amber' : sev === 'danger' ? 'rose' : 'blue'}" style="width:34px;height:34px;"><i data-lucide="${ic}"></i></div>
+      <div style="flex:1; min-width:0;">
+        <div style="font-weight: 600; font-size: 13px;">${srEscape(a.message)}</div>
+        <div class="text-text-3" style="font-size: 11px; margin-top: 2px;">${a.busId} · ${srRelTime(a.ts)}</div>
+      </div>
+    </div>
+  `;
+}).join('');
+document.getElementById('alertsList').innerHTML = alertsHtml || '<div class="sr-empty">No alerts</div>';
+
+// ---------- Today's schedule (compact) ----------
+const sched = APP_DATA.routes.flatMap(r => r.runs.map(run => {
+  const school = APP_DATA.byId.school[run.schoolId];
+  return `
+    <div style="display:flex; align-items:center; justify-content:space-between; font-size:12px; padding:6px 0; border-bottom:1px solid var(--sr-border);">
+      <div>
+        <div style="font-weight:700;">${r.busId} → <span style="color:${school.color}">${school.shortName}</span></div>
+        <div class="text-text-3" style="font-size:11px;">${run.start} · ${run.stops.filter(s => !APP_DATA.byId.stop[s.stopId].isSchool).length} stops</div>
+      </div>
+      <span class="sr-pill success"><span class="dot"></span>On time</span>
+    </div>
+  `;
+})).slice(0, 5).join('');
+document.getElementById('scheduleList').innerHTML = sched;
+
+// ---------- Ridership chart ----------
+const days = APP_DATA.dailyRidershipPreview;
+new Chart(document.getElementById('ridershipChart'), {
+  type: 'bar',
+  data: {
+    labels: days.map(d => srFmtDate(d.date)),
+    datasets: [
+      { label: 'Boarded', data: days.map(d => d.boarded), backgroundColor: '#0F1E3D', borderRadius: 6, maxBarThickness: 30 },
+      { label: 'Exited',  data: days.map(d => d.exited),  backgroundColor: '#FFD60A', borderRadius: 6, maxBarThickness: 30 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8, font: { size: 11 } } } },
+    scales: { x: { grid: { display: false } }, y: { beginAtZero: true, grid: { color: '#F1F5F9' } } }
+  }
+});
+
+// ---------- Latest events ----------
+const events = APP_DATA.events.slice().sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 7);
+const tbody = document.getElementById('eventsTable');
+tbody.innerHTML = events.map(e => {
+  const stu = APP_DATA.byId.student[e.studentId];
+  const stop = APP_DATA.byId.stop[e.stopId];
+  return `
+    <tr>
+      <td>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div class="sr-avatar">${srInitials(stu.name)}</div>
+          <div>
+            <div style="font-weight: 600;">${srEscape(stu.name)}</div>
+            <div class="text-text-3" style="font-size: 11px;">${srEscape(stu.grade)}</div>
+          </div>
+        </div>
+      </td>
+      <td><span class="sr-pill success"><i data-lucide="log-in" style="width:11px;height:11px;"></i> Boarded</span></td>
+      <td class="sr-mono">${srEscape(e.busId)}</td>
+      <td class="text-text-2">${srEscape(stop.name)}</td>
+      <td class="text-text-3 sr-mono">${srFmtTime(e.timestamp)}</td>
+      <td><button class="sr-icon-btn"><i data-lucide="more-horizontal"></i></button></td>
+    </tr>
+  `;
+}).join('');
+
+srIcons();
+</script>
+</body>
+</html>

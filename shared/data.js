@@ -390,6 +390,17 @@ window.APP_DATA = {
   byId: null
 };
 
+// ========== Curriculum subjects (for the school score module) ==========
+window.APP_DATA.subjects = [
+  { id: 'math',    name: 'Mathematics',    nameLo: 'ຄະນິດສາດ',     icon: 'calculator' },
+  { id: 'lao',     name: 'Lao Language',   nameLo: 'ພາສາລາວ',       icon: 'book-open' },
+  { id: 'eng',     name: 'English',        nameLo: 'ພາສາອັງກິດ',   icon: 'languages' },
+  { id: 'sci',     name: 'Science',        nameLo: 'ວິທະຍາສາດ',     icon: 'flask-conical' },
+  { id: 'soc',     name: 'Social Studies', nameLo: 'ສັງຄົມສາດ',     icon: 'globe' },
+  { id: 'art',     name: 'Art',            nameLo: 'ສິລະປະ',         icon: 'palette' },
+  { id: 'pe',      name: 'Physical Ed.',   nameLo: 'ພະລະສຶກສາ',     icon: 'activity' }
+];
+
 // ========== Enrich existing rows with management-only fields ==========
 // (qrToken on students, email/accountStatus/lastLogin on guardians,
 // license + status on drivers). Computed deterministically so they stay
@@ -484,12 +495,119 @@ window.APP_DATA = {
   Object.values(d.plans).forEach(p => {
     p.featureLabels = p.features.map(f => featLabels[f] || f);
   });
+
+  // Students: pin a house location near their existing stop (jittered ±0.001°)
+  d.students.forEach(s => {
+    if (s.house) return;
+    const stop = d.stops[s.stopId];
+    const baseCoords = stop ? stop.coords : d.operator.center;
+    const jitterLat = (parseInt(s.id.slice(-2), 10) - 50) / 50000;     // deterministic
+    const jitterLng = (parseInt(s.id.slice(-3, -1) || '50', 10) - 50) / 50000;
+    s.house = {
+      coords: [baseCoords[0] + jitterLat, baseCoords[1] + jitterLng],
+      addressLine: `${stop ? stop.name : 'Houayxay'}, House #${s.id.slice(-3)}`
+    };
+  });
 })();
+
+// ========== Score / attendance / admin user data (NEW) ==========
+(function buildAcademicAndAdmin() {
+  const d = window.APP_DATA;
+
+  // ----- Scores (per student × subject, recent semester) -----
+  d.scores = [];
+  let sId = 1;
+  const seedRng = (n) => {
+    let h = 5; for (let i = 0; i < n.length; i++) h = ((h * 31) + n.charCodeAt(i)) | 0;
+    return () => { h = (h * 9301 + 49297) & 0x7fffffff; return h / 0x7fffffff; };
+  };
+  const recentMonths = ['2026-03', '2026-04', '2026-05'];
+  d.students.forEach(stu => {
+    const r = seedRng(stu.id);
+    d.subjects.forEach(sub => {
+      // 1-2 scores per subject per student (recent assessments)
+      const count = 1 + Math.floor(r() * 2);
+      for (let i = 0; i < count; i++) {
+        const month = recentMonths[Math.min(recentMonths.length - 1, Math.floor(r() * recentMonths.length))];
+        const day = 1 + Math.floor(r() * 28);
+        const base = 60 + Math.floor(r() * 38);
+        d.scores.push({
+          id: 'SC-' + String(sId++).padStart(4, '0'),
+          studentId: stu.id,
+          schoolId: stu.schoolId,
+          subject: sub.id,
+          subjectName: sub.name,
+          score: base,
+          max: 100,
+          assessmentType: ['Quiz','Test','Assignment','Mid-term','Final'][Math.floor(r() * 5)],
+          date: `${month}-${String(day).padStart(2, '0')}`,
+          comment: '',
+          teacher: ['Mrs. Phanthavong','Mr. Khamla','Ms. Inthavong','Mr. Sourivong','Ms. Bouasavanh'][Math.floor(r() * 5)]
+        });
+      }
+    });
+  });
+
+  // ----- Absences (parent-requested, school approves) -----
+  d.absences = [
+    { id: 'ABS-001', studentId: 'S-1001', date: '2026-05-09', reason: 'Doctor appointment',           requestedAt: '2026-05-08T19:30:00+07:00', requestedBy: 'G-001', status: 'requested', schoolNote: '' },
+    { id: 'ABS-002', studentId: 'S-2001', date: '2026-05-09', reason: 'Family emergency',             requestedAt: '2026-05-08T20:15:00+07:00', requestedBy: 'G-001', status: 'requested', schoolNote: '' },
+    { id: 'ABS-003', studentId: 'S-1003', date: '2026-05-08', reason: 'Sick — fever',                 requestedAt: '2026-05-07T22:00:00+07:00', requestedBy: 'G-003', status: 'approved',  schoolNote: 'Get well soon' },
+    { id: 'ABS-004', studentId: 'S-3001', date: '2026-05-12', reason: 'Family trip',                  requestedAt: '2026-05-08T08:10:00+07:00', requestedBy: 'G-006', status: 'approved',  schoolNote: '' },
+    { id: 'ABS-005', studentId: 'S-1002', date: '2026-05-11', reason: 'Dental check-up (Mon AM)',     requestedAt: '2026-05-08T09:45:00+07:00', requestedBy: 'G-002', status: 'requested', schoolNote: '' }
+  ];
+
+  // ----- Admin users (super admin & school admins & dispatcher etc.) -----
+  d.adminUsers = [
+    { id: 'U-001', name: 'Souvanh Phimmasone',  email: 'souvanh@saferide.la',     role: 'super_admin',  status: 'active', lastLogin: '2026-05-09T07:02:00+07:00', avatar: '👑' },
+    { id: 'U-002', name: 'Khamla Vorasen',      email: 'khamla@saferide.la',      role: 'admin',        status: 'active', lastLogin: '2026-05-08T18:42:00+07:00', avatar: '🛡️' },
+    { id: 'U-003', name: 'Phout Sengsouvanh',   email: 'phout.dispatch@saferide.la', role: 'dispatcher', status: 'active', lastLogin: '2026-05-09T06:55:00+07:00', avatar: '📡' },
+    { id: 'U-004', name: 'Bounnyong Sayasone',  email: 'principal@his.edu.la',    role: 'school_admin', schoolId: 'vis', status: 'active', lastLogin: '2026-05-09T07:18:00+07:00', avatar: '🏫' },
+    { id: 'U-005', name: 'Manivanh Khotsana',   email: 'principal@bps.edu.la',    role: 'school_admin', schoolId: 'sgs', status: 'active', lastLogin: '2026-05-08T15:30:00+07:00', avatar: '🏫' },
+    { id: 'U-006', name: 'Sengphet Vongdara',   email: 'principal@hss.edu.la',    role: 'school_admin', schoolId: 'pty', status: 'active', lastLogin: '2026-05-08T16:12:00+07:00', avatar: '🏫' },
+    { id: 'U-007', name: 'Khamphone Sisouphan', email: 'khamphone@saferide.la',   role: 'admin',        status: 'invited', lastLogin: null, avatar: '🛡️' }
+  ];
+
+  // ----- Notifications (per guardian for the parent app) -----
+  d.notifications = [
+    { id: 'N-001', guardianId: 'G-001', type: 'board',     studentId: 'S-1001', title: 'Noi boarded Bus B-101',         body: 'Ban Houayxai Junction · 06:30',          createdAt: '2026-05-09T06:30:18+07:00', read: false },
+    { id: 'N-002', guardianId: 'G-001', type: 'arrived',   studentId: 'S-1001', title: 'Noi arrived at school',          body: 'Houayxay International School · 07:25', createdAt: '2026-05-09T07:25:00+07:00', read: false },
+    { id: 'N-003', guardianId: 'G-001', type: 'absence',   studentId: 'S-1001', title: 'Absence request received',       body: 'Doctor appointment · awaiting school',  createdAt: '2026-05-08T19:31:00+07:00', read: true },
+    { id: 'N-004', guardianId: 'G-001', type: 'score',     studentId: 'S-1001', title: 'New score posted',               body: 'Math · 87/100',                          createdAt: '2026-05-08T15:00:00+07:00', read: true },
+    { id: 'N-005', guardianId: 'G-001', type: 'approach',  studentId: 'S-2001', title: 'Bus B-101 is 2 min from Pat',    body: 'Ban Houayxai Junction',                  createdAt: '2026-05-09T07:36:00+07:00', read: false }
+  ];
+
+  // ----- Helper indices (defensive: byId may not be built yet) -----
+  d.byId = d.byId || {};
+  d.byId.score      = Object.fromEntries(d.scores.map(s => [s.id, s]));
+  d.byId.absence    = Object.fromEntries(d.absences.map(a => [a.id, a]));
+  d.byId.adminUser  = Object.fromEntries(d.adminUsers.map(u => [u.id, u]));
+  d.byId.subject    = Object.fromEntries(d.subjects.map(s => [s.id, s]));
+})();
+
+// ========== Live monitoring helpers ==========
+// Pre-compute the "path" each bus follows: array of [lat,lng] from current
+// position through remaining stops to the school.
+window.busPath = function(busId) {
+  const lp = APP_DATA.livePositions[busId];
+  if (!lp || !lp.currentRunId) return [lp ? lp.coords : APP_DATA.operator.center];
+  for (const r of APP_DATA.routes) {
+    for (const run of r.runs) {
+      if (run.id !== lp.currentRunId) continue;
+      const stopCoords = run.stops.map(s => APP_DATA.byId.stop[s.stopId].coords);
+      // Find the index of the next stop and rebuild path from current position
+      const nextIdx = run.stops.findIndex(s => s.stopId === lp.nextStopId);
+      const tail = nextIdx >= 0 ? stopCoords.slice(nextIdx) : stopCoords;
+      return [lp.coords, ...tail];
+    }
+  }
+  return [lp.coords];
+};
 
 // Build id→object lookups for convenience
 (function buildIndices() {
   const d = window.APP_DATA;
-  d.byId = {
+  Object.assign(d.byId = d.byId || {}, {
     school:       Object.fromEntries(d.schools.map(s => [s.id, s])),
     bus:          Object.fromEntries(d.buses.map(b => [b.id, b])),
     driver:       Object.fromEntries(d.drivers.map(dr => [dr.id, dr])),
@@ -500,7 +618,7 @@ window.APP_DATA = {
     plan:         d.plans,
     subscription: Object.fromEntries(d.subscriptions.map(s => [s.id, s])),
     subBySchool:  Object.fromEntries(d.subscriptions.map(s => [s.schoolId, s]))
-  };
+  });
 })();
 
 // ========== Billing helpers ==========

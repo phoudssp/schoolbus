@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SafeRide School — Attendance</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="../shared/style.css">
+</head><body>
+<div class="app-shell">
+  <aside class="sr-sidebar"></aside>
+  <div class="app-main">
+    <header class="sr-topbar"></header>
+    <div class="app-content">
+      <div class="sr-page-head"><div>
+        <div class="sr-breadcrumb"><a href="index.html">School</a><i data-lucide="chevron-right"></i><span>Attendance</span></div>
+        <h1 class="sr-page-title">Attendance & absences</h1>
+        <p class="sr-page-sub">Today's bus check-ins and parent-requested absences awaiting your approval.</p>
+      </div></div>
+
+      <div class="sr-tab-pills" style="display: inline-flex; margin-bottom: 18px;">
+        <button class="sr-tab-pill active" onclick="show('today')" id="tab-today">Today's attendance</button>
+        <button class="sr-tab-pill" onclick="show('absences')" id="tab-absences">Absence requests <span class="sr-pill warn" style="margin-left:4px;" id="absBadge"></span></button>
+      </div>
+
+      <div id="pane-today">
+        <div class="sr-grid sr-cols-3" style="margin-bottom: 18px;">
+          <div class="sr-kpi"><div class="sr-kpi-icon green"><i data-lucide="user-check"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">Present (bus)</div><div class="sr-kpi-val" id="k-pres">—</div></div></div>
+          <div class="sr-kpi"><div class="sr-kpi-icon amber"><i data-lucide="hourglass"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">Pending</div><div class="sr-kpi-val" id="k-pend">—</div></div></div>
+          <div class="sr-kpi"><div class="sr-kpi-icon rose"><i data-lucide="calendar-x"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">Absent (approved)</div><div class="sr-kpi-val" id="k-abs">—</div></div></div>
+        </div>
+        <div class="sr-table-wrap"><table class="sr-table">
+          <thead><tr><th>Student</th><th>Grade</th><th>Bus</th><th>Boarded</th><th>Status</th></tr></thead>
+          <tbody id="rowsToday"></tbody>
+        </table></div>
+      </div>
+
+      <div id="pane-absences" style="display: none;">
+        <div class="sr-table-wrap"><table class="sr-table">
+          <thead><tr><th>Student</th><th>Date</th><th>Reason</th><th>Requested by</th><th>Status</th><th></th></tr></thead>
+          <tbody id="rowsAbs"></tbody>
+        </table></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../shared/data.js"></script>
+<script src="../shared/ui.js"></script>
+<script>
+const SCHOOL_ID = 'vis';
+srMount({ role: 'school', active: 'attendance', user: { name: 'Bounnyong S.', role: 'Principal · HIS', initials: 'BS' } });
+
+let view = 'today';
+function show(t) {
+  view = t;
+  document.getElementById('pane-today').style.display = t === 'today' ? '' : 'none';
+  document.getElementById('pane-absences').style.display = t === 'absences' ? '' : 'none';
+  document.getElementById('tab-today').classList.toggle('active', t === 'today');
+  document.getElementById('tab-absences').classList.toggle('active', t === 'absences');
+}
+window.show = show;
+
+const myStudents = APP_DATA.students.filter(s => s.schoolId === SCHOOL_ID);
+const myAbsences = APP_DATA.absences.filter(a => APP_DATA.byId.student[a.studentId]?.schoolId === SCHOOL_ID);
+
+function renderToday() {
+  const today = '2026-05-09';
+  const onBusEvents = {};
+  APP_DATA.events.forEach(e => { if (e.type === 'BOARD' && APP_DATA.byId.student[e.studentId]?.schoolId === SCHOOL_ID) onBusEvents[e.studentId] = e; });
+  const absentApprovedIds = new Set(myAbsences.filter(a => a.status === 'approved' && a.date === today).map(a => a.studentId));
+
+  let pres = 0, pend = 0, abs = absentApprovedIds.size;
+  const rows = myStudents.map(s => {
+    if (absentApprovedIds.has(s.id)) {
+      return `<tr><td>${student(s)}</td><td>${srEscape(s.grade)}</td><td>—</td><td>—</td><td><span class="sr-pill danger"><i data-lucide="calendar-x" style="width:11px;height:11px;"></i> Absent</span></td></tr>`;
+    }
+    const e = onBusEvents[s.id];
+    const busId = findBus(s.id);
+    if (e) { pres++; return `<tr><td>${student(s)}</td><td>${srEscape(s.grade)}</td><td><strong>${e.busId}</strong></td><td>${srFmtTime(e.timestamp)}</td><td><span class="sr-pill success"><span class="dot"></span>Present</span></td></tr>`; }
+    pend++;
+    return `<tr><td>${student(s)}</td><td>${srEscape(s.grade)}</td><td>${busId || '—'}</td><td>—</td><td><span class="sr-pill warn"><span class="dot"></span>Pending</span></td></tr>`;
+  }).join('');
+  document.getElementById('rowsToday').innerHTML = rows;
+  document.getElementById('k-pres').textContent = pres;
+  document.getElementById('k-pend').textContent = pend;
+  document.getElementById('k-abs').textContent = abs;
+  srIcons();
+}
+
+function findBus(stuId) {
+  for (const r of APP_DATA.routes) for (const run of r.runs) if (run.schoolId === SCHOOL_ID && run.stops.some(s => s.studentIds.includes(stuId))) return r.busId;
+  return null;
+}
+
+function student(s) {
+  return `<div style="display:flex; gap:10px; align-items:center;"><div class="sr-avatar" style="background: rgba(85,112,241,0.12); color: var(--sr-blue);">${srInitials(s.name)}</div><div><div style="font-weight:700;">${srEscape(s.name)}</div><div class="text-text-3 sr-mono" style="font-size:10px;">${s.id}</div></div></div>`;
+}
+
+function renderAbs() {
+  document.getElementById('rowsAbs').innerHTML = myAbsences.map(a => {
+    const s = APP_DATA.byId.student[a.studentId];
+    const g = APP_DATA.byId.guardian[a.requestedBy];
+    const cls = a.status === 'approved' ? 'success' : a.status === 'denied' ? 'danger' : 'warn';
+    return `
+      <tr>
+        <td>${student(s)}</td>
+        <td>${srFmtDate(a.date)}</td>
+        <td>${srEscape(a.reason)}</td>
+        <td><div class="text-text-2" style="font-size:12px;">${g ? srEscape(g.name) : '—'}</div><div class="text-text-3" style="font-size: 10px;">${srRelTime(a.requestedAt)}</div></td>
+        <td><span class="sr-pill ${cls}"><span class="dot"></span>${a.status}</span></td>
+        <td style="text-align:right;">
+          ${a.status === 'requested' ? `
+            <button class="sr-btn sr-btn-sm sr-btn-success" onclick="approve('${a.id}')"><i data-lucide="check"></i>Approve</button>
+            <button class="sr-btn sr-btn-sm sr-btn-ghost" onclick="deny('${a.id}')"><i data-lucide="x"></i>Deny</button>` : '—'}
+        </td>
+      </tr>
+    `;
+  }).join('');
+  document.getElementById('absBadge').textContent = myAbsences.filter(a => a.status === 'requested').length;
+  srIcons();
+}
+window.approve = id => { APP_DATA.byId.absence[id].status = 'approved'; srToast('✓ Absence approved'); renderAbs(); renderToday(); };
+window.deny    = id => { APP_DATA.byId.absence[id].status = 'denied';   srToast('✗ Absence denied');   renderAbs(); };
+
+renderToday();
+renderAbs();
+</script></body></html>

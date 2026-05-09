@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SafeRide — Billing</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="../shared/style.css">
+</head><body>
+<div class="app-shell">
+  <aside class="sr-sidebar"></aside>
+  <div class="app-main">
+    <header class="sr-topbar"></header>
+    <div class="app-content">
+      <div class="sr-page-head">
+        <div>
+          <div class="sr-breadcrumb"><a href="index.html">Operator</a><i data-lucide="chevron-right"></i><span>Billing</span></div>
+          <h1 class="sr-page-title">Billing & subscriptions</h1>
+          <p class="sr-page-sub">School subscriptions, monthly invoices, and revenue trends.</p>
+        </div>
+      </div>
+
+      <div class="sr-grid sr-cols-4" style="margin-bottom: 18px;">
+        <div class="sr-kpi"><div class="sr-kpi-icon green"><i data-lucide="trending-up"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">MRR</div><div class="sr-kpi-val" id="kpi-mrr">—</div><span class="sr-kpi-trend up"><i data-lucide="arrow-up"></i>+1.6%</span></div></div>
+        <div class="sr-kpi"><div class="sr-kpi-icon blue"><i data-lucide="package"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">Active subs</div><div class="sr-kpi-val" id="kpi-subs">—</div></div></div>
+        <div class="sr-kpi"><div class="sr-kpi-icon amber"><i data-lucide="receipt"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">Outstanding</div><div class="sr-kpi-val" id="kpi-out">—</div></div></div>
+        <div class="sr-kpi"><div class="sr-kpi-icon purple"><i data-lucide="users"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">Students billed</div><div class="sr-kpi-val" id="kpi-stu">—</div></div></div>
+      </div>
+
+      <div class="sr-grid sr-cols-12" style="margin-bottom: 18px;">
+        <div class="sr-card" style="grid-column: span 8;">
+          <div class="sr-card-head"><h3 class="sr-card-title">Revenue — last 6 months</h3></div>
+          <div style="position: relative; height: 260px;"><canvas id="rev"></canvas></div>
+        </div>
+        <div class="sr-card" style="grid-column: span 4;">
+          <div class="sr-card-head"><h3 class="sr-card-title">School subscriptions</h3></div>
+          <div id="subList"></div>
+        </div>
+      </div>
+
+      <div class="sr-card">
+        <div class="sr-card-head"><h3 class="sr-card-title">Recent invoices</h3></div>
+        <div style="margin: 0 -20px -20px;"><table class="sr-table">
+          <thead><tr><th>Invoice</th><th>School</th><th>Period</th><th>Amount</th><th>Due</th><th>Status</th><th></th></tr></thead>
+          <tbody id="invRows"></tbody>
+        </table></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../shared/data.js"></script>
+<script src="../shared/ui.js"></script>
+<script>
+srMount({ role: 'operator', active: 'billing', user: { name: 'Souvanh P.', role: 'Super Admin', initials: 'SP' } });
+document.getElementById('kpi-mrr').textContent = fmtMoney(totalMRR());
+document.getElementById('kpi-subs').textContent = APP_DATA.subscriptions.filter(s => s.status === 'active').length;
+document.getElementById('kpi-out').textContent = fmtMoney(outstandingTotal());
+document.getElementById('kpi-stu').textContent = totalStudentsBilled().toLocaleString();
+
+new Chart(document.getElementById('rev'), { type: 'bar',
+  data: { labels: APP_DATA.revenueHistory.map(r => fmtMonth(r.month)),
+          datasets: [{ data: APP_DATA.revenueHistory.map(r => r.revenue), backgroundColor: '#FFD60A', borderRadius: 6, maxBarThickness: 50 }] },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { ticks: { callback: v => fmtMoney(v) }, grid: { color: '#F1F5F9' } } } }
+});
+
+document.getElementById('subList').innerHTML = APP_DATA.subscriptions.map(sub => {
+  const sch = APP_DATA.byId.school[sub.schoolId];
+  const plan = APP_DATA.plans[sub.planId];
+  return `
+    <div class="sr-list-row">
+      <div style="width: 4px; height: 36px; border-radius: 2px; background: ${sch.color};"></div>
+      <div style="flex: 1; min-width: 0;">
+        <div style="font-weight: 700; font-size: 13px;">${sch.shortName}</div>
+        <div class="text-text-3" style="font-size: 11px;">${plan.name} · ${fmtMoney(sub.monthlyAmount)}</div>
+      </div>
+    </div>
+  `;
+}).join('');
+
+document.getElementById('invRows').innerHTML = APP_DATA.invoices.slice(0, 12).map(inv => {
+  const sch = APP_DATA.byId.school[inv.schoolId];
+  const cls = inv.status === 'paid' ? 'success' : inv.status === 'pending' ? 'warn' : 'danger';
+  return `
+    <tr>
+      <td class="sr-mono" style="font-size: 12px;">${inv.id}</td>
+      <td><span style="color:${sch.color}; font-weight: 700;">${sch.shortName}</span></td>
+      <td class="text-text-2">${fmtMonth(inv.period)}</td>
+      <td><strong>${fmtMoney(inv.amount)}</strong></td>
+      <td class="text-text-3">${srFmtDate(inv.dueAt)}</td>
+      <td><span class="sr-pill ${cls}"><span class="dot"></span>${inv.status}</span></td>
+      <td style="text-align:right;"><button class="sr-icon-btn"><i data-lucide="download"></i></button></td>
+    </tr>
+  `;
+}).join('');
+
+srIcons();
+</script></body></html>

@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SafeRide — Parents</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <link rel="stylesheet" href="../shared/style.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sr-sidebar"></aside>
+  <div class="app-main">
+    <header class="sr-topbar"></header>
+    <div class="app-content">
+
+      <div class="sr-page-head">
+        <div>
+          <div class="sr-breadcrumb"><a href="index.html">Operator</a><i data-lucide="chevron-right"></i><span>Parents</span></div>
+          <h1 class="sr-page-title">Parent accounts</h1>
+          <p class="sr-page-sub">Login accounts for the parent app — invite, suspend, reset passwords.</p>
+        </div>
+        <button id="addBtn" class="sr-btn sr-btn-primary"><i data-lucide="mail-plus"></i>Invite parent</button>
+      </div>
+
+      <div class="sr-card" style="padding: 14px 18px; margin-bottom: 16px;">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <div class="sr-search" style="flex: 1; max-width: 320px;"><i data-lucide="search"></i><input id="search" placeholder="Search by name or email…"></div>
+          <select id="statusFilter" class="sr-select" style="max-width: 200px;">
+            <option value="">All statuses</option><option value="active">Active</option><option value="invited">Invited</option><option value="suspended">Suspended</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="sr-table-wrap"><table class="sr-table">
+        <thead><tr><th>Parent</th><th>Email</th><th>Phone</th><th>Children</th><th>Account</th><th>Last login</th><th></th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table></div>
+
+    </div>
+  </div>
+</div>
+
+<script src="../shared/data.js"></script>
+<script src="../shared/ui.js"></script>
+<script>
+srMount({ role: 'operator', active: 'parents', user: { name: 'Souvanh P.', role: 'Super Admin', initials: 'SP' } });
+
+function render() {
+  const q = document.getElementById('search').value.toLowerCase();
+  const fs = document.getElementById('statusFilter').value;
+  const tbody = document.getElementById('rows');
+  const list = APP_DATA.guardians.filter(g => (!fs || g.accountStatus === fs) && (!q || g.name.toLowerCase().includes(q) || (g.email||'').toLowerCase().includes(q)));
+  tbody.innerHTML = list.map(g => {
+    const accCls = g.accountStatus === 'active' ? 'success' : g.accountStatus === 'invited' ? 'info' : 'danger';
+    const childNames = g.studentIds.slice(0, 2).map(id => (APP_DATA.byId.student[id] || {name: '?'}).name.split(' ')[0]).join(', ') + (g.studentIds.length > 2 ? ` +${g.studentIds.length - 2}` : '');
+    return `
+      <tr>
+        <td>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div class="sr-avatar lg" style="background: rgba(244,63,94,0.12); color: var(--sr-rose);">${srInitials(g.name)}</div>
+            <div><div style="font-weight: 700;">${srEscape(g.name)}</div><div class="text-text-3 sr-mono" style="font-size: 11px;">${g.id}</div></div>
+          </div>
+        </td>
+        <td class="text-text-2" style="font-size: 12px;">${srEscape(g.email || '—')}</td>
+        <td class="sr-mono" style="font-size: 12px;">${srEscape(g.phone || '')}</td>
+        <td><div style="font-weight: 700;">${g.studentIds.length}</div><div class="text-text-3" style="font-size: 11px;">${srEscape(childNames || '—')}</div></td>
+        <td><span class="sr-pill ${accCls}"><span class="dot"></span>${g.accountStatus}</span></td>
+        <td class="text-text-3" style="font-size: 11px;">${g.lastLogin ? srFmtDateTime(g.lastLogin) : 'Never'}</td>
+        <td style="text-align:right; white-space: nowrap;">
+          ${g.accountStatus === 'invited' ? `<button class="sr-icon-btn" onclick="invite('${g.id}')" title="Resend invite"><i data-lucide="mail"></i></button>` : `<button class="sr-icon-btn" onclick="reset('${g.id}')" title="Reset password"><i data-lucide="key-round"></i></button>`}
+          <button class="sr-icon-btn" onclick="edit('${g.id}')" title="Edit"><i data-lucide="pencil"></i></button>
+          <button class="sr-icon-btn" onclick="del('${g.id}')" title="Delete"><i data-lucide="trash-2"></i></button>
+        </td>
+      </tr>
+    `;
+  }).join('') || `<tr><td colspan="7"><div class="sr-empty"><i data-lucide="user-round"></i><div>No parents</div></div></td></tr>`;
+  srIcons();
+}
+function fields() {
+  return [
+    { key: 'name', label: 'Parent name', type: 'text', required: true },
+    { key: 'email', label: 'Email (login)', type: 'email', required: true, hint: 'Used as the login email for the parent app.' },
+    { key: 'phone', label: 'Phone', type: 'tel' },
+    { key: 'studentIds', label: 'Children', type: 'checkboxes', options: APP_DATA.students.map(s => ({ value: s.id, label: s.name + ' · ' + (APP_DATA.byId.school[s.schoolId] || {}).shortName })) },
+    { key: 'accountStatus', label: 'Status', type: 'select', default: 'invited', options: [{value:'invited',label:'Invited'},{value:'active',label:'Active'},{value:'suspended',label:'Suspended'}] }
+  ];
+}
+document.getElementById('addBtn').addEventListener('click', () => srModal({ title: 'Invite parent', fields: fields(), values: { studentIds: [], accountStatus: 'invited' },
+  onSave: data => {
+    const id = srNewId('G', APP_DATA.guardians);
+    const g = { id, ...data, lastLogin: null, createdAt: new Date().toISOString().slice(0, 10) };
+    APP_DATA.guardians.push(g); APP_DATA.byId.guardian[id] = g;
+    (g.studentIds || []).forEach(sid => { const s = APP_DATA.byId.student[sid]; if (s) s.guardianId = id; });
+    srToast('✓ Invitation sent → ' + g.email); render();
+  }}));
+window.edit = id => {
+  const g = APP_DATA.byId.guardian[id];
+  srModal({ title: 'Edit ' + g.name, fields: fields(), values: g, onSave: data => { Object.assign(g, data); srToast('✓ Saved'); render(); } });
+};
+window.del = id => srConfirm({ title: 'Delete parent?', message: 'This unlinks them from all children.', danger: true,
+  onYes: () => { APP_DATA.guardians = APP_DATA.guardians.filter(x => x.id !== id); delete APP_DATA.byId.guardian[id]; srToast('✓ Deleted'); render(); } });
+window.invite = id => srToast('📧 Invitation re-sent to ' + APP_DATA.byId.guardian[id].email);
+window.reset = id => srToast('🔑 Password reset link sent to ' + APP_DATA.byId.guardian[id].email);
+
+document.getElementById('search').addEventListener('input', render);
+document.getElementById('statusFilter').addEventListener('change', render);
+render();
+</script>
+</body>
+</html>

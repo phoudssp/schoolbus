@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SafeRide — Admin Users</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="../shared/style.css">
+</head><body>
+<div class="app-shell">
+  <aside class="sr-sidebar"></aside>
+  <div class="app-main">
+    <header class="sr-topbar"></header>
+    <div class="app-content">
+      <div class="sr-page-head">
+        <div>
+          <div class="sr-breadcrumb"><a href="index.html">Operator</a><i data-lucide="chevron-right"></i><span>Admin Users</span></div>
+          <h1 class="sr-page-title">Admin user management</h1>
+          <p class="sr-page-sub">Staff accounts with role-based access. Super Admins, Admins, Dispatchers, and School Admins.</p>
+        </div>
+        <button id="addBtn" class="sr-btn sr-btn-primary"><i data-lucide="user-plus"></i>Add user</button>
+      </div>
+
+      <div class="sr-grid sr-cols-4" style="margin-bottom: 18px;">
+        <div class="sr-kpi"><div class="sr-kpi-icon yellow"><i data-lucide="crown"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">Super Admins</div><div class="sr-kpi-val" id="cnt-super">—</div></div></div>
+        <div class="sr-kpi"><div class="sr-kpi-icon blue"><i data-lucide="shield"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">Admins</div><div class="sr-kpi-val" id="cnt-admin">—</div></div></div>
+        <div class="sr-kpi"><div class="sr-kpi-icon green"><i data-lucide="radar"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">Dispatchers</div><div class="sr-kpi-val" id="cnt-dispatch">—</div></div></div>
+        <div class="sr-kpi"><div class="sr-kpi-icon purple"><i data-lucide="school"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">School Admins</div><div class="sr-kpi-val" id="cnt-school">—</div></div></div>
+      </div>
+
+      <div class="sr-table-wrap"><table class="sr-table">
+        <thead><tr><th>User</th><th>Role</th><th>Email</th><th>Scope</th><th>Status</th><th>Last login</th><th></th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+<script src="../shared/data.js"></script>
+<script src="../shared/ui.js"></script>
+<script>
+srMount({ role: 'operator', active: 'users', user: { name: 'Souvanh P.', role: 'Super Admin', initials: 'SP' } });
+
+const ROLE_INFO = {
+  super_admin:  { label: 'Super Admin',  cls: 'warn',    icon: 'crown' },
+  admin:        { label: 'Admin',        cls: 'info',    icon: 'shield' },
+  dispatcher:   { label: 'Dispatcher',   cls: 'success', icon: 'radar' },
+  school_admin: { label: 'School Admin', cls: 'purple',  icon: 'school' }
+};
+
+function counts() {
+  document.getElementById('cnt-super').textContent    = APP_DATA.adminUsers.filter(u => u.role === 'super_admin').length;
+  document.getElementById('cnt-admin').textContent    = APP_DATA.adminUsers.filter(u => u.role === 'admin').length;
+  document.getElementById('cnt-dispatch').textContent = APP_DATA.adminUsers.filter(u => u.role === 'dispatcher').length;
+  document.getElementById('cnt-school').textContent   = APP_DATA.adminUsers.filter(u => u.role === 'school_admin').length;
+}
+
+function render() {
+  document.getElementById('rows').innerHTML = APP_DATA.adminUsers.map(u => {
+    const info = ROLE_INFO[u.role] || { label: u.role, cls: 'neutral', icon: 'user' };
+    const sch = u.schoolId ? APP_DATA.byId.school[u.schoolId] : null;
+    return `
+      <tr>
+        <td><div style="display:flex; align-items: center; gap: 10px;">
+          <div class="sr-avatar lg" style="background: rgba(85,112,241,0.12); color: var(--sr-blue);">${srInitials(u.name)}</div>
+          <div><div style="font-weight: 700;">${srEscape(u.name)}</div><div class="text-text-3 sr-mono" style="font-size: 11px;">${u.id}</div></div>
+        </div></td>
+        <td><span class="sr-pill ${info.cls}"><i data-lucide="${info.icon}" style="width:10px;height:10px;"></i>${info.label}</span></td>
+        <td class="text-text-2" style="font-size: 12px;">${srEscape(u.email)}</td>
+        <td>${sch ? `<span style="color:${sch.color}; font-weight: 700;">${sch.shortName}</span>` : '<span class="text-text-4">All</span>'}</td>
+        <td><span class="sr-pill ${u.status === 'active' ? 'success' : 'info'}"><span class="dot"></span>${u.status}</span></td>
+        <td class="text-text-3" style="font-size: 11px;">${u.lastLogin ? srRelTime(u.lastLogin) : 'Never'}</td>
+        <td style="text-align:right;">
+          <button class="sr-icon-btn" onclick="reset('${u.id}')" title="Reset password"><i data-lucide="key-round"></i></button>
+          <button class="sr-icon-btn" onclick="edit('${u.id}')"><i data-lucide="pencil"></i></button>
+          <button class="sr-icon-btn" onclick="del('${u.id}')"><i data-lucide="trash-2"></i></button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+  counts();
+  srIcons();
+}
+function fields() { return [
+  { key: 'name', label: 'Full name', type: 'text', required: true },
+  { key: 'email', label: 'Email', type: 'email', required: true },
+  { key: 'role', label: 'Role', type: 'select', required: true, default: 'admin', options: [
+    { value: 'super_admin', label: 'Super Admin (full access)' },
+    { value: 'admin',       label: 'Admin (operator-wide CRUD)' },
+    { value: 'dispatcher',  label: 'Dispatcher (live ops only)' },
+    { value: 'school_admin',label: 'School Admin (one school)' }
+  ]},
+  { key: 'schoolId', label: 'School (only for School Admin)', type: 'select', placeholder: '— Operator-wide —', options: APP_DATA.schools.map(s => ({ value: s.id, label: s.name })) },
+  { key: 'status', label: 'Status', type: 'select', default: 'invited', options: ['active', 'invited', 'suspended'] }
+];}
+document.getElementById('addBtn').addEventListener('click', () => srModal({ title: 'Add user', fields: fields(),
+  onSave: data => { const id = srNewId('U', APP_DATA.adminUsers); const u = { id, ...data, lastLogin: null, avatar: '🛡️' }; APP_DATA.adminUsers.push(u); APP_DATA.byId.adminUser[id] = u; srToast('✓ Invitation sent to ' + u.email); render(); }}));
+window.edit = id => { const u = APP_DATA.byId.adminUser[id]; srModal({ title: 'Edit ' + u.name, fields: fields(), values: u, onSave: data => { Object.assign(u, data); srToast('✓ Saved'); render(); }}); };
+window.del = id => srConfirm({ title: 'Delete user?', message: 'Their access is revoked immediately.', danger: true, onYes: () => { APP_DATA.adminUsers = APP_DATA.adminUsers.filter(x => x.id !== id); delete APP_DATA.byId.adminUser[id]; srToast('✓ Deleted'); render(); }});
+window.reset = id => srToast('🔑 Password reset link sent to ' + APP_DATA.byId.adminUser[id].email);
+render();
+</script></body></html>

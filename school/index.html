@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SafeRide — School Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="../shared/style.css">
+</head><body>
+<div class="app-shell">
+  <aside class="sr-sidebar"></aside>
+  <div class="app-main">
+    <header class="sr-topbar"></header>
+    <div class="app-content">
+      <div class="sr-page-head">
+        <div>
+          <div class="sr-breadcrumb"><i data-lucide="school"></i><span>HIS · Houayxay International School</span></div>
+          <h1 class="sr-page-title">Welcome back, Bounnyong 👋</h1>
+          <p class="sr-page-sub">Saturday, May 9 · 320 students · Bell 07:30 / 14:30</p>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <a href="live.html" class="sr-btn sr-btn-yellow"><i data-lucide="radar"></i>Live status</a>
+          <a href="scores.html" class="sr-btn sr-btn-primary"><i data-lucide="award"></i>Add scores</a>
+        </div>
+      </div>
+
+      <div class="sr-grid sr-cols-4" style="margin-bottom: 18px;">
+        <div class="sr-kpi"><div class="sr-kpi-icon blue"><i data-lucide="users"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">Total students</div><div class="sr-kpi-val">320</div><span class="sr-kpi-trend up"><i data-lucide="trending-up"></i>+12 this term</span></div></div>
+        <div class="sr-kpi"><div class="sr-kpi-icon green"><i data-lucide="check-check"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">Present today (bus)</div><div class="sr-kpi-val" id="kpi-present">—</div><span class="sr-kpi-trend up"><i data-lucide="trending-up"></i>96%</span></div></div>
+        <div class="sr-kpi"><div class="sr-kpi-icon amber"><i data-lucide="calendar-x"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">Absence requests</div><div class="sr-kpi-val" id="kpi-abs">—</div><span class="sr-kpi-trend flat"><i data-lucide="hand"></i>Awaiting review</span></div></div>
+        <div class="sr-kpi"><div class="sr-kpi-icon purple"><i data-lucide="award"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">Scores entered</div><div class="sr-kpi-val" id="kpi-scores">—</div><span class="sr-kpi-trend flat"><i data-lucide="calendar"></i>This week</span></div></div>
+      </div>
+
+      <div class="sr-grid sr-cols-12" style="margin-bottom: 18px;">
+        <div class="sr-card" style="grid-column: span 8;">
+          <div class="sr-card-head">
+            <div><h3 class="sr-card-title">Incoming buses today</h3><p class="text-text-3" style="font-size:12px; margin: 2px 0 0;">SafeRide buses bringing your students this morning</p></div>
+            <a href="live.html" class="sr-btn sr-btn-sm sr-btn-ghost">Open live <i data-lucide="arrow-up-right"></i></a>
+          </div>
+          <div id="busesIn" style="display: flex; flex-direction: column; gap: 10px;"></div>
+        </div>
+
+        <div class="sr-card" style="grid-column: span 4;">
+          <div class="sr-card-head">
+            <h3 class="sr-card-title">Pending absences</h3>
+            <a href="attendance.html" class="sr-btn sr-btn-sm sr-btn-ghost">Review all <i data-lucide="arrow-up-right"></i></a>
+          </div>
+          <div id="absList"></div>
+        </div>
+      </div>
+
+      <div class="sr-grid sr-cols-12">
+        <div class="sr-card" style="grid-column: span 7;">
+          <div class="sr-card-head"><h3 class="sr-card-title">Average score by subject</h3></div>
+          <div style="position: relative; height: 240px;"><canvas id="scoreChart"></canvas></div>
+        </div>
+        <div class="sr-card" style="grid-column: span 5;">
+          <div class="sr-card-head"><h3 class="sr-card-title">Recent activity</h3></div>
+          <div id="activity" style="font-size: 13px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../shared/data.js"></script>
+<script src="../shared/ui.js"></script>
+<script>
+const SCHOOL_ID = 'vis';   // demo: act as Houayxay International School admin
+srMount({ role: 'school', active: 'dashboard', user: { name: 'Bounnyong S.', role: 'Principal · HIS', initials: 'BS' } });
+
+const mySch = APP_DATA.byId.school[SCHOOL_ID];
+const myStudents = APP_DATA.students.filter(s => s.schoolId === SCHOOL_ID);
+const myAbsences = APP_DATA.absences.filter(a => APP_DATA.byId.student[a.studentId]?.schoolId === SCHOOL_ID);
+const myScores = APP_DATA.scores.filter(s => s.schoolId === SCHOOL_ID);
+
+document.getElementById('kpi-present').textContent = APP_DATA.events.filter(e => e.type === 'BOARD' && APP_DATA.byId.student[e.studentId]?.schoolId === SCHOOL_ID).length;
+document.getElementById('kpi-abs').textContent     = myAbsences.filter(a => a.status === 'requested').length;
+document.getElementById('kpi-scores').textContent  = myScores.length;
+
+// Incoming buses
+const myRuns = APP_DATA.routes.flatMap(r => r.runs.filter(run => run.schoolId === SCHOOL_ID).map(run => ({ route: r, run })));
+document.getElementById('busesIn').innerHTML = myRuns.map(({ route, run }) => {
+  const lp = APP_DATA.livePositions[route.busId];
+  const driver = APP_DATA.byId.driver[route.driverId];
+  const expected = run.stops.reduce((a, s) => a + s.studentIds.length, 0);
+  const scanned = APP_DATA.events.filter(e => e.runId === run.id && e.type === 'BOARD').length;
+  const pct = expected ? Math.round(scanned / expected * 100) : 0;
+  const sCls = lp.status === 'in_transit' ? 'success' : lp.status === 'at_stop' ? 'warn' : 'info';
+  return `
+    <div style="display: flex; align-items: center; gap: 14px; padding: 14px; background: var(--sr-muted); border-radius: 10px;">
+      <div class="sr-kpi-icon yellow" style="width:42px;height:42px;"><i data-lucide="bus"></i></div>
+      <div style="flex:1; min-width: 0;">
+        <div style="display: flex; align-items: center; gap: 8px;"><strong>${route.busId}</strong><span class="sr-pill ${sCls}"><span class="dot"></span>${lp.status.replace('_',' ')}</span></div>
+        <div class="text-text-3" style="font-size: 12px;">${srEscape(driver.name)} · ETA ${lp.etaMin != null ? lp.etaMin + ' min' : '—'}</div>
+        <div style="margin-top: 6px; height: 6px; background: var(--sr-border); border-radius: 999px; overflow: hidden;">
+          <div style="background: var(--sr-green); height: 100%; width: ${pct}%; border-radius: 999px;"></div>
+        </div>
+      </div>
+      <div style="text-align: right;"><div style="font-size: 18px; font-weight: 800;">${scanned}<span class="text-text-3" style="font-size: 13px; font-weight: 500;">/${expected}</span></div><div class="text-text-3" style="font-size: 11px;">boarded</div></div>
+    </div>
+  `;
+}).join('');
+
+// Absences
+document.getElementById('absList').innerHTML = myAbsences.filter(a => a.status === 'requested').slice(0, 4).map(a => {
+  const stu = APP_DATA.byId.student[a.studentId];
+  return `
+    <div style="display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--sr-border);">
+      <div class="sr-avatar" style="background: rgba(244,63,94,0.12); color: var(--sr-rose);">${srInitials(stu.name)}</div>
+      <div style="flex:1; min-width: 0;">
+        <div style="font-weight: 700; font-size: 13px;">${srEscape(stu.name)}</div>
+        <div class="text-text-3" style="font-size: 11px;">${srEscape(a.reason)} · ${srFmtDate(a.date)}</div>
+      </div>
+      <a href="attendance.html" class="sr-btn sr-btn-sm sr-btn-yellow">Review</a>
+    </div>
+  `;
+}).join('') || '<div class="sr-empty"><i data-lucide="check-check"></i><div>No pending absences</div></div>';
+
+// Subject avg
+const bySubject = {};
+myScores.forEach(s => { (bySubject[s.subject] = bySubject[s.subject] || []).push(s.score); });
+const subjLabels = APP_DATA.subjects.map(s => s.name);
+const subjAvgs = APP_DATA.subjects.map(s => {
+  const arr = bySubject[s.id] || [];
+  return arr.length ? Math.round(arr.reduce((a,b) => a+b, 0) / arr.length) : 0;
+});
+new Chart(document.getElementById('scoreChart'), {
+  type: 'bar',
+  data: { labels: subjLabels, datasets: [{ data: subjAvgs, backgroundColor: '#5570F1', borderRadius: 6, maxBarThickness: 36 }] },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100 } } }
+});
+
+// Activity
+const acts = [
+  { i: 'log-in', m: '13 students boarded morning bus B-101', t: '07:25', c: 'green' },
+  { i: 'log-in', m: '12 students arrived from B-103',         t: '07:25', c: 'green' },
+  { i: 'calendar-x', m: 'Mr. Chanthavong requested absence for Noi (May 9)', t: '08:05', c: 'amber' },
+  { i: 'award',  m: 'Maly scored 92 in Mathematics quiz',     t: 'Yesterday', c: 'purple' },
+  { i: 'award',  m: 'Tom scored 78 in English assignment',    t: 'Yesterday', c: 'purple' }
+];
+document.getElementById('activity').innerHTML = acts.map(a => `
+  <div class="sr-list-row">
+    <div class="sr-kpi-icon ${a.c}" style="width:30px;height:30px;"><i data-lucide="${a.i}"></i></div>
+    <div style="flex:1;"><div>${a.m}</div><div class="text-text-3" style="font-size: 11px;">${a.t}</div></div>
+  </div>
+`).join('');
+
+srIcons();
+</script></body></html>

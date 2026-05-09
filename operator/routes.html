@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SafeRide — Routes</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <link rel="stylesheet" href="../shared/style.css">
+  <style>
+    .stop-num { width: 24px; height: 24px; background: var(--sr-yellow); color: var(--sr-navy); border: 2px solid var(--sr-navy); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 11px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+    .house-pin { width: 22px; height: 22px; background: var(--sr-blue); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sr-sidebar"></aside>
+  <div class="app-main">
+    <header class="sr-topbar"></header>
+    <div class="app-content" style="padding: 0;">
+
+      <div style="display: grid; grid-template-columns: 380px 1fr; height: calc(100vh - 65px);">
+
+        <!-- LEFT panel -->
+        <aside style="background: white; border-right: 1px solid var(--sr-border); display: flex; flex-direction: column; overflow: hidden;">
+
+          <div style="padding: 18px 20px; border-bottom: 1px solid var(--sr-border);">
+            <div class="sr-breadcrumb"><a href="index.html">Operator</a><i data-lucide="chevron-right"></i><span>Routes</span></div>
+            <h2 style="margin: 4px 0 4px; font-size: 18px; font-weight: 800;">Route planning</h2>
+            <p class="text-text-3" style="font-size: 12px; margin: 0;">Door-to-door pickups. Optimize for shortest distance to each school.</p>
+            <button id="newRoute" class="sr-btn sr-btn-primary" style="margin-top: 12px; width: 100%;"><i data-lucide="plus"></i>New route</button>
+          </div>
+
+          <div style="overflow-y: auto; flex: 1; padding: 8px 12px;">
+            <div class="text-text-3" style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 8px 8px 4px;">All routes</div>
+            <div id="routesList"></div>
+          </div>
+
+          <div id="routeDetail" style="border-top: 1px solid var(--sr-border); padding: 16px 20px; max-height: 50vh; overflow-y: auto; background: var(--sr-muted);"></div>
+
+        </aside>
+
+        <!-- RIGHT map -->
+        <main style="position: relative;">
+          <div id="map" style="height: 100%;"></div>
+          <div style="position: absolute; top: 14px; left: 14px; background: white; padding: 10px 14px; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.1); font-size: 11px; z-index: 999;">
+            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;"><span class="stop-num" style="width: 14px; height: 14px; font-size: 9px;">1</span> Pickup stop</div>
+            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;"><span class="house-pin" style="width: 14px; height: 14px; font-size: 9px;">🏠</span> Student house</div>
+            <div style="display: flex; align-items: center; gap: 6px;"><span class="school-marker-div" style="font-size: 9px; padding: 1px 4px;">🏫</span> School</div>
+          </div>
+        </main>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+<script src="../shared/data.js"></script>
+<script src="../shared/ui.js"></script>
+<script>
+srMount({ role: 'operator', active: 'routes', user: { name: 'Souvanh P.', role: 'Super Admin', initials: 'SP' } });
+
+const map = L.map('map', { zoomControl: true, attributionControl: false }).setView(APP_DATA.operator.center, 14);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+
+let selectedKey = null;
+const layers = { schools: L.layerGroup().addTo(map), houses: L.layerGroup().addTo(map), routeStops: L.layerGroup().addTo(map), poly: null };
+
+// Schools always visible
+APP_DATA.schools.forEach(s => {
+  L.marker(s.coords, { icon: L.divIcon({ className: '', html: `<div class="school-marker-div" style="border-color:${s.color}; color:${s.color}">🏫 ${s.shortName}</div>`, iconSize: [110, 28], iconAnchor: [55, 14] }) }).addTo(layers.schools);
+});
+
+function allRuns() { return APP_DATA.routes.flatMap(r => r.runs.map(run => ({ route: r, run }))); }
+
+function selRun() {
+  if (!selectedKey) return null;
+  const [rid, runId] = selectedKey.split('::');
+  const r = APP_DATA.byId.route[rid]; if (!r) return null;
+  const run = r.runs.find(x => x.id === runId);
+  return run ? { route: r, run } : null;
+}
+
+function renderList() {
+  const wrap = document.getElementById('routesList');
+  wrap.innerHTML = allRuns().map(({route, run}) => {
+    const sch = APP_DATA.byId.school[run.schoolId];
+    const stops = run.stops.map(s => APP_DATA.byId.stop[s.stopId].coords);
+    const km = routeKm(stops);
+    const isSel = selectedKey === `${route.id}::${run.id}`;
+    const studentCount = run.stops.reduce((a,s) => a + s.studentIds.length, 0);
+    return `
+      <div onclick="select('${route.id}','${run.id}')" style="cursor:pointer; padding: 12px; margin-bottom: 6px; border-radius: 10px; ${isSel ? 'background: #FFFBEA; border: 1px solid var(--sr-yellow);' : 'border: 1px solid transparent; background: transparent;'}">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <strong style="font-size: 13px;">${route.busId} → <span style="color:${sch.color}">${sch.shortName}</span></strong>
+          <span class="sr-mono text-text-3" style="font-size: 11px;">${run.direction}</span>
+        </div>
+        <div class="text-text-3" style="font-size: 11px; margin-top: 3px; display: flex; gap: 8px;">
+          <span><i data-lucide="map-pin" style="width:10px;height:10px;vertical-align:middle;"></i> ${run.stops.filter(s => !APP_DATA.byId.stop[s.stopId].isSchool).length}</span>
+          <span><i data-lucide="users" style="width:10px;height:10px;vertical-align:middle;"></i> ${studentCount}</span>
+          <span><i data-lucide="route" style="width:10px;height:10px;vertical-align:middle;"></i> ${km.toFixed(1)} km</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+  srIcons();
+}
+
+function renderDetail() {
+  const wrap = document.getElementById('routeDetail');
+  const sel = selRun();
+  if (!sel) { wrap.innerHTML = '<div class="text-text-4" style="font-size: 12px; text-align: center;">Select a route from the list</div>'; return; }
+  const sch = APP_DATA.byId.school[sel.run.schoolId];
+  const stopCoords = sel.run.stops.map(s => APP_DATA.byId.stop[s.stopId].coords);
+  const km = routeKm(stopCoords);
+  const min = Math.round(km / 25 * 60);
+  const studentCount = sel.run.stops.reduce((a,s) => a + s.studentIds.length, 0);
+  wrap.innerHTML = `
+    <div>
+      <strong style="font-size: 14px;">${sel.route.busId} → <span style="color:${sch.color}">${sch.shortName}</span></strong>
+      <div class="text-text-3" style="font-size: 11px; font-family: monospace;">${sel.run.id}</div>
+    </div>
+    <div class="sr-grid sr-cols-3" style="gap: 6px; margin: 12px 0;">
+      <div style="background: white; border: 1px solid var(--sr-border); padding: 8px; border-radius: 6px; text-align: center;">
+        <div class="text-text-3" style="font-size: 10px;">DIST</div><div style="font-weight: 800;" id="d-km">${km.toFixed(1)} km</div>
+      </div>
+      <div style="background: white; border: 1px solid var(--sr-border); padding: 8px; border-radius: 6px; text-align: center;">
+        <div class="text-text-3" style="font-size: 10px;">TIME</div><div style="font-weight: 800;" id="d-min">${min} min</div>
+      </div>
+      <div style="background: white; border: 1px solid var(--sr-border); padding: 8px; border-radius: 6px; text-align: center;">
+        <div class="text-text-3" style="font-size: 10px;">KIDS</div><div style="font-weight: 800;">${studentCount}</div>
+      </div>
+    </div>
+    <button onclick="optimize()" class="sr-btn sr-btn-yellow" style="width: 100%;"><i data-lucide="zap"></i> Optimize</button>
+    <div style="margin-top: 14px;">
+      <div class="text-text-3" style="font-size: 10px; font-weight: 700; text-transform: uppercase;">Stops in order</div>
+      <div id="stopsList" style="margin-top: 6px;"></div>
+    </div>
+  `;
+  renderStopsList();
+  srIcons();
+}
+
+function renderStopsList() {
+  const sel = selRun(); if (!sel) return;
+  const wrap = document.getElementById('stopsList'); if (!wrap) return;
+  wrap.innerHTML = sel.run.stops.map((s, i) => {
+    const stop = APP_DATA.byId.stop[s.stopId];
+    if (stop.isSchool) {
+      return `<div style="padding: 6px 8px; background: rgba(85,112,241,0.1); border-radius: 6px; margin-top: 4px; display: flex; align-items: center; gap: 8px; font-size: 12px;"><i data-lucide="school" style="width:14px;height:14px; color: var(--sr-blue);"></i><strong>${srEscape(stop.name)}</strong></div>`;
+    }
+    return `
+      <div style="padding: 6px 8px; background: white; border: 1px solid var(--sr-border); border-radius: 6px; margin-top: 4px; display: flex; align-items: center; gap: 8px; font-size: 12px;">
+        <span class="stop-num">${i+1}</span>
+        <div style="flex: 1; min-width: 0;"><div style="font-weight: 600;">${srEscape(stop.name)}</div><div class="text-text-3" style="font-size: 10px;">${s.studentIds.length} student${s.studentIds.length !== 1 ? 's' : ''}</div></div>
+        <button class="sr-icon-btn" style="width: 22px; height: 22px;" onclick="moveStop(${i}, -1)"><i data-lucide="chevron-up" style="width:12px;height:12px;"></i></button>
+        <button class="sr-icon-btn" style="width: 22px; height: 22px;" onclick="moveStop(${i}, 1)"><i data-lucide="chevron-down" style="width:12px;height:12px;"></i></button>
+      </div>
+    `;
+  }).join('');
+  srIcons();
+}
+
+function renderOverlay() {
+  layers.routeStops.clearLayers();
+  layers.houses.clearLayers();
+  if (layers.poly) { map.removeLayer(layers.poly); layers.poly = null; }
+  const sel = selRun(); if (!sel) return;
+  const sch = APP_DATA.byId.school[sel.run.schoolId];
+
+  // Draw houses for each student in the run
+  sel.run.stops.forEach(s => {
+    s.studentIds.forEach(stuId => {
+      const stu = APP_DATA.byId.student[stuId];
+      if (stu && stu.house && stu.house.coords) {
+        L.marker(stu.house.coords, { icon: L.divIcon({ className: '', html: `<div class="house-pin">🏠</div>`, iconSize: [22, 22], iconAnchor: [11, 11] }) })
+          .addTo(layers.houses).bindPopup(`<b>${srEscape(stu.name)}</b><br>${srEscape(stu.house.addressLine || '')}`);
+      }
+    });
+  });
+
+  const stopCoords = sel.run.stops.map(s => APP_DATA.byId.stop[s.stopId].coords);
+  layers.poly = L.polyline(stopCoords, { color: sch.color, weight: 5, opacity: 0.85, dashArray: '8 6' }).addTo(map);
+  sel.run.stops.forEach((s, i) => {
+    const stop = APP_DATA.byId.stop[s.stopId];
+    if (stop.isSchool) {
+      L.marker(stop.coords, { icon: L.divIcon({ className: '', html: `<div class="school-marker-div" style="border-color:${sch.color}; background:${sch.color}; color:white;">🏫 ${sch.shortName}</div>`, iconSize: [110, 28], iconAnchor: [55, 14] }), zIndexOffset: 1000 }).addTo(layers.routeStops);
+    } else {
+      L.marker(stop.coords, { icon: L.divIcon({ className: '', html: `<div class="stop-num">${i+1}</div>`, iconSize: [24, 24], iconAnchor: [12, 12] }), zIndexOffset: 500 }).addTo(layers.routeStops);
+    }
+  });
+  if (stopCoords.length) map.fitBounds(stopCoords, { padding: [40, 40] });
+}
+
+window.select = (rid, runId) => { selectedKey = `${rid}::${runId}`; renderList(); renderDetail(); renderOverlay(); };
+window.moveStop = (i, dir) => {
+  const sel = selRun(); if (!sel) return;
+  const j = i + dir;
+  const stops = sel.run.stops;
+  if (j < 0 || j >= stops.length) return;
+  if (APP_DATA.byId.stop[stops[i].stopId].isSchool || APP_DATA.byId.stop[stops[j].stopId].isSchool) return;
+  [stops[i], stops[j]] = [stops[j], stops[i]];
+  renderDetail(); renderOverlay(); renderList();
+};
+window.optimize = () => {
+  const sel = selRun(); if (!sel) return;
+  const stops = sel.run.stops;
+  const points = stops.map(s => APP_DATA.byId.stop[s.stopId].coords);
+  let endIdx = stops.findIndex(s => APP_DATA.byId.stop[s.stopId].isSchool);
+  if (endIdx < 0) endIdx = null;
+  const before = routeKm(points);
+  const order = nearestNeighborOrder(points, endIdx);
+  sel.run.stops = order.map(i => stops[i]);
+  const after = routeKm(sel.run.stops.map(s => APP_DATA.byId.stop[s.stopId].coords));
+  const saved = before - after;
+  if (saved > 0.05) srToast(`⚡ Optimized — ${saved.toFixed(1)} km saved (${Math.round(saved/before*100)}%)`);
+  else srToast('✓ Already optimal');
+  renderDetail(); renderOverlay(); renderList();
+};
+document.getElementById('newRoute').addEventListener('click', () => srToast('Use the existing routes — full builder is coming'));
+
+renderList();
+const first = allRuns()[0];
+if (first) select(first.route.id, first.run.id);
+</script>
+</body>
+</html>

@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SafeRide — Live Monitoring</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <link rel="stylesheet" href="../shared/style.css">
+</head>
+<body>
+
+<div class="app-shell">
+  <aside class="sr-sidebar"></aside>
+  <div class="app-main">
+    <header class="sr-topbar"></header>
+    <div class="app-content" style="padding: 0;">
+
+      <div class="sr-grid sr-cols-12" style="gap: 0; height: calc(100vh - 65px);">
+
+        <!-- LEFT: bus list + selected bus detail -->
+        <aside style="grid-column: span 4; background: white; border-right: 1px solid var(--sr-border); display: flex; flex-direction: column; overflow: hidden;">
+
+          <div style="padding: 16px 20px; border-bottom: 1px solid var(--sr-border);">
+            <div style="display:flex; align-items:center; justify-content: space-between; margin-bottom: 8px;">
+              <h2 style="margin: 0; font-size: 16px; font-weight: 800;"><span class="sr-live-dot" style="display:inline-block; vertical-align:middle; margin-right:8px;"></span>Live monitoring</h2>
+              <span class="sr-pill success" id="liveTime"><i data-lucide="clock" style="width:11px;height:11px;"></i> 07:05</span>
+            </div>
+            <p class="text-text-3" style="font-size: 12px; margin: 0;">Real-time bus positions across Bokeo Province. Updates every 2 seconds.</p>
+
+            <div class="sr-grid" style="grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 14px;">
+              <div style="background: var(--sr-bg); padding: 10px; border-radius: 8px; text-align: center;">
+                <div style="font-size: 18px; font-weight: 800; color: var(--sr-green);" id="stat-active">5</div>
+                <div style="font-size: 10px; color: var(--sr-text-3); text-transform: uppercase; letter-spacing: 0.04em;">Active</div>
+              </div>
+              <div style="background: var(--sr-bg); padding: 10px; border-radius: 8px; text-align: center;">
+                <div style="font-size: 18px; font-weight: 800; color: var(--sr-amber);" id="stat-onstop">0</div>
+                <div style="font-size: 10px; color: var(--sr-text-3); text-transform: uppercase; letter-spacing: 0.04em;">At stop</div>
+              </div>
+              <div style="background: var(--sr-bg); padding: 10px; border-radius: 8px; text-align: center;">
+                <div style="font-size: 18px; font-weight: 800; color: var(--sr-text-3);" id="stat-idle">1</div>
+                <div style="font-size: 10px; color: var(--sr-text-3); text-transform: uppercase; letter-spacing: 0.04em;">Idle</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="overflow-y: auto; flex: 1;">
+            <div id="busList" style="padding: 8px;"></div>
+          </div>
+
+          <div style="border-top: 1px solid var(--sr-border); padding: 14px 20px; background: var(--sr-muted);">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 8px;">
+              <strong style="font-size: 12px;">Recent activity</strong>
+              <a href="#" style="font-size: 11px; color: var(--sr-blue); text-decoration: none;">View log →</a>
+            </div>
+            <div id="activityFeed" style="font-size: 12px; color: var(--sr-text-2); max-height: 130px; overflow-y: auto;"></div>
+          </div>
+
+        </aside>
+
+        <!-- RIGHT: map -->
+        <main style="grid-column: span 8; position: relative;">
+          <div id="map" style="height: calc(100vh - 65px); width: 100%;"></div>
+
+          <!-- Floating speed control -->
+          <div style="position:absolute; top: 16px; right: 16px; background: white; border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,0.15); padding: 10px 14px; display: flex; align-items: center; gap: 12px; z-index: 1000;">
+            <span style="font-size: 12px; font-weight: 700; color: var(--sr-text-2);">Sim speed</span>
+            <button onclick="setSpeed(30)" class="sr-btn sr-btn-sm sr-btn-ghost speed-btn" data-speed="30">30×</button>
+            <button onclick="setSpeed(60)" class="sr-btn sr-btn-sm sr-btn-yellow speed-btn" data-speed="60">60×</button>
+            <button onclick="setSpeed(120)" class="sr-btn sr-btn-sm sr-btn-ghost speed-btn" data-speed="120">120×</button>
+          </div>
+
+          <!-- Selected bus info card -->
+          <div id="busInfoCard" style="position:absolute; bottom: 16px; left: 16px; right: 16px; background: white; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.18); padding: 16px 20px; z-index: 999; display: none;"></div>
+        </main>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="../shared/data.js"></script>
+<script src="../shared/ui.js"></script>
+<script>
+srMount({ role: 'operator', active: 'monitoring', user: { name: 'Souvanh P.', role: 'Super Admin', initials: 'SP' } });
+
+// ---------- Map ----------
+const map = L.map('map', { zoomControl: true, attributionControl: false }).setView(APP_DATA.operator.center, 13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+
+// School markers
+APP_DATA.schools.forEach(s => {
+  const icon = L.divIcon({ className: '', html: `<div class="school-marker-div" style="border-color:${s.color}; color:${s.color}">🏫 ${s.shortName}</div>`, iconSize: [110, 28], iconAnchor: [55, 14] });
+  L.marker(s.coords, { icon }).addTo(map).bindPopup(`<b>${s.name}</b>`);
+});
+
+// Bus markers
+const busMarkers = {};
+const busPolylines = {};
+function busIconHtml(busId, status) {
+  const sIcon = status === 'in_transit' ? '🚌' : status === 'at_stop' ? '🚏' : '⏸';
+  return `<div class="bus-marker-div ${status}" data-bus="${busId}">${sIcon} ${busId}</div>`;
+}
+APP_DATA.buses.forEach(b => {
+  const lp = APP_DATA.livePositions[b.id];
+  if (!lp) return;
+  const icon = L.divIcon({ className: '', html: busIconHtml(b.id, lp.status), iconSize: [80, 28], iconAnchor: [40, 14] });
+  busMarkers[b.id] = L.marker(lp.coords, { icon }).addTo(map);
+  busMarkers[b.id].on('click', () => selectBus(b.id));
+});
+
+// ---------- Sim state ----------
+// Each bus tracks its progress along its current run's stop sequence.
+// State[busId] = { runId, segIdx, segProgress (0..1), pauseUntil }
+const sim = {};
+APP_DATA.buses.forEach(b => {
+  const lp = APP_DATA.livePositions[b.id];
+  if (!lp.currentRunId) return;
+  // Find run + remaining stop list
+  let run = null;
+  for (const r of APP_DATA.routes) for (const ru of r.runs) if (ru.id === lp.currentRunId) { run = ru; break; }
+  if (!run) return;
+  const stopCoords = run.stops.map(s => APP_DATA.byId.stop[s.stopId].coords);
+  const nextIdx = run.stops.findIndex(s => s.stopId === lp.nextStopId);
+  // Path: current pos → next stop → ... → school
+  sim[b.id] = {
+    runId: run.id,
+    path: [lp.coords].concat(nextIdx >= 0 ? stopCoords.slice(nextIdx) : stopCoords),
+    segIdx: 0,
+    segProgress: 0,
+    pauseUntil: 0,
+    stopNames: ['(current)'].concat((nextIdx >= 0 ? run.stops.slice(nextIdx) : run.stops).map(s => APP_DATA.byId.stop[s.stopId].name))
+  };
+});
+
+// Sim params
+let SIM_SPEED = 60;       // 60× real time = 1 min real / sec sim
+let SIM_KMH = 25;         // bus avg speed in city
+const TICK_MS = 500;
+let liveTime = new Date(APP_NOW);
+
+window.setSpeed = function (s) {
+  SIM_SPEED = s;
+  document.querySelectorAll('.speed-btn').forEach(b => {
+    b.classList.toggle('sr-btn-yellow', parseInt(b.dataset.speed) === s);
+    b.classList.toggle('sr-btn-ghost',  parseInt(b.dataset.speed) !== s);
+  });
+};
+
+// ---------- Distance + interpolation ----------
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+function tick() {
+  // Advance sim time
+  liveTime = new Date(liveTime.getTime() + TICK_MS * SIM_SPEED);
+  document.getElementById('liveTime').innerHTML = `<i data-lucide="clock" style="width:11px;height:11px;"></i> ${srFmtTime(liveTime)}`;
+  srIcons();
+
+  const activity = [];
+  Object.entries(sim).forEach(([busId, s]) => {
+    if (s.segIdx >= s.path.length - 1) return;   // arrived
+    if (liveTime.getTime() < s.pauseUntil) return;
+
+    const a = s.path[s.segIdx];
+    const b = s.path[s.segIdx + 1];
+    const segKm = haversineKm(a, b);
+    const realSecPerKm = 3600 / SIM_KMH;
+    const simSecPerKm = realSecPerKm / SIM_SPEED;
+    const segSimSec = segKm * simSecPerKm;
+    if (segSimSec <= 0) { s.segIdx++; return; }
+    s.segProgress += (TICK_MS / 1000) / segSimSec;
+
+    if (s.segProgress >= 1) {
+      // arrived at next stop
+      s.segProgress = 0;
+      s.segIdx++;
+      // Pause briefly at stop (boarding)
+      if (s.segIdx < s.path.length - 1) {
+        s.pauseUntil = liveTime.getTime() + 6000 / SIM_SPEED * 1000;   // 6 real sec at stop
+        activity.unshift({ time: new Date(liveTime), msg: `🚏 ${busId} at <b>${s.stopNames[s.segIdx]}</b>` });
+      } else {
+        activity.unshift({ time: new Date(liveTime), msg: `🏫 ${busId} arrived at <b>${s.stopNames[s.segIdx]}</b>` });
+      }
+      // Update live position
+      APP_DATA.livePositions[busId].coords = s.path[s.segIdx];
+      busMarkers[busId].setLatLng(s.path[s.segIdx]);
+    } else {
+      // interpolate
+      const lat = lerp(a[0], b[0], s.segProgress);
+      const lng = lerp(a[1], b[1], s.segProgress);
+      APP_DATA.livePositions[busId].coords = [lat, lng];
+      busMarkers[busId].setLatLng([lat, lng]);
+    }
+  });
+
+  // Push activity feed
+  if (activity.length) addActivity(activity);
+  renderBusList();
+}
+
+setInterval(tick, TICK_MS);
+
+// ---------- Bus list ----------
+function statusPill(status) {
+  if (status === 'in_transit') return `<span class="sr-pill success"><span class="dot"></span>In transit</span>`;
+  if (status === 'at_stop')    return `<span class="sr-pill warn"><span class="dot"></span>At stop</span>`;
+  if (status === 'starting')   return `<span class="sr-pill info"><span class="dot"></span>Starting</span>`;
+  return `<span class="sr-pill neutral"><span class="dot"></span>Idle</span>`;
+}
+
+let selectedBusId = null;
+function selectBus(id) {
+  selectedBusId = id;
+  renderBusList();
+  renderBusInfo();
+  const lp = APP_DATA.livePositions[id];
+  if (lp) map.setView(lp.coords, 15, { animate: true });
+}
+
+function renderBusList() {
+  const wrap = document.getElementById('busList');
+  wrap.innerHTML = APP_DATA.buses.map(b => {
+    const lp = APP_DATA.livePositions[b.id];
+    const route = APP_DATA.byId.route[`R-${b.id.split('-')[1]}`];
+    const driver = route ? APP_DATA.byId.driver[route.driverId] : null;
+    const cur = currentRunForBus(b.id);
+    const school = cur ? APP_DATA.byId.school[cur.run.schoolId] : null;
+    const isSel = selectedBusId === b.id;
+    return `
+      <div onclick="selectBus('${b.id}')" style="cursor:pointer; padding: 12px; margin-bottom: 6px; border-radius: 10px; ${isSel ? 'background: #FFFBEA; border: 1px solid var(--sr-yellow);' : 'background: transparent; border: 1px solid var(--sr-border);'} display: flex; align-items: center; gap: 12px;">
+        <div class="sr-kpi-icon ${lp.status === 'idle' ? 'navy' : 'yellow'}" style="width:38px; height:38px;"><i data-lucide="bus"></i></div>
+        <div style="flex:1; min-width: 0;">
+          <div style="display:flex; align-items:center; gap:6px;">
+            <strong style="font-size: 13px;">${b.id}</strong>
+            ${statusPill(lp.status)}
+          </div>
+          <div class="text-text-3" style="font-size: 11px; margin-top: 2px;">
+            ${driver ? srEscape(driver.name.split(' ')[0]) : '—'}
+            ${school ? ` · → <span style="color:${school.color}; font-weight: 600;">${school.shortName}</span>` : ''}
+            ${lp.etaMin != null ? ` · ${lp.etaMin}m` : ''}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+  srIcons();
+}
+
+function renderBusInfo() {
+  const card = document.getElementById('busInfoCard');
+  if (!selectedBusId) { card.style.display = 'none'; return; }
+  const b = APP_DATA.byId.bus[selectedBusId];
+  const lp = APP_DATA.livePositions[selectedBusId];
+  const route = APP_DATA.byId.route[`R-${b.id.split('-')[1]}`];
+  const driver = route ? APP_DATA.byId.driver[route.driverId] : null;
+  const cur = currentRunForBus(b.id);
+  const school = cur ? APP_DATA.byId.school[cur.run.schoolId] : null;
+  card.style.display = 'block';
+  card.innerHTML = `
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <div class="sr-kpi-icon yellow" style="width: 50px; height: 50px;"><i data-lucide="bus" style="width: 26px; height: 26px;"></i></div>
+        <div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <h3 style="margin:0; font-size: 18px; font-weight: 800;">${b.id}</h3>
+            <span class="sr-mono text-text-3" style="font-size: 12px;">${b.plate}</span>
+            ${statusPill(lp.status)}
+          </div>
+          <div class="text-text-3" style="font-size: 12px; margin-top: 2px;">
+            ${driver ? `🧑‍✈️ ${srEscape(driver.name)}` : '—'}
+            ${school ? ` · → <span style="color:${school.color}; font-weight: 700;">${school.name}</span>` : ''}
+          </div>
+        </div>
+      </div>
+      <div style="display:flex; gap: 8px;">
+        <button class="sr-btn sr-btn-sm sr-btn-ghost"><i data-lucide="phone"></i>Call driver</button>
+        <button class="sr-btn sr-btn-sm sr-btn-ghost"><i data-lucide="message-square"></i>Message</button>
+        <button class="sr-icon-btn" onclick="selectedBusId=null; renderBusInfo();"><i data-lucide="x"></i></button>
+      </div>
+    </div>
+    ${cur ? `
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 12px;">
+        <div style="background: var(--sr-bg); padding: 10px; border-radius: 8px;">
+          <div class="text-text-3" style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em;">Run</div>
+          <div class="sr-mono" style="font-size: 12px; font-weight: 700;">${cur.run.id}</div>
+        </div>
+        <div style="background: var(--sr-bg); padding: 10px; border-radius: 8px;">
+          <div class="text-text-3" style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em;">Direction</div>
+          <div style="font-size: 13px; font-weight: 700;">${cur.run.direction}</div>
+        </div>
+        <div style="background: var(--sr-bg); padding: 10px; border-radius: 8px;">
+          <div class="text-text-3" style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em;">Students</div>
+          <div style="font-size: 13px; font-weight: 700;">${cur.run.stops.reduce((a, s) => a + s.studentIds.length, 0)}</div>
+        </div>
+        <div style="background: var(--sr-bg); padding: 10px; border-radius: 8px;">
+          <div class="text-text-3" style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em;">ETA</div>
+          <div style="font-size: 13px; font-weight: 700;">${lp.etaMin != null ? lp.etaMin + ' min' : '—'}</div>
+        </div>
+      </div>
+    ` : ''}
+  `;
+  srIcons();
+}
+
+// ---------- Activity feed ----------
+const activityItems = [];
+function addActivity(items) {
+  items.forEach(it => activityItems.unshift(it));
+  while (activityItems.length > 20) activityItems.pop();
+  renderActivity();
+}
+function renderActivity() {
+  document.getElementById('activityFeed').innerHTML = activityItems.slice(0, 8).map(it =>
+    `<div style="padding: 4px 0; border-bottom: 1px solid var(--sr-border);">
+       <span class="sr-mono text-text-3" style="font-size: 10px;">${srFmtTime(it.time)}</span>
+       <span style="margin-left: 8px;">${it.msg}</span>
+     </div>`).join('');
+}
+
+// Init
+renderBusList();
+selectBus('B-101');
+addActivity([{ time: new Date(liveTime), msg: 'Live monitoring started' }]);
+srIcons();
+</script>
+</body>
+</html>

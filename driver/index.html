@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SafeRide — Driver Tablet</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="../shared/style.css">
+<style>
+  body { background: linear-gradient(180deg, #0F1E3D 0%, #182B57 100%); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 22px 14px; gap: 16px; }
+  .stop-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; }
+  .stop-row.done { opacity: 0.55; }
+  .stop-row.current { background: #FFFBEA; border: 1px solid var(--sr-yellow); }
+  .stop-pin { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 11px; flex-shrink: 0; }
+  .stop-row.done .stop-pin { background: var(--sr-green); color: white; }
+  .stop-row.current .stop-pin { background: var(--sr-yellow); color: var(--sr-navy); border: 2px solid var(--sr-navy); }
+  .stop-row .stop-pin { background: white; color: var(--sr-text-3); border: 1.5px solid var(--sr-border-2); }
+  .scan-btn { padding: 28px 16px; border-radius: 16px; font-weight: 800; font-size: 18px; cursor: pointer; border: 3px solid transparent; transition: transform 0.1s; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .scan-btn:active { transform: translateY(2px); }
+  .scan-qr  { background: linear-gradient(135deg, #FFD60A, #E5BC00); color: var(--sr-navy); border-color: var(--sr-navy); }
+  .scan-nfc { background: linear-gradient(135deg, #5570F1, #4256BF); color: white; border-color: #1E3A8A; }
+  .scan-btn i { width: 32px; height: 32px; }
+</style>
+</head><body>
+
+<div style="display:flex; align-items: center; gap: 12px; color: white;">
+  <a href="../index.html" style="color: white; text-decoration: none; font-size: 13px;"><i data-lucide="arrow-left" style="vertical-align:middle; width: 16px; height: 16px;"></i> Back</a>
+  <span style="opacity:0.4;">·</span>
+  <span style="font-size: 13px; opacity: 0.7;">Driver tablet — Bus B-101</span>
+</div>
+
+<div class="sr-tablet-frame">
+  <div class="sr-tablet-screen" style="display: flex; flex-direction: column;">
+
+    <!-- Header -->
+    <header style="background: linear-gradient(135deg, var(--sr-navy), var(--sr-navy-2)); color: white; padding: 14px 22px; display: flex; align-items: center; justify-content: space-between;">
+      <div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 38px; height: 38px; background: var(--sr-yellow); color: var(--sr-navy); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px;">S</div>
+          <div>
+            <div style="font-weight: 800; font-size: 18px;">B-101 · ບກ-1234</div>
+            <div style="font-size: 11px; color: rgba(255,255,255,0.7);">🧑‍✈️ Bounmy Phimmasone · → <span style="color: var(--sr-yellow); font-weight: 700;">HIS</span></div>
+          </div>
+        </div>
+      </div>
+      <div style="text-align: right;">
+        <div style="font-size: 10px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.06em;">Current run</div>
+        <div class="sr-mono" style="font-weight: 800; font-size: 13px;" id="runHeader">RUN-101-AM-VIS</div>
+      </div>
+    </header>
+
+    <!-- Body -->
+    <main style="flex: 1; display: grid; grid-template-columns: 5fr 7fr; overflow: hidden;">
+
+      <!-- LEFT: stop timeline -->
+      <aside style="border-right: 1px solid var(--sr-border); padding: 16px; overflow-y: auto; background: white;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <strong style="font-size: 14px;">Stops</strong>
+          <span class="text-text-3" style="font-size: 12px;" id="stopProgress">3/5</span>
+        </div>
+        <div id="stopsTimeline" style="display: flex; flex-direction: column; gap: 4px;"></div>
+
+        <div style="margin-top: 16px; padding: 12px; background: var(--sr-bg); border-radius: 10px; font-size: 12px;">
+          <div style="display: flex; justify-content: space-between; padding: 4px 0;">
+            <span class="text-text-3">On board</span>
+            <strong id="onBoard">7</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 4px 0;">
+            <span class="text-text-3">Expected total</span>
+            <strong id="expectedTotal">8</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 4px 0;">
+            <span class="text-text-3">ETA next stop</span>
+            <strong id="etaText">3 min</strong>
+          </div>
+        </div>
+      </aside>
+
+      <!-- RIGHT: current stop + scan -->
+      <section style="display: flex; flex-direction: column;">
+        <div style="background: #FFFBEA; padding: 14px 22px; border-bottom: 1px solid #FFE45A;">
+          <div style="display: flex; align-items: end; justify-content: space-between;">
+            <div>
+              <div style="font-size: 11px; font-weight: 800; color: #92400E; text-transform: uppercase; letter-spacing: 0.06em;">Next stop</div>
+              <div style="font-size: 22px; font-weight: 800; color: var(--sr-navy);" id="currentStopName">Mekong Port</div>
+              <div style="font-size: 12px; color: var(--sr-text-2);" id="currentStopMeta">07:08 · 1 expected</div>
+            </div>
+            <div style="text-align: right;"><div style="font-size: 28px; font-weight: 900; color: var(--sr-navy);" id="stopScanCount">0/1</div><div style="font-size: 10px; color: var(--sr-text-3); text-transform: uppercase;">scanned</div></div>
+          </div>
+        </div>
+
+        <div style="flex: 1; padding: 16px 22px; overflow-y: auto;">
+          <div style="font-size: 11px; font-weight: 700; color: var(--sr-text-3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px;">Stop manifest</div>
+          <div id="manifest" style="display: flex; flex-direction: column; gap: 6px;"></div>
+        </div>
+
+        <!-- Scan buttons -->
+        <div style="padding: 14px 22px; background: white; border-top: 1px solid var(--sr-border);">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <button id="qrBtn" class="scan-btn scan-qr"><i data-lucide="scan-line"></i><span>QR scan</span></button>
+            <button id="nfcBtn" class="scan-btn scan-nfc"><i data-lucide="nfc"></i><span>NFC tap</span></button>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px;">
+            <button id="manualBtn" class="sr-btn sr-btn-ghost"><i data-lucide="user-plus"></i>Manual board (forgot card)</button>
+            <button id="nextStopBtn" class="sr-btn sr-btn-primary" disabled><i data-lucide="check"></i>Mark stop done · next</button>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <footer style="background: var(--sr-bg); padding: 8px 22px; display: flex; justify-content: space-between; font-size: 11px; color: var(--sr-text-3); border-top: 1px solid var(--sr-border);">
+          <div style="display: flex; gap: 14px;">
+            <span><span class="sr-live-dot" style="display: inline-block; vertical-align: middle; margin-right: 4px;"></span>GPS</span>
+            <span><i data-lucide="signal" style="width:11px;height:11px; vertical-align: middle;"></i> 4G</span>
+            <span><i data-lucide="battery-full" style="width:13px;height:11px; vertical-align: middle;"></i> 87%</span>
+          </div>
+          <div class="sr-mono" id="footerTime">07:05</div>
+        </footer>
+      </section>
+
+    </main>
+
+  </div>
+</div>
+
+<!-- Walk-the-bus modal -->
+<div id="walkModal" class="sr-modal-bg" style="display: none;">
+  <div class="sr-modal" style="max-width: 420px;">
+    <div class="sr-modal-body" style="text-align: center;">
+      <div style="font-size: 48px; margin-bottom: 12px;">🚌</div>
+      <h3 style="margin: 0 0 6px; font-size: 18px; font-weight: 800;">Walk the bus</h3>
+      <p style="margin: 0; font-size: 13px; color: var(--sr-text-3);">I confirm I have walked through the bus. No children remain on board.</p>
+    </div>
+    <div class="sr-modal-foot">
+      <button class="sr-btn sr-btn-ghost" data-close>Cancel</button>
+      <button class="sr-btn sr-btn-success" id="walkConfirm"><i data-lucide="check"></i>Complete run</button>
+    </div>
+  </div>
+</div>
+
+<script src="../shared/data.js"></script>
+<script src="../shared/ui.js"></script>
+<script>
+const route = APP_DATA.byId.route['R-101'];
+const run = route.runs[0];
+const stopState = run.stops.map(s => {
+  const done = APP_DATA.events.filter(e => e.stopId === s.stopId && e.runId === run.id && e.type === 'BOARD').map(e => e.studentId);
+  return { stopId: s.stopId, time: s.time, studentIds: s.studentIds.slice(), isSchool: !!s.isSchool, boarded: new Set(done), completed: done.length === s.studentIds.length && done.length > 0 };
+});
+let currentStopIdx = stopState.findIndex(ss => !ss.completed && ss.studentIds.length > 0);
+if (currentStopIdx < 0) currentStopIdx = stopState.length - 1;
+
+function renderTimeline() {
+  document.getElementById('stopsTimeline').innerHTML = stopState.map((ss, i) => {
+    const stop = APP_DATA.byId.stop[ss.stopId];
+    const cls = i < currentStopIdx ? 'done' : (i === currentStopIdx ? 'current' : '');
+    const pin = ss.isSchool ? '🏫' : (i + 1);
+    return `
+      <div class="stop-row ${cls}">
+        <div class="stop-pin">${pin}</div>
+        <div style="flex: 1; min-width: 0;">
+          <div style="font-weight: 700; font-size: 13px;">${srEscape(stop.name)}</div>
+          <div class="text-text-3" style="font-size: 11px;">${ss.time}${ss.isSchool ? '' : ` · ${ss.boarded.size}/${ss.studentIds.length} boarded`}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+  document.getElementById('stopProgress').textContent = `${stopState.filter(s => s.completed).length}/${stopState.length}`;
+  document.getElementById('onBoard').textContent = stopState.reduce((a, s) => a + s.boarded.size, 0);
+  document.getElementById('expectedTotal').textContent = stopState.reduce((a, s) => a + s.studentIds.length, 0);
+}
+
+function renderStop() {
+  const ss = stopState[currentStopIdx];
+  const stop = APP_DATA.byId.stop[ss.stopId];
+  document.getElementById('currentStopName').textContent = stop.name;
+  if (ss.isSchool) {
+    document.getElementById('currentStopMeta').textContent = `${ss.time} · School arrival · scan all out`;
+    document.getElementById('stopScanCount').textContent = '🏫';
+  } else {
+    document.getElementById('currentStopMeta').textContent = `${ss.time} · ${ss.studentIds.length} expected`;
+    document.getElementById('stopScanCount').textContent = `${ss.boarded.size}/${ss.studentIds.length}`;
+  }
+
+  const studentIds = ss.isSchool
+    ? stopState.filter(s => !s.isSchool).flatMap(s => Array.from(s.boarded))
+    : ss.studentIds;
+  document.getElementById('manifest').innerHTML = studentIds.map(sid => {
+    const stu = APP_DATA.byId.student[sid];
+    const sch = APP_DATA.byId.school[stu.schoolId];
+    const done = ss.boarded.has(sid);
+    return `
+      <div style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: white; border: 1px solid var(--sr-border); border-radius: 10px; ${done ? 'opacity: 0.55;' : ''}">
+        <div class="sr-avatar" style="background:${sch.color}22; color:${sch.color};">${srInitials(stu.name)}</div>
+        <div style="flex: 1;"><div style="font-weight: 700; font-size: 13px;">${srEscape(stu.name)}</div><div class="text-text-3" style="font-size: 11px;">${srEscape(stu.grade)} · ${srEscape(sch.shortName)}</div></div>
+        ${done ? '<i data-lucide="check-circle-2" style="color: var(--sr-green); width: 22px; height: 22px;"></i>' : '<span class="sr-pill neutral">Expected</span>'}
+      </div>
+    `;
+  }).join('');
+
+  document.getElementById('nextStopBtn').disabled = !(ss.completed || ss.boarded.size === ss.studentIds.length || ss.isSchool);
+  srIcons();
+}
+
+function doScan(method) {
+  const ss = stopState[currentStopIdx];
+  if (ss.isSchool) { srToast('🏫 Arrived at school'); openWalk(); return; }
+  const next = ss.studentIds.find(id => !ss.boarded.has(id));
+  if (!next) { srToast('All students at this stop scanned'); return; }
+  ss.boarded.add(next);
+  if (ss.boarded.size === ss.studentIds.length) ss.completed = true;
+  const stu = APP_DATA.byId.student[next];
+  srToast(`${method === 'nfc' ? '📡 NFC' : '📷 QR'} · ${stu.name} boarded`);
+  renderTimeline(); renderStop();
+}
+
+document.getElementById('qrBtn').addEventListener('click', () => doScan('qr'));
+document.getElementById('nfcBtn').addEventListener('click', () => doScan('nfc'));
+document.getElementById('manualBtn').addEventListener('click', () => doScan('manual'));
+document.getElementById('nextStopBtn').addEventListener('click', () => {
+  const ss = stopState[currentStopIdx];
+  ss.completed = true;
+  if (currentStopIdx < stopState.length - 1) {
+    currentStopIdx++;
+    renderTimeline(); renderStop();
+    srToast('→ Next stop');
+  } else openWalk();
+});
+
+function openWalk() { document.getElementById('walkModal').style.display = 'flex'; }
+document.querySelectorAll('#walkModal [data-close]').forEach(el => el.addEventListener('click', () => document.getElementById('walkModal').style.display = 'none'));
+document.getElementById('walkConfirm').addEventListener('click', () => { document.getElementById('walkModal').style.display = 'none'; srToast('✅ Run completed — all students accounted for'); });
+
+let clk = new Date(APP_NOW);
+setInterval(() => { clk = new Date(clk.getTime() + 30 * 1000); document.getElementById('footerTime').textContent = srFmtTime(clk); }, 4000);
+
+renderTimeline(); renderStop();
+</script></body></html>

@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SafeRide Parent — Child detail</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="../shared/style.css">
+<style>body { background: linear-gradient(180deg, #0F1E3D 0%, #182B57 100%); display: flex; justify-content: center; padding: 28px 14px; min-height: 100vh; }</style>
+</head><body>
+
+<div style="display: flex; flex-direction: column; align-items: center; gap: 18px;">
+  <a href="index.html" style="color: white; text-decoration: none; font-size: 13px;"><i data-lucide="arrow-left" style="vertical-align:middle; width: 16px; height: 16px;"></i> Back to home</a>
+
+  <div class="sr-phone-frame">
+    <div class="sr-phone-notch"></div>
+    <div class="sr-phone-screen" style="display: flex; flex-direction: column;">
+
+      <div style="padding: 14px 24px 0; display: flex; justify-content: space-between; font-size: 12px; font-weight: 700;">
+        <span>07:08</span>
+        <span><i data-lucide="signal" style="width:13px;height:13px;"></i> <i data-lucide="battery-full" style="width:18px;height:13px;"></i></span>
+      </div>
+
+      <div style="padding: 12px 16px 8px; display: flex; align-items: center; gap: 8px;">
+        <a href="index.html" style="color: var(--sr-text); padding: 6px;"><i data-lucide="arrow-left"></i></a>
+        <strong style="font-size: 16px;" id="title">Child</strong>
+      </div>
+
+      <div style="flex: 1; overflow-y: auto; padding: 0 20px 80px;" id="body"></div>
+
+      <nav class="sr-tabbar">
+        <a href="index.html" class="sr-tab"><i data-lucide="home"></i><span>Home</span></a>
+        <a href="child.html?id=S-1001" class="sr-tab active"><i data-lucide="users"></i><span>Children</span></a>
+        <a href="scores.html" class="sr-tab"><i data-lucide="award"></i><span>Scores</span></a>
+        <a href="absence.html" class="sr-tab"><i data-lucide="calendar-x"></i><span>Absence</span></a>
+        <a href="settings.html" class="sr-tab"><i data-lucide="user"></i><span>Profile</span></a>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<script src="../shared/data.js"></script>
+<script src="../shared/ui.js"></script>
+<script>
+const params = new URLSearchParams(location.search);
+const c = APP_DATA.byId.student[params.get('id') || 'S-1001'];
+const sch = APP_DATA.byId.school[c.schoolId];
+const guardian = APP_DATA.byId.guardian[c.guardianId];
+const onBus = APP_DATA.events.some(e => e.studentId === c.id && e.type === 'BOARD');
+let busId = null, lp = null;
+for (const r of APP_DATA.routes) for (const run of r.runs) if (run.schoolId === c.schoolId && run.stops.some(s => s.studentIds.includes(c.id))) { busId = r.busId; lp = APP_DATA.livePositions[busId]; break; }
+const events = APP_DATA.events.filter(e => e.studentId === c.id);
+const recentScores = APP_DATA.scores.filter(s => s.studentId === c.id).slice(0, 3);
+
+document.getElementById('title').textContent = c.name;
+document.getElementById('body').innerHTML = `
+  <!-- Hero -->
+  <div style="background: linear-gradient(135deg, ${sch.color}, ${sch.color}aa); color: white; border-radius: 14px; padding: 18px; margin-top: 8px;">
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <div style="width: 60px; height: 60px; border-radius: 50%; background: rgba(255,255,255,0.2); border: 2px solid white; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 22px;">${srInitials(c.name)}</div>
+      <div>
+        <div style="font-weight: 800; font-size: 18px;">${srEscape(c.name)}</div>
+        <div style="font-size: 12px; opacity: 0.9;">${srEscape(c.grade)} · ${srEscape(sch.name)}</div>
+        <div style="margin-top: 6px; display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; background: rgba(255,255,255,0.18); border-radius: 999px; font-size: 11px; font-weight: 700;">
+          ${onBus ? '<i data-lucide="check-circle" style="width:11px;height:11px;"></i> On the bus' : '<i data-lucide="home" style="width:11px;height:11px;"></i> At home'}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live map -->
+  ${lp && lp.status !== 'idle' ? `
+    <div style="margin-top: 14px;">
+      <strong style="font-size: 13px;">Live location</strong>
+      <div id="map" style="height: 180px; border-radius: 12px; overflow: hidden; margin-top: 6px; border: 1px solid var(--sr-border);"></div>
+      <div style="margin-top: 6px; display: flex; justify-content: space-between; font-size: 11px;">
+        <span class="text-text-3">Bus ${busId}</span>
+        ${lp.etaMin != null ? `<span style="color: var(--sr-blue); font-weight: 700;">ETA ${lp.etaMin} min</span>` : ''}
+      </div>
+    </div>
+  ` : ''}
+
+  <!-- Today's events -->
+  <div style="margin-top: 16px;">
+    <strong style="font-size: 13px;">Today's journey</strong>
+    <div style="margin-top: 8px;">
+      ${[
+        { icon: 'log-in',     label: 'Boarded at home',           done: events.some(e => e.type === 'BOARD' && e.direction === 'AM'), time: events[0] && srFmtTime(events[0].timestamp) },
+        { icon: 'school',     label: 'Arrived at school',         done: false, time: '—' },
+        { icon: 'log-in',     label: 'Boarded for home',          done: false, time: '—' },
+        { icon: 'house',      label: 'Dropped off at home',       done: false, time: '—' }
+      ].map(e => `
+        <div style="display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--sr-border);">
+          <div style="width: 30px; height: 30px; border-radius: 50%; background: ${e.done ? 'rgba(16,185,129,0.14)' : 'var(--sr-bg)'}; color: ${e.done ? 'var(--sr-green)' : 'var(--sr-text-4)'}; display: flex; align-items: center; justify-content: center;"><i data-lucide="${e.icon}"></i></div>
+          <div style="flex:1; font-size: 13px; font-weight: ${e.done ? '700' : '500'}; color: ${e.done ? 'var(--sr-text)' : 'var(--sr-text-4)'};">${e.label}</div>
+          <div class="sr-mono" style="font-size: 11px; color: ${e.done ? 'var(--sr-green)' : 'var(--sr-text-4)'}; font-weight: ${e.done ? '700' : '500'};">${e.time}</div>
+        </div>
+      `).join('')}
+    </div>
+  </div>
+
+  <!-- Recent scores -->
+  ${recentScores.length ? `
+    <div style="margin-top: 16px;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <strong style="font-size: 13px;">Recent scores</strong>
+        <a href="scores.html" style="color: var(--sr-blue); font-size: 11px; font-weight: 700; text-decoration: none;">All scores →</a>
+      </div>
+      <div style="margin-top: 8px;">
+        ${recentScores.map(s => {
+          const subj = APP_DATA.byId.subject[s.subject];
+          return `
+          <div style="display: flex; align-items: center; gap: 10px; padding: 10px; background: white; border: 1px solid var(--sr-border); border-radius: 10px; margin-bottom: 6px;">
+            <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(139,92,246,0.12); color: var(--sr-purple); display: flex; align-items: center; justify-content: center;"><i data-lucide="${subj.icon}"></i></div>
+            <div style="flex: 1;"><div style="font-weight: 700; font-size: 12px;">${srEscape(subj.name)}</div><div class="text-text-3" style="font-size: 11px;">${srEscape(s.assessmentType)} · ${srFmtDate(s.date)}</div></div>
+            <div style="font-size: 18px; font-weight: 800;">${s.score}<span class="text-text-3" style="font-size: 12px; font-weight: 500;">/100</span></div>
+          </div>
+        `;}).join('')}
+      </div>
+    </div>
+  ` : ''}
+
+  <!-- Actions -->
+  <div style="margin-top: 16px; display: flex; gap: 8px;">
+    <a href="absence.html?id=${c.id}" class="sr-btn sr-btn-ghost" style="flex: 1; justify-content: center;"><i data-lucide="calendar-x"></i>Absence</a>
+    <a href="tel:+85684555100" class="sr-btn sr-btn-primary" style="flex: 1; justify-content: center;"><i data-lucide="phone"></i>Call school</a>
+  </div>
+`;
+
+if (lp && lp.status !== 'idle') {
+  setTimeout(() => {
+    const m = L.map('map', { zoomControl: false, attributionControl: false }).setView(lp.coords, 14);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(m);
+    L.marker(sch.coords, { icon: L.divIcon({ className: '', html: `<div class="school-marker-div" style="border-color:${sch.color}; color:${sch.color}; font-size: 11px; padding: 2px 6px;">🏫</div>`, iconSize: [40, 22], iconAnchor: [20, 11] })}).addTo(m);
+    L.marker(lp.coords, { icon: L.divIcon({ className: '', html: `<div class="bus-marker-div in_transit">🚌 ${busId}</div>`, iconSize: [70, 22], iconAnchor: [35, 11] })}).addTo(m);
+    if (c.house) L.marker(c.house.coords, { icon: L.divIcon({ className: '', html: `<div style="font-size:20px;">🏠</div>`, iconSize: [20,20], iconAnchor: [10,10] })}).addTo(m);
+    m.fitBounds([sch.coords, lp.coords, ...(c.house ? [c.house.coords] : [])], { padding: [20, 20] });
+  }, 100);
+}
+srIcons();
+</script></body></html>

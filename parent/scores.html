@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SafeRide Parent — Scores</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="../shared/style.css">
+<style>body { background: linear-gradient(180deg, #0F1E3D 0%, #182B57 100%); display: flex; justify-content: center; padding: 28px 14px; min-height: 100vh; }</style>
+</head><body>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 18px;">
+  <a href="index.html" style="color: white; text-decoration: none; font-size: 13px;"><i data-lucide="arrow-left" style="vertical-align:middle; width:16px;height:16px;"></i> Home</a>
+  <div class="sr-phone-frame"><div class="sr-phone-notch"></div><div class="sr-phone-screen" style="display:flex; flex-direction: column;">
+    <div style="padding: 14px 24px 0; display: flex; justify-content: space-between; font-size: 12px; font-weight: 700;"><span>07:08</span><span><i data-lucide="battery-full" style="width:18px;height:13px;"></i></span></div>
+    <div style="padding: 12px 20px 4px;"><strong style="font-size: 18px;">Scores</strong><div class="text-text-3" style="font-size: 11px; margin-top: 2px;">From your child's school</div></div>
+
+    <div style="padding: 8px 20px 0; display: flex; gap: 6px;" id="kidPills"></div>
+
+    <div style="flex: 1; overflow-y: auto; padding: 14px 20px 80px;">
+
+      <div id="summary" style="background: white; border: 1px solid var(--sr-border); border-radius: 12px; padding: 14px; margin-bottom: 14px;"></div>
+
+      <div style="position: relative; height: 180px; margin-bottom: 14px; background: white; border: 1px solid var(--sr-border); border-radius: 12px; padding: 12px;">
+        <canvas id="chart"></canvas>
+      </div>
+
+      <strong style="font-size: 13px;">Recent assessments</strong>
+      <div id="list" style="margin-top: 8px;"></div>
+
+    </div>
+
+    <nav class="sr-tabbar">
+      <a href="index.html" class="sr-tab"><i data-lucide="home"></i><span>Home</span></a>
+      <a href="child.html?id=S-1001" class="sr-tab"><i data-lucide="users"></i><span>Children</span></a>
+      <a href="scores.html" class="sr-tab active"><i data-lucide="award"></i><span>Scores</span></a>
+      <a href="absence.html" class="sr-tab"><i data-lucide="calendar-x"></i><span>Absence</span></a>
+      <a href="settings.html" class="sr-tab"><i data-lucide="user"></i><span>Profile</span></a>
+    </nav>
+  </div></div>
+</div>
+<script src="../shared/data.js"></script>
+<script src="../shared/ui.js"></script>
+<script>
+const guardian = APP_DATA.byId.guardian['G-001'];
+const kids = guardian.studentIds.map(id => APP_DATA.byId.student[id]);
+let kid = kids[0];
+let chart = null;
+
+document.getElementById('kidPills').innerHTML = kids.map(k => `<button onclick="pick('${k.id}')" id="kp-${k.id}" style="border: 1px solid var(--sr-border); border-radius: 999px; padding: 6px 14px; font-size: 12px; font-weight: 700; background: white; cursor: pointer;">${srEscape(k.name.split(' ')[0])}</button>`).join('');
+
+window.pick = (id) => { kid = APP_DATA.byId.student[id]; render(); };
+
+function render() {
+  document.querySelectorAll('[id^=kp-]').forEach(el => { el.style.background = 'white'; el.style.color = 'var(--sr-text)'; });
+  document.getElementById('kp-' + kid.id).style.background = 'var(--sr-navy)';
+  document.getElementById('kp-' + kid.id).style.color = 'white';
+
+  const scores = APP_DATA.scores.filter(s => s.studentId === kid.id);
+  const avg = scores.length ? Math.round(scores.reduce((a,s) => a+s.score, 0) / scores.length) : 0;
+  const sch = APP_DATA.byId.school[kid.schoolId];
+
+  document.getElementById('summary').innerHTML = `
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <div>
+        <div style="font-size: 11px; color: var(--sr-text-3); text-transform: uppercase; letter-spacing: 0.05em;">Overall average</div>
+        <div style="font-size: 32px; font-weight: 900; color: var(--sr-navy);">${avg}<span style="font-size: 14px; color: var(--sr-text-3); font-weight: 500;">/100</span></div>
+        <div style="font-size: 11px; color: ${sch.color}; font-weight: 700; margin-top: 2px;">${srEscape(sch.shortName)} · ${srEscape(kid.grade)}</div>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 50%; background: ${avg >= 80 ? 'rgba(16,185,129,0.14)' : avg >= 60 ? 'rgba(245,158,11,0.14)' : 'rgba(239,68,68,0.14)'}; color: ${avg >= 80 ? 'var(--sr-green)' : avg >= 60 ? 'var(--sr-amber)' : 'var(--sr-red)'};">
+        <i data-lucide="${avg >= 80 ? 'trending-up' : avg >= 60 ? 'minus' : 'trending-down'}" style="width: 32px; height: 32px;"></i>
+      </div>
+    </div>
+  `;
+
+  // Per-subject avg chart
+  const bySubject = {};
+  scores.forEach(s => { (bySubject[s.subject] = bySubject[s.subject] || []).push(s.score); });
+  const subjLabels = APP_DATA.subjects.map(s => s.name.replace(' Language','').replace(' Studies','').slice(0, 6));
+  const subjData = APP_DATA.subjects.map(s => {
+    const arr = bySubject[s.id] || [];
+    return arr.length ? Math.round(arr.reduce((a,b) => a+b, 0) / arr.length) : 0;
+  });
+  if (chart) chart.destroy();
+  chart = new Chart(document.getElementById('chart'), {
+    type: 'bar',
+    data: { labels: subjLabels, datasets: [{ data: subjData, backgroundColor: '#5570F1', borderRadius: 4, maxBarThickness: 20 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { max: 100, beginAtZero: true } } }
+  });
+
+  document.getElementById('list').innerHTML = scores.sort((a,b) => b.date.localeCompare(a.date)).slice(0, 20).map(s => {
+    const subj = APP_DATA.byId.subject[s.subject];
+    const cls = s.score >= 85 ? 'success' : s.score >= 70 ? 'info' : s.score >= 50 ? 'warn' : 'danger';
+    return `
+      <div style="display: flex; align-items: center; gap: 10px; padding: 10px; background: white; border: 1px solid var(--sr-border); border-radius: 10px; margin-bottom: 6px;">
+        <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(139,92,246,0.12); color: var(--sr-purple); display: flex; align-items: center; justify-content: center;"><i data-lucide="${subj.icon}"></i></div>
+        <div style="flex: 1; min-width: 0;"><div style="font-weight: 700; font-size: 12px;">${srEscape(subj.name)} · ${srEscape(s.assessmentType)}</div><div class="text-text-3" style="font-size: 10px;">${srFmtDate(s.date)} · ${srEscape(s.teacher)}</div></div>
+        <div style="display: flex; align-items: center; gap: 6px;"><div style="font-weight: 800; font-size: 14px;">${s.score}</div><span class="sr-pill ${cls}" style="font-size: 10px; padding: 2px 6px;">${s.score >= 85 ? 'A' : s.score >= 70 ? 'B' : s.score >= 60 ? 'C' : s.score >= 50 ? 'D' : 'F'}</span></div>
+      </div>
+    `;
+  }).join('') || '<div class="sr-empty"><i data-lucide="award"></i><div>No scores yet</div></div>';
+
+  srIcons();
+}
+
+render();
+</script></body></html>

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SafeRide — Drivers</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <link rel="stylesheet" href="../shared/style.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sr-sidebar"></aside>
+  <div class="app-main">
+    <header class="sr-topbar"></header>
+    <div class="app-content">
+      <div class="sr-page-head">
+        <div>
+          <div class="sr-breadcrumb"><a href="index.html">Operator</a><i data-lucide="chevron-right"></i><span>Drivers</span></div>
+          <h1 class="sr-page-title">Drivers</h1>
+          <p class="sr-page-sub">Driver roster, licenses, and bus assignments.</p>
+        </div>
+        <button id="addBtn" class="sr-btn sr-btn-primary"><i data-lucide="user-plus"></i>Add driver</button>
+      </div>
+      <div class="sr-table-wrap"><table class="sr-table">
+        <thead><tr><th>Driver</th><th>Phone</th><th>License</th><th>Expiry</th><th>Bus</th><th>Status</th><th></th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+<script src="../shared/data.js"></script>
+<script src="../shared/ui.js"></script>
+<script>
+srMount({ role: 'operator', active: 'drivers', user: { name: 'Souvanh P.', role: 'Super Admin', initials: 'SP' } });
+function render() {
+  const tbody = document.getElementById('rows');
+  tbody.innerHTML = APP_DATA.drivers.map(d => {
+    const cls = d.status === 'active' ? 'success' : d.status === 'on_leave' ? 'warn' : 'neutral';
+    return `
+      <tr>
+        <td><div style="display:flex; gap:10px; align-items:center;">
+          <div class="sr-avatar lg" style="background: rgba(85,112,241,0.12); color: var(--sr-blue);">${srInitials(d.name)}</div>
+          <div><div style="font-weight:700;">${srEscape(d.name)}</div><div class="text-text-3" style="font-size:11px;">Hired ${srFmtDate(d.hiredAt)}</div></div>
+        </div></td>
+        <td class="sr-mono" style="font-size:12px;">${srEscape(d.phone)}</td>
+        <td class="sr-mono" style="font-size:12px;">${srEscape(d.licenseNo)}</td>
+        <td class="text-text-2" style="font-size: 12px;">${srFmtDate(d.licenseExpiry)}</td>
+        <td><strong>${d.assignedBusId || '<span class="text-text-4">—</span>'}</strong></td>
+        <td><span class="sr-pill ${cls}"><span class="dot"></span>${d.status.replace('_',' ')}</span></td>
+        <td style="text-align:right;">
+          <button class="sr-icon-btn" onclick="edit('${d.id}')"><i data-lucide="pencil"></i></button>
+          <button class="sr-icon-btn" onclick="del('${d.id}')"><i data-lucide="trash-2"></i></button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+  srIcons();
+}
+function fields() { return [
+  { key: 'name', label: 'Full name', type: 'text', required: true },
+  { key: 'phone', label: 'Phone', type: 'tel', placeholder: '+856 20 …' },
+  { key: 'licenseNo', label: 'License #', type: 'text', required: true },
+  { key: 'licenseExpiry', label: 'Expiry date', type: 'date', required: true, default: '2027-12-31' },
+  { key: 'hiredAt', label: 'Hired date', type: 'date', default: new Date().toISOString().slice(0,10) },
+  { key: 'assignedBusId', label: 'Assigned bus', type: 'select', placeholder: '— None —', options: APP_DATA.buses.map(b => ({ value: b.id, label: b.id + ' · ' + b.plate })) },
+  { key: 'status', label: 'Status', type: 'select', default: 'active', options: [{value:'active',label:'Active'},{value:'on_leave',label:'On leave'},{value:'inactive',label:'Inactive'}] }
+];}
+document.getElementById('addBtn').addEventListener('click', () => srModal({ title: 'Add driver', fields: fields(),
+  onSave: data => { const id = srNewId('D', APP_DATA.drivers); const d = { id, avatar: '🧑‍✈️', ...data }; APP_DATA.drivers.push(d); APP_DATA.byId.driver[id] = d; srToast('✓ Driver added'); render(); }}));
+window.edit = id => { const d = APP_DATA.byId.driver[id]; srModal({ title: 'Edit ' + d.name, fields: fields(), values: d, onSave: data => { Object.assign(d, data); srToast('✓ Saved'); render(); } }); };
+window.del = id => srConfirm({ title: 'Delete driver?', message: 'They will be removed from all assigned buses.', danger: true,
+  onYes: () => { APP_DATA.drivers = APP_DATA.drivers.filter(x => x.id !== id); delete APP_DATA.byId.driver[id]; srToast('✓ Deleted'); render(); } });
+render();
+</script>
+</body>
+</html>

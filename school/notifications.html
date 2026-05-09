@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SafeRide School — Notifications</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="../shared/style.css">
+</head><body>
+<div class="app-shell">
+  <aside class="sr-sidebar"></aside>
+  <div class="app-main">
+    <header class="sr-topbar"></header>
+    <div class="app-content">
+      <div class="sr-page-head"><div>
+        <div class="sr-breadcrumb"><a href="index.html">School</a><i data-lucide="chevron-right"></i><span>Notifications</span></div>
+        <h1 class="sr-page-title">Notifications</h1>
+        <p class="sr-page-sub">Send messages to parents and view system alerts.</p>
+      </div><button class="sr-btn sr-btn-primary"><i data-lucide="send"></i>Send announcement</button></div>
+
+      <div class="sr-card">
+        <div id="list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../shared/data.js"></script>
+<script src="../shared/ui.js"></script>
+<script>
+srMount({ role: 'school', active: 'notifications', user: { name: 'Bounnyong S.', role: 'Principal · HIS', initials: 'BS' } });
+const items = [
+  { i: 'calendar-x', t: 'Absence request from Mr. Chanthavong', d: 'Noi · Doctor appointment · May 9', tm: '8h ago', c: 'amber' },
+  { i: 'calendar-x', t: 'Absence request from Mrs. Vongchanh',  d: 'Maly · Dental check-up · May 11', tm: '10h ago', c: 'amber' },
+  { i: 'message-square', t: 'Driver Bounmy reported delay',     d: 'Bus B-101 · 5 min late', tm: '1h ago', c: 'blue' },
+  { i: 'check-check', t: 'Score notification sent',              d: 'Math quiz scores delivered to 28 parents', tm: 'Yesterday', c: 'green' },
+  { i: 'bus', t: 'Bus B-103 arriving in 5 min',                  d: 'Live status', tm: '2m ago', c: 'green' }
+];
+document.getElementById('list').innerHTML = items.map(it => `
+  <div class="sr-list-row">
+    <div class="sr-kpi-icon ${it.c}" style="width:36px;height:36px;"><i data-lucide="${it.i}"></i></div>
+    <div style="flex:1;"><div style="font-weight: 700;">${it.t}</div><div class="text-text-3" style="font-size: 12px;">${it.d}</div></div>
+    <div class="text-text-3" style="font-size: 11px;">${it.tm}</div>
+  </div>
+`).join('');
+srIcons();
+</script></body></html>

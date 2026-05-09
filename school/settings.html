@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SafeRide School — Settings</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="../shared/style.css">
+</head><body>
+<div class="app-shell">
+  <aside class="sr-sidebar"></aside>
+  <div class="app-main">
+    <header class="sr-topbar"></header>
+    <div class="app-content">
+      <div class="sr-page-head"><div>
+        <div class="sr-breadcrumb"><a href="index.html">School</a><i data-lucide="chevron-right"></i><span>Settings</span></div>
+        <h1 class="sr-page-title">School settings</h1>
+      </div></div>
+
+      <div class="sr-grid sr-cols-2">
+        <div class="sr-card">
+          <div style="display:flex; gap:10px; align-items:center; margin-bottom: 12px;"><i data-lucide="school"></i><strong>School profile</strong></div>
+          <div class="sr-form">
+            <div class="sr-field"><label class="sr-label">Name</label><input class="sr-input" value="Houayxay International School"></div>
+            <div class="sr-field"><label class="sr-label">Address</label><input class="sr-input" value="Houayxay City Centre, Bokeo"></div>
+            <div class="sr-field"><label class="sr-label">Bell schedule</label><div style="display: flex; gap: 8px;"><input class="sr-input" type="time" value="07:30"><input class="sr-input" type="time" value="14:30"></div></div>
+          </div>
+        </div>
+        <div class="sr-card">
+          <div style="display:flex; gap:10px; align-items:center; margin-bottom: 12px;"><i data-lucide="users"></i><strong>Teachers</strong></div>
+          <div id="teachers"></div>
+          <button class="sr-btn sr-btn-ghost" style="margin-top: 10px;"><i data-lucide="user-plus"></i>Add teacher</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../shared/data.js"></script>
+<script src="../shared/ui.js"></script>
+<script>
+srMount({ role: 'school', active: 'settings', user: { name: 'Bounnyong S.', role: 'Principal · HIS', initials: 'BS' } });
+['Mrs. Phanthavong (Math)','Mr. Khamla (Lao)','Ms. Inthavong (English)','Mr. Sourivong (Science)'].forEach(t => {
+  document.getElementById('teachers').insertAdjacentHTML('beforeend', `<div class="sr-list-row"><div class="sr-avatar" style="background: rgba(85,112,241,0.12); color: var(--sr-blue);">${srInitials(t)}</div><div style="flex:1;"><div style="font-weight:700;font-size:13px;">${t}</div></div></div>`);
+});
+srIcons();
+</script></body></html>

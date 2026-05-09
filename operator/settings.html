@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SafeRide — Settings</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="../shared/style.css">
+</head><body>
+<div class="app-shell">
+  <aside class="sr-sidebar"></aside>
+  <div class="app-main">
+    <header class="sr-topbar"></header>
+    <div class="app-content">
+      <div class="sr-page-head"><div>
+        <div class="sr-breadcrumb"><a href="index.html">Operator</a><i data-lucide="chevron-right"></i><span>Settings</span></div>
+        <h1 class="sr-page-title">Settings</h1>
+        <p class="sr-page-sub">Operator profile, branding, billing, and integrations.</p>
+      </div></div>
+
+      <div class="sr-grid sr-cols-12">
+        <div class="sr-card" style="grid-column: span 4;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom: 12px;"><i data-lucide="building-2" style="color: var(--sr-blue);"></i><strong>Operator profile</strong></div>
+          <div class="sr-form">
+            <div class="sr-field"><label class="sr-label">Company name</label><input class="sr-input" value="SafeRide Bus Co." readonly></div>
+            <div class="sr-field"><label class="sr-label">City</label><input class="sr-input" value="Houayxay, Bokeo"></div>
+            <div class="sr-field"><label class="sr-label">Contact phone</label><input class="sr-input" value="+856 84 555 0100"></div>
+            <div class="sr-field"><label class="sr-label">Email</label><input class="sr-input" value="ops@saferide.la"></div>
+          </div>
+        </div>
+        <div class="sr-card" style="grid-column: span 4;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom: 12px;"><i data-lucide="palette" style="color: var(--sr-purple);"></i><strong>Branding</strong></div>
+          <div class="sr-form">
+            <div class="sr-field"><label class="sr-label">Brand color</label><input type="color" class="sr-input" value="#FFD60A" style="width: 80px; height: 38px;"></div>
+            <div class="sr-field"><label class="sr-label">Logo</label><div style="display: flex; align-items: center; gap: 8px;"><div style="width: 40px; height: 40px; border-radius: 8px; background: var(--sr-yellow); color: var(--sr-navy); display: flex; align-items: center; justify-content: center; font-weight: 900;">S</div><button class="sr-btn sr-btn-sm sr-btn-ghost"><i data-lucide="upload"></i>Upload</button></div></div>
+          </div>
+        </div>
+        <div class="sr-card" style="grid-column: span 4;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom: 12px;"><i data-lucide="bell" style="color: var(--sr-amber);"></i><strong>Notifications</strong></div>
+          <div class="sr-form">
+            <label style="display: flex; align-items: center; gap: 10px; font-size: 13px;"><input type="checkbox" checked> Email parents on each scan</label>
+            <label style="display: flex; align-items: center; gap: 10px; font-size: 13px;"><input type="checkbox" checked> SMS fallback if push fails</label>
+            <label style="display: flex; align-items: center; gap: 10px; font-size: 13px;"><input type="checkbox"> Daily summary email to school admins</label>
+          </div>
+        </div>
+        <div class="sr-card" style="grid-column: span 6;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom: 12px;"><i data-lucide="plug" style="color: var(--sr-green);"></i><strong>Integrations</strong></div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div class="sr-list-row"><div class="sr-kpi-icon blue" style="width:32px;height:32px;"><i data-lucide="map"></i></div><div style="flex:1;"><div style="font-weight:700;font-size:13px;">Google Maps</div><div class="text-text-3" style="font-size:11px;">Routing & geocoding</div></div><span class="sr-pill success"><span class="dot"></span>Connected</span></div>
+            <div class="sr-list-row"><div class="sr-kpi-icon green" style="width:32px;height:32px;"><i data-lucide="message-square"></i></div><div style="flex:1;"><div style="font-weight:700;font-size:13px;">SMS gateway</div><div class="text-text-3" style="font-size:11px;">Lao Telecom</div></div><span class="sr-pill success"><span class="dot"></span>Connected</span></div>
+            <div class="sr-list-row"><div class="sr-kpi-icon purple" style="width:32px;height:32px;"><i data-lucide="credit-card"></i></div><div style="flex:1;"><div style="font-weight:700;font-size:13px;">BCEL payment</div><div class="text-text-3" style="font-size:11px;">Online invoice payments</div></div><button class="sr-btn sr-btn-sm sr-btn-ghost">Configure</button></div>
+          </div>
+        </div>
+        <div class="sr-card" style="grid-column: span 6;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom: 12px;"><i data-lucide="shield-check" style="color: var(--sr-rose);"></i><strong>Security & data</strong></div>
+          <div class="sr-form">
+            <label style="display: flex; align-items: center; gap: 10px; font-size: 13px;"><input type="checkbox" checked> Require 2FA for Super Admins</label>
+            <label style="display: flex; align-items: center; gap: 10px; font-size: 13px;"><input type="checkbox" checked> Encrypt data at rest (AES-256)</label>
+            <label style="display: flex; align-items: center; gap: 10px; font-size: 13px;"><input type="checkbox"> Auto-delete events older than 12 months</label>
+            <button class="sr-btn sr-btn-ghost" style="margin-top: 6px;"><i data-lucide="download"></i>Export all data</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../shared/data.js"></script>
+<script src="../shared/ui.js"></script>
+<script>srMount({ role: 'operator', active: 'settings', user: { name: 'Souvanh P.', role: 'Super Admin', initials: 'SP' } });</script>
+</body></html>

@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SafeRide School — Students</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="../shared/style.css">
+</head><body>
+<div class="app-shell">
+  <aside class="sr-sidebar"></aside>
+  <div class="app-main">
+    <header class="sr-topbar"></header>
+    <div class="app-content">
+      <div class="sr-page-head"><div>
+        <div class="sr-breadcrumb"><a href="index.html">School</a><i data-lucide="chevron-right"></i><span>Students</span></div>
+        <h1 class="sr-page-title">All students</h1>
+        <p class="sr-page-sub">Students enrolled at HIS · view bus assignment, attendance and recent scores.</p>
+      </div></div>
+
+      <div class="sr-card" style="padding: 14px 18px; margin-bottom: 16px;">
+        <div class="sr-search" style="max-width: 320px;"><i data-lucide="search"></i><input id="search" placeholder="Search by name or ID…"></div>
+      </div>
+
+      <div class="sr-table-wrap"><table class="sr-table">
+        <thead><tr><th>Student</th><th>Grade</th><th>Bus</th><th>Guardian</th><th>Today's bus status</th><th>Avg score</th><th></th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+<script src="../shared/data.js"></script>
+<script src="../shared/ui.js"></script>
+<script>
+const SCHOOL_ID = 'vis';
+srMount({ role: 'school', active: 'students', user: { name: 'Bounnyong S.', role: 'Principal · HIS', initials: 'BS' } });
+
+function findBus(stuId) {
+  for (const r of APP_DATA.routes) {
+    for (const run of r.runs) {
+      if (run.schoolId !== SCHOOL_ID) continue;
+      if (run.stops.some(s => s.studentIds.includes(stuId))) return r.busId;
+    }
+  }
+  return null;
+}
+function avgScore(stuId) {
+  const scores = APP_DATA.scores.filter(s => s.studentId === stuId);
+  if (!scores.length) return null;
+  return Math.round(scores.reduce((a, s) => a + s.score, 0) / scores.length);
+}
+
+function render() {
+  const q = document.getElementById('search').value.toLowerCase();
+  const list = APP_DATA.students.filter(s => s.schoolId === SCHOOL_ID && (!q || s.name.toLowerCase().includes(q)));
+  document.getElementById('rows').innerHTML = list.map(s => {
+    const busId = findBus(s.id);
+    const guardian = s.guardianId ? APP_DATA.byId.guardian[s.guardianId] : null;
+    const onBus = APP_DATA.events.some(e => e.studentId === s.id && e.type === 'BOARD');
+    const avg = avgScore(s.id);
+    return `
+      <tr>
+        <td><div style="display:flex; gap:10px; align-items:center;">
+          <div class="sr-avatar lg" style="background: rgba(85,112,241,0.12); color: var(--sr-blue);">${srInitials(s.name)}</div>
+          <div><div style="font-weight:700;">${srEscape(s.name)}</div><div class="text-text-3 sr-mono" style="font-size:11px;">${s.id}</div></div>
+        </div></td>
+        <td>${srEscape(s.grade)}</td>
+        <td><strong>${busId || '—'}</strong></td>
+        <td class="text-text-2" style="font-size: 12px;">${guardian ? srEscape(guardian.name) : '—'}</td>
+        <td>${onBus ? '<span class="sr-pill success"><i data-lucide="log-in" style="width:11px;height:11px;"></i>On bus / arrived</span>' : '<span class="sr-pill neutral"><span class="dot"></span>Not boarded</span>'}</td>
+        <td>${avg != null ? `<strong>${avg}</strong><span class="text-text-3" style="font-size:11px;">/100</span>` : '<span class="text-text-4">—</span>'}</td>
+        <td style="text-align:right;"><a href="scores.html" class="sr-btn sr-btn-sm sr-btn-ghost"><i data-lucide="award"></i>Scores</a></td>
+      </tr>
+    `;
+  }).join('');
+  srIcons();
+}
+document.getElementById('search').addEventListener('input', render);
+render();
+</script></body></html>

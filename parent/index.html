@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SafeRide — Parent App</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="../shared/style.css">
+<style>body { background: linear-gradient(180deg, #0F1E3D 0%, #182B57 100%); display: flex; align-items: flex-start; justify-content: center; min-height: 100vh; padding: 28px 14px; }</style>
+</head><body>
+
+<div style="display: flex; flex-direction: column; align-items: center; gap: 18px;">
+  <div style="display:flex; align-items: center; gap: 12px; color: white;">
+    <a href="../index.html" style="color: white; text-decoration: none; font-size: 13px;"><i data-lucide="arrow-left" style="vertical-align:middle; width: 16px; height: 16px;"></i> Back to launcher</a>
+    <span style="opacity: 0.4;">·</span>
+    <span style="font-size: 13px; opacity: 0.7;">Parent app — Mr. Chanthavong</span>
+  </div>
+
+  <div class="sr-phone-frame">
+    <div class="sr-phone-notch"></div>
+    <div class="sr-phone-screen" style="display: flex; flex-direction: column;">
+
+      <!-- Status bar -->
+      <div style="padding: 14px 24px 0; display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: var(--sr-text);">
+        <span id="time">07:08</span>
+        <span><i data-lucide="signal" style="width:13px;height:13px;"></i> <i data-lucide="wifi" style="width:13px;height:13px;"></i> <i data-lucide="battery-full" style="width:18px;height:13px;"></i></span>
+      </div>
+
+      <!-- App header -->
+      <div style="padding: 16px 20px 8px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div class="text-text-3" style="font-size: 11px;">Saturday, May 9</div>
+            <h2 style="margin: 2px 0 0; font-size: 22px; font-weight: 800;">Hello, Bouasy 👋</h2>
+          </div>
+          <a href="notifications.html" style="position: relative; width: 38px; height: 38px; background: var(--sr-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--sr-text); text-decoration: none;">
+            <i data-lucide="bell"></i>
+            <span style="position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; background: var(--sr-red); border-radius: 50%; border: 2px solid var(--sr-bg);"></span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Body (scroll) -->
+      <div style="flex: 1; overflow-y: auto; padding: 0 20px 80px;">
+
+        <!-- Child cards -->
+        <div id="children" style="display: flex; flex-direction: column; gap: 12px; margin-top: 8px;"></div>
+
+        <!-- Mini map -->
+        <div style="margin-top: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <strong style="font-size: 14px;">Live bus location</strong>
+            <span class="sr-pill success"><span class="dot"></span>Live</span>
+          </div>
+          <div id="map" style="height: 200px; border-radius: 12px; overflow: hidden; border: 1px solid var(--sr-border);"></div>
+        </div>
+
+        <!-- Quick actions -->
+        <div style="margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          <a href="absence.html" style="background: white; border: 1px solid var(--sr-border); border-radius: 12px; padding: 14px; text-align: center; text-decoration: none; color: var(--sr-text);">
+            <i data-lucide="calendar-x" style="width: 26px; height: 26px; color: var(--sr-rose); margin-bottom: 4px;"></i>
+            <div style="font-weight: 700; font-size: 13px;">Request absence</div>
+          </a>
+          <a href="scores.html" style="background: white; border: 1px solid var(--sr-border); border-radius: 12px; padding: 14px; text-align: center; text-decoration: none; color: var(--sr-text);">
+            <i data-lucide="award" style="width: 26px; height: 26px; color: var(--sr-purple); margin-bottom: 4px;"></i>
+            <div style="font-weight: 700; font-size: 13px;">View scores</div>
+          </a>
+        </div>
+
+        <!-- Today's events -->
+        <div style="margin-top: 18px;">
+          <strong style="font-size: 14px;">Today</strong>
+          <div id="timeline" style="margin-top: 8px;"></div>
+        </div>
+
+      </div>
+
+      <!-- Bottom tabs -->
+      <nav class="sr-tabbar">
+        <a href="index.html"          class="sr-tab active"><i data-lucide="home"></i><span>Home</span></a>
+        <a href="child.html?id=S-1001" class="sr-tab"><i data-lucide="users"></i><span>Children</span></a>
+        <a href="scores.html"          class="sr-tab"><i data-lucide="award"></i><span>Scores</span></a>
+        <a href="absence.html"         class="sr-tab"><i data-lucide="calendar-x"></i><span>Absence</span></a>
+        <a href="settings.html"        class="sr-tab"><i data-lucide="user"></i><span>Profile</span></a>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<script src="../shared/data.js"></script>
+<script src="../shared/ui.js"></script>
+<script>
+const guardian = APP_DATA.byId.guardian['G-001'];
+const children = guardian.studentIds.map(id => APP_DATA.byId.student[id]);
+
+// ---------- Child status cards ----------
+function getChildStatus(c) {
+  let busId = null, runId = null;
+  for (const r of APP_DATA.routes) for (const run of r.runs) {
+    if (run.schoolId !== c.schoolId) continue;
+    if (run.stops.some(s => s.studentIds.includes(c.id))) { busId = r.busId; runId = run.id; break; }
+  }
+  const onBus = APP_DATA.events.some(e => e.studentId === c.id && e.type === 'BOARD');
+  return { busId, runId, onBus, lp: busId ? APP_DATA.livePositions[busId] : null };
+}
+
+document.getElementById('children').innerHTML = children.map(c => {
+  const s = getChildStatus(c);
+  const sch = APP_DATA.byId.school[c.schoolId];
+  const stateLbl = s.onBus ? 'On the bus / arrived' : (s.lp && s.lp.status !== 'idle' ? `Bus ${s.busId} en route` : 'At home');
+  const stateColor = s.onBus ? 'var(--sr-green)' : 'var(--sr-amber)';
+  return `
+    <a href="child.html?id=${c.id}" style="text-decoration: none; color: inherit;">
+      <div style="background: white; border: 1px solid var(--sr-border); border-radius: 14px; padding: 14px; display: flex; align-items: center; gap: 12px;">
+        <div class="sr-avatar lg" style="background:${sch.color}22; color:${sch.color}; font-size: 16px;">${srInitials(c.name)}</div>
+        <div style="flex: 1; min-width: 0;">
+          <div style="font-weight: 800; font-size: 15px;">${srEscape(c.name)}</div>
+          <div style="font-size: 11px; color: var(--sr-text-3);">${srEscape(c.grade)} · <span style="color:${sch.color}; font-weight: 700;">${srEscape(sch.shortName)}</span></div>
+          <div style="margin-top: 6px; display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; color: ${stateColor};">
+            <span style="width: 6px; height: 6px; border-radius: 50%; background: ${stateColor};"></span>${stateLbl}
+          </div>
+        </div>
+        ${s.lp && s.lp.etaMin != null ? `<div style="text-align: right;"><div style="font-weight: 800; font-size: 16px;">${s.lp.etaMin}m</div><div style="font-size: 10px; color: var(--sr-text-3);">ETA</div></div>` : ''}
+      </div>
+    </a>
+  `;
+}).join('');
+
+// ---------- Map ----------
+const focused = children[0];
+const fStatus = getChildStatus(focused);
+const sch = APP_DATA.byId.school[focused.schoolId];
+const map = L.map('map', { zoomControl: false, attributionControl: false }).setView(sch.coords, 13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+L.marker(sch.coords, { icon: L.divIcon({ className: '', html: `<div class="school-marker-div" style="border-color:${sch.color}; color:${sch.color}; font-size: 11px; padding: 2px 6px;">🏫 ${sch.shortName}</div>`, iconSize: [80, 22], iconAnchor: [40, 11] })}).addTo(map);
+if (focused.house) L.marker(focused.house.coords, { icon: L.divIcon({ className: '', html: `<div style="background: var(--sr-blue); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">🏠</div>`, iconSize: [24,24], iconAnchor: [12,12] }) }).addTo(map);
+if (fStatus.lp) L.marker(fStatus.lp.coords, { icon: L.divIcon({ className: '', html: `<div class="bus-marker-div in_transit">🚌 ${fStatus.busId}</div>`, iconSize: [70, 22], iconAnchor: [35, 11] })}).addTo(map);
+const pts = [sch.coords, ...(focused.house ? [focused.house.coords] : []), ...(fStatus.lp ? [fStatus.lp.coords] : [])];
+if (pts.length > 1) map.fitBounds(pts, { padding: [25, 25] });
+
+// ---------- Today timeline ----------
+document.getElementById('timeline').innerHTML = APP_DATA.events.filter(e => children.some(c => c.id === e.studentId)).slice(0, 6).reverse().map(e => {
+  const stu = APP_DATA.byId.student[e.studentId];
+  const stop = APP_DATA.byId.stop[e.stopId];
+  return `
+    <div style="display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--sr-border);">
+      <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(16,185,129,0.12); color: var(--sr-green); display: flex; align-items: center; justify-content: center;"><i data-lucide="log-in"></i></div>
+      <div style="flex: 1;"><div style="font-weight: 700; font-size: 13px;">${srEscape(stu.name.split(' ')[0])} boarded ${e.busId}</div><div class="text-text-3" style="font-size: 11px;">${srEscape(stop.name)}</div></div>
+      <div class="sr-mono text-text-3" style="font-size: 11px;">${srFmtTime(e.timestamp)}</div>
+    </div>
+  `;
+}).join('') || '<div class="sr-empty"><i data-lucide="bus"></i><div>No events today</div></div>';
+
+srIcons();
+</script></body></html>

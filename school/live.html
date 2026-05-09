@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SafeRide School — Live Status</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="../shared/style.css">
+</head><body>
+<div class="app-shell">
+  <aside class="sr-sidebar"></aside>
+  <div class="app-main">
+    <header class="sr-topbar"></header>
+    <div class="app-content">
+      <div class="sr-page-head"><div>
+        <div class="sr-breadcrumb"><a href="index.html">School</a><i data-lucide="chevron-right"></i><span>Live Status</span></div>
+        <h1 class="sr-page-title"><span class="sr-live-dot" style="display:inline-block; vertical-align:middle; margin-right: 8px;"></span>Live student status</h1>
+        <p class="sr-page-sub">Real-time check-in feed as students board the bus and arrive at school.</p>
+      </div></div>
+
+      <div class="sr-grid sr-cols-4" style="margin-bottom: 18px;">
+        <div class="sr-kpi"><div class="sr-kpi-icon blue"><i data-lucide="bus"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">Buses incoming</div><div class="sr-kpi-val" id="k-buses">—</div></div></div>
+        <div class="sr-kpi"><div class="sr-kpi-icon green"><i data-lucide="user-check"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">On bus / arrived</div><div class="sr-kpi-val" id="k-on">—</div></div></div>
+        <div class="sr-kpi"><div class="sr-kpi-icon amber"><i data-lucide="user-x"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">Not boarded yet</div><div class="sr-kpi-val" id="k-not">—</div></div></div>
+        <div class="sr-kpi"><div class="sr-kpi-icon rose"><i data-lucide="calendar-x"></i></div><div class="sr-kpi-body"><div class="sr-kpi-label">Absent today</div><div class="sr-kpi-val" id="k-abs">—</div></div></div>
+      </div>
+
+      <div class="sr-grid sr-cols-12">
+        <div class="sr-card" style="grid-column: span 7;">
+          <div class="sr-card-head"><h3 class="sr-card-title">Today's incoming buses</h3><span class="sr-pill success"><span class="dot"></span>Live · auto-updating</span></div>
+          <div id="busList" style="display: flex; flex-direction: column; gap: 10px;"></div>
+        </div>
+
+        <div class="sr-card" style="grid-column: span 5;">
+          <div class="sr-card-head"><h3 class="sr-card-title">Latest scans</h3><span class="text-text-3" style="font-size:11px;">Live feed</span></div>
+          <div id="feed" style="display: flex; flex-direction: column; gap: 8px; max-height: 480px; overflow-y: auto;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../shared/data.js"></script>
+<script src="../shared/ui.js"></script>
+<script>
+const SCHOOL_ID = 'vis';
+srMount({ role: 'school', active: 'live', user: { name: 'Bounnyong S.', role: 'Principal · HIS', initials: 'BS' } });
+
+const myStudents = APP_DATA.students.filter(s => s.schoolId === SCHOOL_ID);
+const myRuns = APP_DATA.routes.flatMap(r => r.runs.filter(run => run.schoolId === SCHOOL_ID).map(run => ({ route: r, run })));
+const absentToday = APP_DATA.absences.filter(a => a.status === 'approved' && a.date === '2026-05-09' && APP_DATA.byId.student[a.studentId]?.schoolId === SCHOOL_ID);
+
+const onBusIds = new Set(APP_DATA.events.filter(e => e.type === 'BOARD' && APP_DATA.byId.student[e.studentId]?.schoolId === SCHOOL_ID).map(e => e.studentId));
+const allMyIds = new Set(myStudents.map(s => s.id));
+const notBoarded = [...allMyIds].filter(id => !onBusIds.has(id) && !absentToday.find(a => a.studentId === id));
+
+document.getElementById('k-buses').textContent = myRuns.length;
+document.getElementById('k-on').textContent    = onBusIds.size;
+document.getElementById('k-not').textContent   = notBoarded.length;
+document.getElementById('k-abs').textContent   = absentToday.length;
+
+document.getElementById('busList').innerHTML = myRuns.map(({ route, run }) => {
+  const lp = APP_DATA.livePositions[route.busId];
+  const expected = run.stops.reduce((a, s) => a + s.studentIds.length, 0);
+  const scanned = APP_DATA.events.filter(e => e.runId === run.id && e.type === 'BOARD').length;
+  const pct = expected ? Math.round(scanned / expected * 100) : 0;
+  return `
+    <div style="display: flex; align-items: center; gap: 14px; padding: 14px; background: var(--sr-muted); border-radius: 10px;">
+      <div class="sr-kpi-icon yellow" style="width:42px;height:42px;"><i data-lucide="bus"></i></div>
+      <div style="flex: 1; min-width: 0;">
+        <div style="display: flex; align-items: center; gap: 8px;"><strong>${route.busId}</strong><span class="sr-pill ${lp.status === 'in_transit' ? 'success' : 'warn'}"><span class="dot"></span>${lp.status.replace('_',' ')}</span></div>
+        <div class="text-text-3" style="font-size: 12px;">ETA ${lp.etaMin != null ? lp.etaMin + ' min' : '—'} · ${run.stops.filter(s => !APP_DATA.byId.stop[s.stopId].isSchool).length} stops · ${expected} students</div>
+        <div style="margin-top: 6px; height: 6px; background: white; border: 1px solid var(--sr-border); border-radius: 999px; overflow: hidden;">
+          <div style="background: var(--sr-green); height: 100%; width: ${pct}%;"></div>
+        </div>
+      </div>
+      <div style="text-align: right;"><div style="font-size: 22px; font-weight: 800;">${scanned}<span class="text-text-3" style="font-size: 13px; font-weight: 500;">/${expected}</span></div><div class="text-text-3" style="font-size: 11px;">boarded</div></div>
+    </div>
+  `;
+}).join('');
+
+const feedEvents = APP_DATA.events.filter(e => APP_DATA.byId.student[e.studentId]?.schoolId === SCHOOL_ID).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+document.getElementById('feed').innerHTML = feedEvents.map(e => {
+  const stu = APP_DATA.byId.student[e.studentId];
+  const stop = APP_DATA.byId.stop[e.stopId];
+  return `
+    <div style="display: flex; align-items: center; gap: 10px; padding: 10px; background: var(--sr-muted); border-radius: 8px;">
+      <div class="sr-kpi-icon green" style="width:32px;height:32px;"><i data-lucide="log-in"></i></div>
+      <div style="flex:1; min-width: 0;">
+        <div style="font-weight: 700; font-size: 13px;">${srEscape(stu.name)}</div>
+        <div class="text-text-3" style="font-size: 11px;">Boarded ${e.busId} · ${srEscape(stop.name)}</div>
+      </div>
+      <div class="sr-mono text-text-3" style="font-size: 11px;">${srFmtTime(e.timestamp)}</div>
+    </div>
+  `;
+}).join('') || '<div class="sr-empty"><i data-lucide="bus"></i><div>No events yet</div></div>';
+
+srIcons();
+</script></body></html>
