@@ -3,318 +3,254 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SafeRide — ການນຳສະເໜີ</title>
+  <title>Phetaloun SchoolBus — ການນຳສະເໜີ</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
   <style>
+    /* PowerPoint widescreen 16:9 = 13.333" × 7.5" = 1280 × 720 px */
     :root {
-      --navy: #0F1E3D;
-      --navy-2: #182B57;
-      --yellow: #FFD60A;
-      --yellow-dark: #E5BC00;
-      --green: #10B981;
-      --amber: #F59E0B;
-      --red: #EF4444;
-      --slate-50: #F8FAFC;
+      --p-blue: #0E4D92;
+      --p-blue-2: #134AA6;
+      --p-cyan: #29ABE2;
+      --p-cyan-2: #1B95C9;
       --slate-100: #F1F5F9;
       --slate-200: #E2E8F0;
-      --slate-400: #94A3B8;
       --slate-500: #64748B;
       --slate-700: #334155;
       --slate-900: #0F172A;
+      --green: #10B981;
+      --amber: #F59E0B;
+      --red: #EF4444;
+      --purple: #8B5CF6;
     }
     * { box-sizing: border-box; }
-    html, body {
-      margin: 0; padding: 0;
-      background: #1F2937;
-      font-family: 'Noto Sans Lao', 'Phetsarath OT', 'Inter', system-ui, sans-serif;
-      color: var(--slate-900);
-    }
-    body {
-      padding: 40px 0;
-      display: flex; flex-direction: column; align-items: center; gap: 24px;
-    }
+    html, body { margin: 0; padding: 0; background: #1F2937; color: var(--slate-900); font-family: 'Noto Sans Lao', 'Phetsarath OT', 'Inter', system-ui, sans-serif; }
+    body { padding: 40px 0; display: flex; flex-direction: column; align-items: center; gap: 24px; }
     .slide {
-      width: 1280px;
-      height: 720px;
-      background: white;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-      position: relative;
-      overflow: hidden;
-      page-break-after: always;
-      break-after: page;
+      width: 1280px; height: 720px;
+      background: white; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+      position: relative; overflow: hidden;
+      page-break-after: always; break-after: page;
       flex-shrink: 0;
     }
     @page { size: 13.333in 7.5in; margin: 0; }
     @media print {
       html, body { background: white; padding: 0; gap: 0; }
-      .slide { box-shadow: none; margin: 0; page-break-after: always; }
+      .slide { box-shadow: none; margin: 0; }
       .toolbar { display: none !important; }
     }
 
-    .brand-bg { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 100%); color: white; }
+    .brand-bg { background: linear-gradient(135deg, var(--p-blue) 0%, var(--p-blue-2) 100%); color: white; }
     .brand-bg .pad h1, .brand-bg .pad h2, .brand-bg .pad h3 { color: white; }
-    .brand-bg .pad p, .brand-bg .pad .lede { color: rgba(255,255,255,0.88); }
-
-    .logo-mark {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 48px; height: 48px; background: var(--yellow);
-      border-radius: 12px; color: var(--navy);
-      font-size: 26px; font-weight: 900;
-      box-shadow: 0 6px 16px rgba(255,214,10,0.25);
-      font-family: 'Inter', sans-serif;
-    }
-    .logo-row {
-      display: inline-flex; align-items: center; gap: 14px;
-      font-size: 28px; font-weight: 900; letter-spacing: -0.02em;
-    }
-    .logo-row .brand-name { font-family: 'Inter', sans-serif; }
-
-    .pill {
-      display: inline-flex; align-items: center;
-      padding: 6px 14px;
-      border-radius: 999px;
-      font-size: 13px; font-weight: 800;
-      letter-spacing: 0.04em;
-      background: rgba(255,214,10,0.18); color: var(--yellow);
-    }
-    .pill-light { background: rgba(15,30,61,0.08); color: var(--navy); }
+    .brand-bg .pad p { color: rgba(255,255,255,0.88); }
 
     .pad { padding: 48px 56px; height: 100%; display: flex; flex-direction: column; }
-    .pad h1 { font-size: 52px; font-weight: 900; letter-spacing: -0.02em; line-height: 1.05; margin: 0 0 12px; color: var(--navy); }
-    .pad h2 { font-size: 38px; font-weight: 800; letter-spacing: -0.018em; line-height: 1.15; margin: 0 0 14px; color: var(--navy); }
-    .pad h3 { font-size: 22px; font-weight: 700; line-height: 1.3; margin: 0 0 6px; color: var(--navy); }
-    .pad p  { font-size: 17px; line-height: 1.55; color: var(--slate-700); margin: 0 0 12px; }
-    .pad .lede { font-size: 21px; line-height: 1.5; color: var(--slate-700); max-width: 980px; }
+    .pad h1 { font-size: 52px; font-weight: 900; line-height: 1.05; margin: 0 0 12px; color: var(--p-blue); letter-spacing: -0.02em; }
+    .pad h2 { font-size: 36px; font-weight: 800; line-height: 1.15; margin: 0 0 14px; color: var(--p-blue); }
+    .pad h3 { font-size: 20px; font-weight: 700; line-height: 1.3; margin: 0 0 6px; color: var(--p-blue); }
+    .pad p  { font-size: 16px; line-height: 1.55; color: var(--slate-700); margin: 0 0 12px; }
+    .pad .lede { font-size: 20px; line-height: 1.5; color: var(--slate-700); max-width: 1000px; }
+
+    .pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 12px; border-radius: 999px;
+      font-size: 12px; font-weight: 800; letter-spacing: 0.04em;
+      background: rgba(41,171,226,0.15); color: var(--p-cyan-2);
+    }
+    .brand-bg .pill { background: rgba(255,255,255,0.15); color: white; }
+    .pill.new { background: rgba(245,158,11,0.18); color: var(--amber); }
 
     .slide-no {
       position: absolute; bottom: 18px; right: 24px;
-      font-size: 11px; color: var(--slate-400);
+      font-size: 11px; color: #94A3B8;
       font-weight: 600; letter-spacing: 0.08em;
       font-family: 'Inter', sans-serif;
     }
-    .brand-bg .slide-no { color: rgba(255,255,255,0.35); }
+    .brand-bg .slide-no { color: rgba(255,255,255,0.4); }
 
-    .cards-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; flex: 1; }
-    .cards-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; flex: 1; }
-    .cards-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; flex: 1; }
+    .cards-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .cards-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+    .cards-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
 
     .card {
       background: white; border: 1.5px solid var(--slate-200);
-      border-radius: 14px; padding: 22px;
+      border-radius: 12px; padding: 18px;
     }
-    .card.dark { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.15); color: white; }
+    .card.dark { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.16); color: white; }
     .card.dark h3 { color: white; }
-    .card.dark p { color: rgba(255,255,255,0.85); }
+    .card.dark p  { color: rgba(255,255,255,0.85); font-size: 13px; }
 
     .icon-box {
-      width: 56px; height: 56px;
-      border-radius: 14px;
+      width: 44px; height: 44px; border-radius: 11px;
       display: inline-flex; align-items: center; justify-content: center;
-      font-size: 28px; margin-bottom: 14px;
+      margin-bottom: 10px; font-size: 22px;
     }
-    .icon-blue   { background: #DBEAFE; color: #1E40AF; }
-    .icon-amber  { background: #FEF3C7; color: #92400E; }
-    .icon-green  { background: #D1FAE5; color: #065F46; }
-    .icon-purple { background: #EDE9FE; color: #5B21B6; }
-    .icon-red    { background: #FEE2E2; color: #991B1B; }
+    .ic-blue   { background: rgba(14,77,146,0.1);  color: var(--p-blue); }
+    .ic-cyan   { background: rgba(41,171,226,0.14); color: var(--p-cyan-2); }
+    .ic-green  { background: rgba(16,185,129,0.14); color: var(--green); }
+    .ic-amber  { background: rgba(245,158,11,0.16); color: var(--amber); }
+    .ic-purple { background: rgba(139,92,246,0.14); color: var(--purple); }
+    .ic-red    { background: rgba(239,68,68,0.14);  color: var(--red); }
 
-    .two-col {
-      display: grid;
-      gap: 36px;
-      flex: 1;
-      align-items: center;
-    }
-    .two-col.left-img { grid-template-columns: 1.3fr 1fr; }
-    .two-col.right-img { grid-template-columns: 1fr 1.3fr; }
-    .two-col.right-narrow { grid-template-columns: 1.6fr 0.9fr; }
+    .two-col { display: grid; gap: 28px; flex: 1; align-items: center; }
+    .two-col.left-img { grid-template-columns: 1.4fr 1fr; }
+    .two-col.right-img { grid-template-columns: 1fr 1.4fr; }
+    .two-col.right-narrow { grid-template-columns: 1.5fr 1fr; }
 
     .screenshot {
-      width: 100%;
-      border-radius: 12px;
-      box-shadow: 0 16px 36px rgba(15,30,61,0.18);
+      width: 100%; border-radius: 10px;
+      box-shadow: 0 14px 30px rgba(14,77,146,0.18);
       border: 1px solid var(--slate-200);
       display: block;
     }
     .device-shell { display: flex; justify-content: center; align-items: center; }
 
-    .feat-list { list-style: none; padding: 0; margin: 14px 0 0; }
+    .feat-list { list-style: none; padding: 0; margin: 12px 0 0; }
     .feat-list li {
-      display: flex; align-items: flex-start; gap: 12px;
-      padding: 8px 0; font-size: 16px; line-height: 1.5;
-      color: var(--slate-700);
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 6px 0; font-size: 15px; line-height: 1.5; color: var(--slate-700);
     }
-    .feat-list li::before {
-      content: '✓';
-      color: var(--yellow-dark); background: var(--yellow);
-      width: 22px; height: 22px; flex-shrink: 0;
-      border-radius: 999px;
-      display: inline-flex; align-items: center; justify-content: center;
-      font-size: 13px; font-weight: 900;
-      margin-top: 2px;
-      font-family: 'Inter', sans-serif;
+    .feat-list li i {
+      width: 18px; height: 18px; flex-shrink: 0;
+      color: var(--p-cyan); margin-top: 2px;
     }
     .brand-bg .feat-list li { color: rgba(255,255,255,0.92); }
 
-    .events-flow {
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      flex-wrap: nowrap; margin: 24px 0;
-    }
+    /* 4-event flow */
+    .events-flow { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 24px; }
     .event-card {
-      flex: 1;
-      background: white; border: 2px solid var(--slate-200);
-      border-radius: 14px; padding: 18px 12px;
-      text-align: center;
+      flex: 1; background: white; border: 2px solid var(--slate-200);
+      border-radius: 12px; padding: 16px 12px; text-align: center;
     }
-    .event-card .num { font-size: 11px; color: var(--slate-400); font-weight: 700; letter-spacing: 0.06em; }
-    .event-card .icon { font-size: 38px; line-height: 1; margin: 6px 0; }
-    .event-card .title { font-weight: 800; font-size: 15px; color: var(--navy); margin-top: 4px; line-height: 1.3; }
-    .event-card .when { font-size: 12px; color: var(--slate-500); margin-top: 3px; }
-    .event-arrow { font-size: 28px; color: var(--yellow-dark); font-weight: 900; }
+    .event-card .num { font-size: 11px; color: var(--slate-500); font-weight: 700; letter-spacing: 0.06em; }
+    .event-card .icon { font-size: 36px; line-height: 1; margin: 6px 0; }
+    .event-card .title { font-weight: 800; font-size: 14px; color: var(--p-blue); margin-top: 4px; line-height: 1.3; }
+    .event-card .when  { font-size: 11px; color: var(--slate-500); margin-top: 3px; }
+    .event-arrow { font-size: 28px; color: var(--p-cyan); font-weight: 900; }
 
-    .role-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; flex: 1; }
-    .role-card {
-      background: white; border: 1.5px solid var(--slate-200);
-      border-radius: 14px; padding: 18px;
-      display: flex; flex-direction: column;
+    /* Brand block (logo) */
+    .brand-block {
+      display: inline-flex; align-items: center; gap: 14px;
     }
-    .role-card .role-icon {
-      width: 48px; height: 48px; border-radius: 12px;
-      display: inline-flex; align-items: center; justify-content: center;
-      font-size: 24px; margin-bottom: 10px;
+    .brand-block-card {
+      background: white; border-radius: 12px;
+      padding: 8px 14px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.18);
     }
-    .role-card h3 { font-size: 18px; font-weight: 800; margin: 0 0 4px; color: var(--navy); }
-    .role-card p  { font-size: 13px; line-height: 1.5; color: var(--slate-600); margin: 0; }
+    .brand-block-card img { height: 50px; display: block; }
 
-    .stat-row { display: flex; gap: 32px; margin-top: 30px; }
-    .stat-big { font-size: 56px; font-weight: 900; line-height: 1; color: var(--yellow); font-family: 'Inter', sans-serif; }
-    .stat-label { font-size: 13px; color: rgba(255,255,255,0.85); margin-top: 6px; }
+    /* Stat row */
+    .stat-row { display: flex; gap: 32px; margin-top: 28px; }
+    .stat-big { font-size: 50px; font-weight: 900; line-height: 1; color: var(--p-cyan); font-family: 'Inter', sans-serif; }
+    .brand-bg .stat-big { color: var(--p-cyan); }
+    .stat-label { font-size: 12px; color: rgba(255,255,255,0.85); margin-top: 6px; }
 
+    /* On-screen toolbar */
     .toolbar {
       position: fixed; top: 12px; right: 12px;
-      background: rgba(255,255,255,0.95);
-      padding: 8px 14px; border-radius: 999px;
+      background: rgba(255,255,255,0.95); padding: 8px 14px; border-radius: 999px;
       display: flex; align-items: center; gap: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      z-index: 1000; font-size: 13px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; font-size: 13px;
     }
     .toolbar button {
-      border: none; background: var(--navy); color: white;
-      padding: 6px 12px; border-radius: 999px;
-      cursor: pointer; font-weight: 700; font-size: 12px;
+      border: none; background: var(--p-blue); color: white;
+      padding: 6px 12px; border-radius: 999px; cursor: pointer; font-weight: 700; font-size: 12px;
     }
-
-    /* Capture mode: ?only=N shows just one slide flush-left, no shadow, no body padding */
-    body.capture-mode { padding: 0 !important; gap: 0 !important; background: white !important; align-items: flex-start !important; }
-    body.capture-mode .slide { box-shadow: none !important; }
-    body.capture-mode .toolbar { display: none !important; }
   </style>
 </head>
 <body>
 
 <div class="toolbar">
-  <span style="color: var(--slate-500);">11 ສະໄລ້ · 1280×720</span>
+  <span style="color: var(--slate-500);">13 ສະໄລ້ · 1280×720</span>
   <button onclick="window.print()">ບັນທຶກ PDF</button>
 </div>
 
-<!-- ============================================================
-     SLIDE 1 — TITLE
-     ============================================================ -->
+<!-- ============ 1. TITLE ============ -->
 <section class="slide brand-bg">
   <div class="pad" style="justify-content: center;">
-    <div class="logo-row" style="margin-bottom: 32px;">
-      <span class="logo-mark">S</span>
-      <span class="brand-name" style="color: white;">SafeRide</span>
+    <div class="brand-block" style="margin-bottom: 36px;">
+      <div class="brand-block-card"><img src="../shared/phetaloun-logo.svg" alt="Phetaloun SchoolBus"></div>
     </div>
-    <h1 style="font-size: 92px; line-height: 1; font-family: 'Inter', sans-serif;">SafeRide</h1>
-    <p class="lede" style="font-size: 26px; max-width: 920px; margin-top: 16px;">
-      ລະບົບລົດເມໂຮງຮຽນຍຸກໃໝ່ ສຳລັບຜູ້ໃຫ້ບໍລິການຮັບສົ່ງນັກຮຽນ
+    <h1 style="font-size: 78px; line-height: 1;">Phetaloun <span style="color: var(--p-cyan);">SchoolBus</span></h1>
+    <p style="font-size: 22px; max-width: 920px; margin-top: 16px;">
+      ລະບົບປະຕິບັດການລົດເມໂຮງຮຽນສຳລັບແຂວງບໍ່ແກ້ວ. ຮັບສົ່ງເຖິງປະຕູບ້ານ, ສະແກນ NFC + QR, ຕິດຕາມສົດ, ການຈັດການຄະແນນ ແລະ ການຂາດຮຽນ — ຄົບໃນລະບົບດຽວ.
     </p>
-    <div style="margin-top: 60px;">
-      <span class="pill">ຕົວແບບ · 2026</span>
+    <div style="margin-top: 50px; display: flex; gap: 10px;">
+      <span class="pill" style="font-size: 13px;">ຕົວແບບ · 2026</span>
+      <span class="pill" style="font-size: 13px;">ຫ້ວຍຊາຍ · ບໍ່ແກ້ວ</span>
     </div>
   </div>
-  <div class="slide-no">1 / 11</div>
+  <div class="slide-no">1 / 13</div>
 </section>
 
-<!-- ============================================================
-     SLIDE 2 — WHAT IS SAFERIDE
-     ============================================================ -->
+<!-- ============ 2. WHAT IS PHETALOUN SCHOOLBUS ============ -->
 <section class="slide">
   <div class="pad">
-    <span class="pill pill-light">01 · ພາບລວມ</span>
-    <h2 style="margin-top: 12px;">SafeRide ແມ່ນຫຍັງ?</h2>
-    <p class="lede" style="max-width: 1150px;">
-      SafeRide ແມ່ນລະບົບຮັບສົ່ງນັກຮຽນ, ຕິດຕາມລົດເມໂຮງຮຽນແບບຄົບຖ້ວນ. ໜຶ່ງລະບົບ, ສີ່ແອັບ: ຜູ້ປົກຄອງທຸກຄົນຮູ້ວ່າລູກຂອງຕົນຢູ່ໃສ ທຸກໆນາທີຂອງການເດີນທາງໄປ-ກັບໂຮງຮຽນ.
+    <span class="pill">01 · ພາບລວມ</span>
+    <h2 style="margin-top: 12px;">Phetaloun SchoolBus ແມ່ນຫຍັງ?</h2>
+    <p class="lede" style="max-width: 1140px;">
+      ລະບົບຄົບຖ້ວນສຳລັບບໍລິສັດທີ່ໃຫ້ບໍລິການລົດເມໂຮງຮຽນຫຼາຍແຫ່ງ. ລົງທະບຽນນັກຮຽນ, ປັກຕຳແໜ່ງເຮືອນ, ວາງແຜນເສັ້ນທາງຮັບສົ່ງເຖິງປະຕູ, ສະແກນບັດທີ່ປະຕູລົດ, ຕິດຕາມສົດ ແລະ ແຈ້ງເຕືອນຜູ້ປົກຄອງທັນທີ.
     </p>
 
-    <div class="cards-3" style="margin-top: 24px;">
+    <div class="cards-3" style="margin-top: 26px;">
       <div class="card">
-        <div class="icon-box icon-blue">🚌</div>
-        <h3>ໜຶ່ງບໍລິສັດ ບໍລິການຫຼາຍໂຮງຮຽນ</h3>
-        <p style="font-size: 14px;">ບໍລິຫານລົດທັງໝົດທົ່ວທຸກໂຮງຮຽນທີ່ທ່ານໃຫ້ບໍລິການ ຈາກໜ້າຄວບຄຸມດຽວ. ໂຮງຮຽນ, ລົດ, ຄົນຂັບ, ເສັ້ນທາງ — ທັງໝົດໃນບ່ອນດຽວ.</p>
+        <div class="icon-box ic-cyan"><i data-lucide="layout-dashboard"></i></div>
+        <h3>ບໍລິສັດດຽວ ຫຼາຍໂຮງຮຽນ</h3>
+        <p>ໜ້າຄວບຄຸມດຽວສຳລັບກອງລົດທັງໝົດທົ່ວທຸກໂຮງຮຽນທີ່ບໍລິການ. ຈັດການຮ່ວມໂຮງຮຽນ, ລົດ, ຄົນຂັບ, ເສັ້ນທາງ, ບັນຊີຜູ້ໃຊ້ລະບົບ.</p>
       </div>
       <div class="card">
-        <div class="icon-box icon-amber">📷</div>
-        <h3>ສະແກນ QR ຂຶ້ນລົດ</h3>
-        <p style="font-size: 14px;">ນັກຮຽນແຕ່ລະຄົນມີລະຫັດ QR ຢູ່ບັດປະຈຳຕົວນັກຮຽນ. ຄົນຂັບສະແກນເມື່ອຂຶ້ນ ແລະ ລົງລົດ. ບໍ່ຕ້ອງມີອຸປະກອນລາຄາແພງ, ບໍ່ຕ້ອງໃຊ້ຖ່ານ, ບໍ່ຕ້ອງເສຍຄ່າຕໍ່ນັກຮຽນ.</p>
+        <div class="icon-box ic-amber"><i data-lucide="home"></i></div>
+        <h3>ຮັບສົ່ງເຖິງປະຕູບ້ານ</h3>
+        <p>ປັກໝຸດເຮືອນຂອງແຕ່ລະນັກຮຽນ. ລະບົບປັບປຸງເສັ້ນທາງໃຫ້ສັ້ນສຸດ. ຮັບແຕ່ລະຄົນຢູ່ໜ້າປະຕູ — ບໍ່ຕ້ອງຍ່າງໄປປ້າຍຈອດ.</p>
       </div>
       <div class="card">
-        <div class="icon-box icon-green">🛰️</div>
-        <h3>Real Time ແລະ ກວດສອບໄດ້</h3>
-        <p style="font-size: 14px;">ທຸກການສະແກນຖືກບັນທຶກເວລາ, ຕິດແທັກ GPS, ແລະ ສົ່ງໃຫ້ຜູ້ປົກຄອງພາຍໃນວິນາທີ. ການໂທສອບຖາມໂຮງຮຽນຈະໝົດໄປ.</p>
+        <div class="icon-box ic-green"><i data-lucide="nfc"></i></div>
+        <h3>ສະແກນດ້ວຍ NFC + QR</h3>
+        <p>ບັດນັກຮຽນມີທັງ NFC ແລະ QR. ຄົນຂັບໃຊ້ PDA ມືຖືແຕະ ຫຼື ສະແກນທີ່ປະຕູລົດ. ໝົດປະຫຍັດເວລາ, ຫຼຸດຄວາມຜິດພາດ.</p>
       </div>
     </div>
   </div>
-  <div class="slide-no">2 / 11</div>
+  <div class="slide-no">2 / 13</div>
 </section>
 
-<!-- ============================================================
-     SLIDE 3 — WHY THIS MATTERS
-     ============================================================ -->
+<!-- ============ 3. THE PROBLEM ============ -->
 <section class="slide">
   <div class="pad">
-    <span class="pill pill-light">02 · ບັນຫາ</span>
-    <h2 style="margin-top: 12px;">ບັນຫາທີ່ພົບ</h2>
-    <p class="lede" style="max-width: 1150px;">
-      ປະຈຸບັນ ຜູ້ປົກຄອງ, ໂຮງຮຽນ, ແລະ ບໍລິສັດໃຫ້ບໍລິການສົ່ງນັກຮຽນບໍ່ມີຂໍ້ມູນ ເຮັດໃຫ້ບໍ່ສາມາດຕິດຕາມການເຄື່ອນໄຫວຕ່າງໆໄດ້.
-    </p>
-
+    <span class="pill">02 · ບັນຫາ</span>
+    <h2 style="margin-top: 12px;">ບັນຫາທີ່ພົບໃນປະຈຸບັນ</h2>
+    <p class="lede">ປະຈຸບັນ ຜູ້ປົກຄອງ ໂຮງຮຽນ ແລະ ບໍລິສັດລົດເມ ບໍ່ມີຂໍ້ມູນທີ່ຊັດເຈນ ເຮັດໃຫ້ບໍ່ສາມາດຕິດຕາມການເຄື່ອນໄຫວ ແລະ ຄວາມຜິດພາດເກີດຂຶ້ນເລື້ອຍໆ.</p>
     <div class="cards-4" style="margin-top: 22px;">
       <div class="card">
-        <div class="icon-box icon-red">😟</div>
-        <h3>ຜູ້ປົກຄອງເບິ່ງບໍ່ເຫັນ</h3>
-        <p style="font-size: 14px;">"ລູກຂ້ອຍຂຶ້ນລົດແລ້ວບໍ?" "ເປັນຫຍັງລົດຊ້າ?" ໂທຫາໂຮງຮຽນບໍ່ຮູ້ຈົບ ແຕ່ບໍ່ມີຄຳຕອບທີ່ແທ້ຈິງ.</p>
+        <div class="icon-box ic-red">😟</div>
+        <h3 style="font-size: 16px;">ຜູ້ປົກຄອງເບິ່ງບໍ່ເຫັນ</h3>
+        <p style="font-size: 13px;">"ລູກຂ້ອຍຂຶ້ນລົດແລ້ວບໍ?" "ເປັນຫຍັງລົດຊ້າ?" ໂທໂຮງຮຽນບໍ່ຮູ້ຈົບ ແຕ່ບໍ່ມີຄຳຕອບ.</p>
       </div>
       <div class="card">
-        <div class="icon-box icon-amber">🚌</div>
-        <h3>ຂຶ້ນຜິດລົດ</h3>
-        <p style="font-size: 14px;">ໂດຍສະເພາະນັກຮຽນນ້ອຍ. ຄົນຂັບຈື່ບໍ່ໝົດ 40 ນັກຮຽນ × ຫຼາຍໂຮງຮຽນ. ຜິດເທື່ອດຽວ ກໍ່ກາຍເປັນຂ່າວ.</p>
+        <div class="icon-box ic-amber">🚌</div>
+        <h3 style="font-size: 16px;">ຂຶ້ນຜິດລົດ</h3>
+        <p style="font-size: 13px;">ໂດຍສະເພາະນັກຮຽນນ້ອຍ. ຄົນຂັບຈື່ບໍ່ໝົດ. ຜິດເທື່ອດຽວເປັນຂ່າວ.</p>
       </div>
       <div class="card">
-        <div class="icon-box icon-amber">📋</div>
-        <h3>ກວດເຂົ້າຮຽນດ້ວຍເຈ້ຍ</h3>
-        <p style="font-size: 14px;">ຄົນຂັບໝາຍຊື່ດ້ວຍມື. ໂຮງຮຽນ ແລະ ບໍລິສັດລົດປຽບທຽບກັນທາງໂທລະສັບ. ເສຍເວລາຫຼາຍຊົ່ວໂມງທຸກໆມື້.</p>
+        <div class="icon-box ic-amber">📋</div>
+        <h3 style="font-size: 16px;">ກວດເຂົ້າຮຽນດ້ວຍເຈ້ຍ</h3>
+        <p style="font-size: 13px;">ບັນທຶກດ້ວຍມື. ໂຮງຮຽນ ແລະ ບໍລິສັດໂທປຽບທຽບ. ເສຍເວລາທຸກມື້.</p>
       </div>
       <div class="card">
-        <div class="icon-box icon-red">⚠️</div>
-        <h3>ເດັກຄ້າງຢູ່ໃນລົດ</h3>
-        <p style="font-size: 14px;">ເຫດການຈິງທີ່ເກີດຂຶ້ນຊ້ຳໆ. ເມື່ອເກີດແລ້ວ ຊື່ສຽງຂອງບໍລິສັດກໍ່ຍາກທີ່ຈະຟື້ນຄືນເຕັມທີ່.</p>
+        <div class="icon-box ic-red">⚠️</div>
+        <h3 style="font-size: 16px;">ເດັກຄ້າງໃນລົດ</h3>
+        <p style="font-size: 13px;">ເຫດການຈິງທີ່ເກີດຊ້ຳໆ. ເມື່ອເກີດແລ້ວ ຊື່ສຽງຂອງບໍລິສັດເສຍຫາຍຍາວນານ.</p>
       </div>
     </div>
   </div>
-  <div class="slide-no">3 / 11</div>
+  <div class="slide-no">3 / 13</div>
 </section>
 
-<!-- ============================================================
-     SLIDE 4 — HOW IT WORKS
-     ============================================================ -->
+<!-- ============ 4. HOW IT WORKS — 4 EVENTS ============ -->
 <section class="slide">
   <div class="pad">
-    <span class="pill pill-light">03 · ວິທີໃຊ້ງານ</span>
-    <h2 style="margin-top: 12px;">ສະແກນ 4 ຄັ້ງຕໍ່ມື້</h2>
-    <p class="lede" style="max-width: 1150px;">
-      ທຸກຄັ້ງທີ່ຂື້ນ ແລະ ລົງລົດ ຈະມີການສະແກນເພື່ອເກັບສະຖານະຂອງນັກຮຽນແຕ່ລະຄົນ ແລະ ຂໍ້ມູນຈະຖືກສົ່ງໄປແຈ້ງເຕືອນໃຫ້ຜູ້ປົກຄອງໄດ້ຮັບຮູ້.
-    </p>
+    <span class="pill">03 · ວິທີໃຊ້ງານ</span>
+    <h2 style="margin-top: 12px;">ສະແກນ 4 ຄັ້ງຕໍ່ມື້ — ໝົດເລື່ອງເທົ່ານັ້ນ</h2>
+    <p class="lede">ທຸກມື້ໂຮງຮຽນ ທຸກນັກຮຽນ. ການສະແກນແຕ່ລະຄັ້ງສ້າງເຫດການທີ່ກວດສອບໄດ້ ແລະ ສົ່ງການແຈ້ງເຕືອນຫາຜູ້ປົກຄອງທັນທີ.</p>
 
     <div class="events-flow">
       <div class="event-card">
@@ -346,194 +282,230 @@
       </div>
     </div>
 
-    <div style="margin-top: 30px; padding: 16px 22px; background: var(--slate-50); border-radius: 12px; border-left: 4px solid var(--yellow);">
-      <p style="margin: 0; font-size: 15px;"><b>ແຕ່ລະເຫດການບັນທຶກ:</b> ນັກຮຽນ · ລົດ · ປ້າຍຈອດ · ເວລາ · GPS · ຄົນຂັບ. ທຸກລາຍງານ, ທຸກການແຈ້ງເຕືອນ, ທຸກຂໍ້ຄວາມ ສ້າງຂຶ້ນຈາກແຫຼ່ງຂໍ້ມູນດຽວນີ້.</p>
+    <div style="margin-top: 28px; padding: 14px 20px; background: var(--slate-100); border-radius: 10px; border-left: 4px solid var(--p-cyan);">
+      <p style="margin: 0; font-size: 14px;"><b>ແຕ່ລະເຫດການບັນທຶກ:</b> ນັກຮຽນ · ລົດ · ປ້າຍຈອດ · ເວລາ · GPS · ຄົນຂັບ. ທຸກລາຍງານ ການແຈ້ງເຕືອນ ແລະ ຂໍ້ມູນ ສ້າງຈາກແຫຼ່ງດຽວນີ້.</p>
     </div>
   </div>
-  <div class="slide-no">4 / 11</div>
+  <div class="slide-no">4 / 13</div>
 </section>
 
-<!-- ============================================================
-     SLIDE 5 — FOUR ROLES, FOUR APPS
-     ============================================================ -->
+<!-- ============ 5. OPERATOR DASHBOARD ============ -->
 <section class="slide">
   <div class="pad">
-    <span class="pill pill-light">04 · ບົດບາດທັງສີ່</span>
-    <h2 style="margin-top: 12px;">ສີ່ບົດບາດ, ສີ່ແອັບ, ໜຶ່ງລະບົບ</h2>
-    <p class="lede" style="max-width: 1150px;">
-      ທຸກຄົນທີ່ກ່ຽວຂ້ອງກັບການເດີນທາງໄປໂຮງຮຽນ ໄດ້ໃຊ້ເຄື່ອງມືທີ່ອອກແບບສຳລັບໜ້າທີ່ຂອງເຂົາ.
-    </p>
-
-    <div class="role-grid" style="margin-top: 22px;">
-      <div class="role-card">
-        <div class="role-icon icon-blue">🛰️</div>
-        <h3>ບໍລິສັດລົດເມ</h3>
-        <p>ເບິ່ງລົດທຸກຄັນແບບສົດໆ ທົ່ວທຸກໂຮງຮຽນ. ຜູ້ຄວບຄຸມເຫັນທຸກລົດ, ທຸກຮອບ, ທຸກການແຈ້ງເຕືອນ ໃນບ່ອນດຽວ.</p>
-      </div>
-      <div class="role-card">
-        <div class="role-icon icon-amber">🚌</div>
-        <h3>ຄົນຂັບ</h3>
-        <p>ແອັບສຳລັບແທັບເລັດ. ເສັ້ນທາງມື້ນີ້, ລາຍຊື່ທຸກປ້າຍຈອດ, ສະແກນ QR ດ້ວຍປຸ່ມດຽວ, ກວດຫຼັງສຳເລັດເສັ້ນທາງ.</p>
-      </div>
-      <div class="role-card">
-        <div class="role-icon icon-green">👨‍👩‍👧</div>
-        <h3>ຜູ້ປົກຄອງ</h3>
-        <p>ຕຳແໜ່ງລົດແບບສົດໆ, ແຈ້ງເຕືອນທັນທີເມື່ອລູກຂຶ້ນລົດ ຫຼື ມາຮອດ. ຮອງຮັບລູກຫຼາຍຄົນ.</p>
-      </div>
-      <div class="role-card">
-        <div class="role-icon icon-purple">🏫</div>
-        <h3>ໂຮງຮຽນ</h3>
-        <p>ມຸມມອງສະເພາະໂຮງຮຽນ. ເບິ່ງລົດທີ່ມາຮອດ, ການເຂົ້າຮຽນ, ແລະ ກວດສອບກັບຫ້ອງຮຽນພາຍໃນວິນາທີ.</p>
-      </div>
-    </div>
-  </div>
-  <div class="slide-no">5 / 11</div>
-</section>
-
-<!-- ============================================================
-     SLIDE 6 — DISPATCHER DASHBOARD
-     ============================================================ -->
-<section class="slide">
-  <div class="pad">
-    <span class="pill pill-light">05 · ບໍລິສັດລົດເມ</span>
-    <h2 style="margin-top: 8px;">ໜ້າຄວບຄຸມຂອງຜູ້ຄວບຄຸມ</h2>
-
+    <span class="pill">04 · ບໍລິສັດລົດເມ</span>
+    <h2 style="margin-top: 8px;">ໜ້າຄວບຄຸມຜູ້ດູແລລະບົບສູງສຸດ</h2>
     <div class="two-col left-img">
+      <div><img class="screenshot" src="screenshots/op-dashboard.png" alt="Operator dashboard"></div>
       <div>
-        <img class="screenshot" src="screenshots/operator.png" alt="Operator dashboard">
-      </div>
-      <div>
-        <p style="font-size: 16px;">ໜ້າຈໍດຽວ ບໍລິຫານທຸກຢ່າງ ທົ່ວທຸກໂຮງຮຽນ.</p>
+        <p style="font-size: 16px;">ໜ້າຈໍດຽວ ບໍລິຫານທຸກຢ່າງ ທົ່ວທຸກໂຮງຮຽນທີ່ບໍລິການ.</p>
         <ul class="feat-list">
-          <li>ແຜນທີ່ສົດໆຂອງລົດທຸກຄັນ ແຍກສີຕາມໂຮງຮຽນ</li>
-          <li>ກົດເບິ່ງລົດໃດກໍ່ໄດ້ ເພື່ອເຫັນຮອບປະຈຸບັນ, ລາຍຊື່ນັກຮຽນ, ເວລາມາຮອດ ແລະ ຄວາມຄືບໜ້າປ້າຍຈອດ</li>
-          <li>ການແຈ້ງເຕືອນແບບສົດໆ: ອອກຊ້າ, ລົດແອອັດ, ອອກນອກເສັ້ນທາງ, ສຳເລັດຮອບ</li>
-          <li>ຕາຕະລາງມື້ນີ້ທຸກເສັ້ນທາງ ກັ່ນຕອງຕາມໂຮງຮຽນໄດ້</li>
+          <li><i data-lucide="check"></i>ແຜນທີ່ສົດໆຂອງລົດທຸກຄັນ</li>
+          <li><i data-lucide="check"></i>ສະຖິຕິລາຍວັນ ນັກຮຽນ ລາຍຮັບ ອັດຕາມາຕາມເວລາ</li>
+          <li><i data-lucide="check"></i>ການແຈ້ງເຕືອນສົດໆ ຕາຕະລາງມື້ນີ້</li>
+          <li><i data-lucide="check"></i>13 ໂມດູນ: ໂຮງຮຽນ, ນັກຮຽນ, ຜູ້ປົກຄອງ, ຄົນຂັບ, ລົດ, ເສັ້ນທາງ, ແພັກເກັດ, ການເງິນ, ລາຍງານ, ຜູ້ໃຊ້ລະບົບ</li>
         </ul>
       </div>
     </div>
   </div>
-  <div class="slide-no">6 / 11</div>
+  <div class="slide-no">5 / 13</div>
 </section>
 
-<!-- ============================================================
-     SLIDE 7 — DRIVER TABLET
-     ============================================================ -->
+<!-- ============ 6. LIVE MONITORING + DOORSTEP ============ -->
 <section class="slide">
   <div class="pad">
-    <span class="pill pill-light">06 · ຄົນຂັບ</span>
-    <h2 style="margin-top: 8px;">ແທັບເລັດສຳລັບຄົນຂັບ</h2>
-
-    <div class="two-col right-img">
+    <span class="pill">05 · ຕິດຕາມສົດ</span>
+    <h2 style="margin-top: 8px;">ຕິດຕາມສົດ + ຮັບສົ່ງເຖິງປະຕູ</h2>
+    <div class="two-col left-img">
+      <div><img class="screenshot" src="screenshots/op-monitoring.png" alt="Live monitoring"></div>
       <div>
-        <p style="font-size: 16px;">ແທັບເລັດທີ່ຕິດໃນລົດ ສະແດງທຸກສິ່ງທີ່ຄົນຂັບຕ້ອງການເຫັນ.</p>
+        <p style="font-size: 16px;">ລົດເຄື່ອນໄຫວຕາມເສັ້ນທາງຈິງ ຢຸດທີ່ປ້າຍຈອດ ແລະ ສົ່ງເຫດການເຂົ້າມາສົດໆ.</p>
         <ul class="feat-list">
-          <li>ຈຸດຈອດມື້ນີ້ຕາມລຳດັບ</li>
-          <li>ລາຍຊື່ນັກຮຽນທຸກຈຸດຈອດ: ນັກຮຽນທີ່ຕ້ອງສະແກນ, ໃຜສະແກນແລ້ວ</li>
-          <li>ປຸ່ມໃຫຍ່ "ກົດເພື່ອສະແກນ" — ໜຶ່ງວິນາທີຕໍ່ນັກຮຽນ</li>
-          <li>ແຈ້ງເຕືອນທັນທີ ຖ້ານັກຮຽນຂຶ້ນຜິດລົດ</li>
-          <li>ຢືນຢັນ <b>"ກວດກາພາຍໃນລົດ"</b> ບັງຄັບຫຼັງສຳເລັດເສັ້ນທາງ</li>
-          <li>ໝາຍດ້ວຍມືສຳລັບກໍລະນີລືມບັດ — ລົດບໍ່ຕ້ອງຢຸດເຄື່ອນທີ່</li>
+          <li><i data-lucide="check"></i>ລົດເຄື່ອນໄຫວສະໝຳ່ສະເໝີ ປັບຄວາມໄວຈຳລອງໄດ້</li>
+          <li><i data-lucide="check"></i>ໝຸດເຮືອນຂອງນັກຮຽນທຸກຄົນເພື່ອເຫັນຖານລູກຄ້າ</li>
+          <li><i data-lucide="check"></i>ລົ໋ອກໃນພື້ນທີ່ບໍ່ແກ້ວເທົ່ານັ້ນ — ບໍ່ຂ້າມໄທ</li>
+          <li><i data-lucide="check"></i>ຄລິກລົດໃດກໍ່ໄດ້ ເພື່ອເບິ່ງລາຍລະອຽດ ຮອບປະຈຸບັນ ແລະ ກິດຈະກຳ</li>
         </ul>
-      </div>
-      <div>
-        <img class="screenshot" src="screenshots/driver.png" alt="Driver tablet app">
       </div>
     </div>
   </div>
-  <div class="slide-no">7 / 11</div>
+  <div class="slide-no">6 / 13</div>
 </section>
 
-<!-- ============================================================
-     SLIDE 8 — PARENT PHONE
-     ============================================================ -->
+<!-- ============ 7. ROUTES — DOOR-TO-DOOR ============ -->
 <section class="slide">
   <div class="pad">
-    <span class="pill pill-light">07 · ຜູ້ປົກຄອງ</span>
-    <h2 style="margin-top: 8px;">ແອັບໂທລະສັບສຳລັບຜູ້ປົກຄອງ</h2>
+    <span class="pill">06 · ເສັ້ນທາງ</span>
+    <h2 style="margin-top: 8px;">ວາງແຜນເສັ້ນທາງ ຮັບເຖິງໜ້າປະຕູ</h2>
+    <div class="two-col left-img">
+      <div><img class="screenshot" src="screenshots/op-routes.png" alt="Routes"></div>
+      <div>
+        <p style="font-size: 16px;">ປັກໝຸດເຮືອນຂອງແຕ່ລະນັກຮຽນ. ລະບົບສະແດງປ້າຍຈອດ + ບ້ານ + ໂຮງຮຽນ ໃນແຜນທີ່ດຽວ.</p>
+        <ul class="feat-list">
+          <li><i data-lucide="check"></i>ປຸ່ມ "ປັບປຸງ" ໃຊ້ Nearest-Neighbor ຫາເສັ້ນທາງສັ້ນສຸດ</li>
+          <li><i data-lucide="check"></i>ສະແດງໄລຍະທາງ km ແລະ ເວລາໂດຍປະມານ</li>
+          <li><i data-lucide="check"></i>ຍ້າຍປ້າຍຈອດຂຶ້ນລົງ ເພີ່ມ/ລຶບໄດ້ສະດວກ</li>
+          <li><i data-lucide="check"></i>ຮ້ອຍກະຫຼັງເຮືອນທີ່ປ້າຍຈອດດຽວກັນ ຫຼື ຮັບແຍກແຕ່ລະຫຼັງ</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="slide-no">7 / 13</div>
+</section>
 
+<!-- ============ 8. PDA DRIVER DEVICE ============ -->
+<section class="slide">
+  <div class="pad">
+    <span class="pill">07 · ຄົນຂັບ</span>
+    <h2 style="margin-top: 8px;">ອຸປະກອນ PDA ມືຖືສຳລັບຄົນຂັບ</h2>
     <div class="two-col right-narrow">
       <div>
-        <p style="font-size: 16px;">ຜູ້ປົກຄອງເຫັນພຽງສິ່ງດຽວ: ລູກຂອງເຂົາຢູ່ໃສ ໃນຕອນນີ້.</p>
+        <p style="font-size: 16px;">PDA ມືຖືແຂງແຮງ ມີຊ່ອງສະແກນ QR/ບາໂຄດ + NFC ໃນຕົວ. ຄົນຂັບໃຊ້ປຸ່ມຮາດແວ ບໍ່ຕ້ອງແຕະຈໍ.</p>
         <ul class="feat-list">
-          <li>ຕຳແໜ່ງລົດ Real Time ເທິງແຜນທີ່ ພ້ອມເວລາມາຮອດປ້າຍບ້ານ</li>
-          <li>ແຈ້ງເຕືອນທຸກໆເຫດການທັງ 4 ສະຖານະ — ຂຶ້ນລົດ, ມາຮອດ, ຂຶ້ນລົດກັບບ້ານ, ຮອດບ້ານ</li>
-          <li>ບັນຊີດຽວສຳລັບທັງຄອບຄົວ. ສະຫຼັບລະຫວ່າງລູກໆ — ເຖິງຈະຮຽນຄົນລະໂຮງຮຽນ</li>
-          <li>ໄລຍະເວລາຂອງເຫດການມື້ນີ້ພ້ອມເວລາ</li>
-          <li>ສອງພາສາ ລາວ + ອັງກິດ</li>
-          <li>ກົດໂທຫາຄົນຂັບ, ໂຮງຮຽນ ຫຼື ບໍລິສັດລົດ ໄດ້ຕະຫລອດ</li>
+          <li><i data-lucide="check"></i>ຊ່ອງສະແກນ QR/ບາໂຄດ ດ້ານເທິງ ມີລາເຊີສີແດງ</li>
+          <li><i data-lucide="check"></i>ປຸ່ມສະແກນສີເຫຼືອງໃຫຍ່ ດ້ານລ່າງ</li>
+          <li><i data-lucide="check"></i>ປຸ່ມ NFC ສີຟ້າ ສຳລັບແຕະບັດ</li>
+          <li><i data-lucide="check"></i>ບັງຄັບກວດກາພາຍໃນລົດ ຫຼັງສຳເລັດເສັ້ນທາງ</li>
+          <li><i data-lucide="check"></i>ລົງທະບຽນແບບກຳມືສຳລັບກໍລະນີລືມບັດ</li>
         </ul>
       </div>
-      <div class="device-shell">
-        <img class="screenshot" src="screenshots/parent.png" alt="Parent phone app" style="max-width: 100%; max-height: 540px; width: auto;">
-      </div>
+      <div class="device-shell"><img class="screenshot" src="screenshots/driver-pda.png" alt="PDA driver" style="max-height: 480px; width: auto;"></div>
     </div>
   </div>
-  <div class="slide-no">8 / 11</div>
+  <div class="slide-no">8 / 13</div>
 </section>
 
-<!-- ============================================================
-     SLIDE 9 — SCHOOL DASHBOARD
-     ============================================================ -->
+<!-- ============ 9. PARENT MOBILE APP ============ -->
 <section class="slide">
   <div class="pad">
-    <span class="pill pill-light">08 · ໂຮງຮຽນ</span>
-    <h2 style="margin-top: 8px;">ໜ້າຄວບຄຸມຂອງໂຮງຮຽນ</h2>
-
-    <div class="two-col left-img">
+    <span class="pill">08 · ຜູ້ປົກຄອງ</span>
+    <h2 style="margin-top: 8px;">ແອັບໂທລະສັບສຳລັບຜູ້ປົກຄອງ</h2>
+    <div class="two-col right-narrow">
       <div>
-        <img class="screenshot" src="screenshots/school.png" alt="School admin dashboard">
+        <p style="font-size: 16px;">ຮັບແຈ້ງເຕືອນທຸກຄັ້ງທີ່ລູກຂຶ້ນ-ລົງລົດ. ເບິ່ງຕຳແໜ່ງສົດໆ ແລະ ເຮັດທຸກຢ່າງຈາກໂທລະສັບ.</p>
+        <ul class="feat-list">
+          <li><i data-lucide="check"></i>ຕຳແໜ່ງລົດສົດໆເທິງແຜນທີ່ ພ້ອມເວລາມາຮອດ</li>
+          <li><i data-lucide="check"></i>ແຈ້ງເຕືອນທຸກໆເຫດການທັງ 4 ຄັ້ງ</li>
+          <li><i data-lucide="check"></i>ບັນຊີດຽວສຳລັບຫຼາຍລູກ — ຄົນລະໂຮງຮຽນກໍ່ໄດ້</li>
+          <li><i data-lucide="check"></i>ເບິ່ງຄະແນນ ແລະ ຂໍຂາດຮຽນຈາກໂທລະສັບ</li>
+          <li><i data-lucide="check"></i>ສອງພາສາ ລາວ + ອັງກິດ</li>
+        </ul>
+      </div>
+      <div class="device-shell"><img class="screenshot" src="screenshots/parent-home.png" alt="Parent home" style="max-height: 500px; width: auto;"></div>
+    </div>
+  </div>
+  <div class="slide-no">9 / 13</div>
+</section>
+
+<!-- ============ 10. SCORE MANAGEMENT (NEW) ============ -->
+<section class="slide">
+  <div class="pad">
+    <span class="pill new"><i data-lucide="sparkles" style="width:12px;height:12px;"></i> ໃໝ່ · 09 · ຄະແນນ</span>
+    <h2 style="margin-top: 8px;">ການຈັດການຄະແນນ — ໂຮງຮຽນ ↔ ຜູ້ປົກຄອງ</h2>
+    <div class="two-col" style="grid-template-columns: 1fr 1fr;">
+      <div>
+        <h3 style="margin: 0 0 6px;">ໂຮງຮຽນ: ໃສ່ຄະແນນ</h3>
+        <img class="screenshot" src="screenshots/school-scores.png" alt="School scores" style="max-height: 320px;">
       </div>
       <div>
-        <p style="font-size: 16px;">ພະນັກງານໂຮງຮຽນຕອບຄຳຖາມຜູ້ປົກຄອງໄດ້ຕະຫລອດເວລາ.</p>
+        <h3 style="margin: 0 0 6px;">ຜູ້ປົກຄອງ: ເຫັນຄະແນນທັນທີ</h3>
+        <img class="screenshot" src="screenshots/parent-scores.png" alt="Parent scores" style="max-height: 320px;">
+      </div>
+    </div>
+    <p style="font-size: 14px; margin-top: 16px; padding: 10px 14px; background: rgba(41,171,226,0.08); border-radius: 8px;">
+      <b>ການເຮັດວຽກ:</b> ຄູໃສ່ຄະແນນຢູ່ໂຮງຮຽນ → ຜູ້ປົກຄອງເຫັນຄະແນນ ແລະ ຄະແນນສະເລ່ຍຂອງລູກໃນແອັບໂທລະສັບທັນທີ. ມີກຣາບຄະແນນສະເລ່ຍຕາມວິຊາ.
+    </p>
+  </div>
+  <div class="slide-no">10 / 13</div>
+</section>
+
+<!-- ============ 11. ABSENCE FLOW (NEW) ============ -->
+<section class="slide">
+  <div class="pad">
+    <span class="pill new"><i data-lucide="sparkles" style="width:12px;height:12px;"></i> ໃໝ່ · 10 · ການຂາດຮຽນ</span>
+    <h2 style="margin-top: 8px;">ຂັ້ນຕອນຂໍຂາດຮຽນ — ຜູ້ປົກຄອງ → ໂຮງຮຽນ</h2>
+    <div class="two-col" style="grid-template-columns: 1fr 1fr;">
+      <div>
+        <h3 style="margin: 0 0 6px;">ຜູ້ປົກຄອງ: ຂໍຜ່ານແອັບ</h3>
+        <img class="screenshot" src="screenshots/parent-absence.png" alt="Parent absence" style="max-height: 320px;">
+      </div>
+      <div>
+        <h3 style="margin: 0 0 6px;">ໂຮງຮຽນ: ອະນຸມັດ ຫຼື ປະຕິເສດ</h3>
+        <img class="screenshot" src="screenshots/school-attendance.png" alt="School attendance" style="max-height: 320px;">
+      </div>
+    </div>
+    <p style="font-size: 14px; margin-top: 16px; padding: 10px 14px; background: rgba(245,158,11,0.08); border-radius: 8px;">
+      <b>ການເຮັດວຽກ:</b> ຜູ້ປົກຄອງເລືອກລູກ → ວັນທີຂາດ → ເຫດຜົນ → ສົ່ງ. ໂຮງຮຽນເຫັນທັນທີ ກົດອະນຸມັດ ຫຼື ປະຕິເສດ. ຜູ້ປົກຄອງເຫັນສະຖານະຕອບກັບ.
+    </p>
+  </div>
+  <div class="slide-no">11 / 13</div>
+</section>
+
+<!-- ============ 12. SCHOOL ADMIN + ACADEMIC CRUD ============ -->
+<section class="slide">
+  <div class="pad">
+    <span class="pill">11 · ໂຮງຮຽນ</span>
+    <h2 style="margin-top: 8px;">ໜ້າຄວບຄຸມໂຮງຮຽນ + ຈັດການວິຊາ/ປະເພດ/ຄູ</h2>
+    <div class="two-col left-img">
+      <div><img class="screenshot" src="screenshots/school-dashboard.png" alt="School dashboard"></div>
+      <div>
+        <p style="font-size: 16px;">ແຕ່ລະໂຮງຮຽນເຫັນຂໍ້ມູນສະເພາະນັກຮຽນຂອງຕົນ ແລະ ສາມາດຈັດການລະບົບການສຶກສາໄດ້ດ້ວຍຕົນເອງ.</p>
         <ul class="feat-list">
-          <li>ລົດທີ່ມາຮອດມື້ນີ້ ພ້ອມແຖບຄວາມຄືບໜ້າສົດໆ</li>
-          <li>ຄົ້ນຫາແຕ່ລະນັກຮຽນ — ຕອບ "ໂຊເຟຍຂຶ້ນລົດແລ້ວບໍ?" ໃນບໍ່ເຖິງ 10 ວິນາທີ</li>
-          <li>ປຽບທຽບການເຂົ້າຮຽນຈາກລົດກັບຫ້ອງຮຽນ</li>
-          <li>ແຈ້ງຂໍ້ມູນທີ່ບໍ່ກົງກັນ: ສະແກນຂຶ້ນລົດ ແຕ່ຂາດຮຽນ?</li>
-          <li>ຂອບເຂດສະເພາະໂຮງຮຽນ — ພະນັກງານເຫັນພຽງນັກຮຽນຂອງຕົນ</li>
+          <li><i data-lucide="check"></i>ສະຖານະການລົງທະບຽນ ການເຂົ້າຮຽນ ແບບສົດໆ</li>
+          <li><i data-lucide="check"></i>CRUD ວິຊາຮຽນ — ເພີ່ມ/ແກ້ໄຂ/ລຶບ ວິຊາທີ່ສອນ</li>
+          <li><i data-lucide="check"></i>CRUD ປະເພດການປະເມີນ — ຄວິສ ການທົດສອບ ມີນ້ຳໜັກ %</li>
+          <li><i data-lucide="check"></i>CRUD ຄູອາຈານ — ຊື່, ວິຊາທີ່ສອນ, ຕິດຕໍ່</li>
+          <li><i data-lucide="check"></i>ແບບຟອມໃສ່ຄະແນນ ຮັບລາຍຊື່ຈາກ CRUD ທັງສາມຂ້າງເທິງ</li>
         </ul>
       </div>
     </div>
   </div>
-  <div class="slide-no">9 / 11</div>
+  <div class="slide-no">12 / 13</div>
 </section>
 
-<!-- ============================================================
-     SLIDE 10 — THE ASK
-     ============================================================ -->
+<!-- ============ 13. THE ASK ============ -->
 <section class="slide brand-bg">
   <div class="pad" style="justify-content: center;">
-    <span class="pill">10 · ຂັ້ນຕອນຕໍ່ໄປ</span>
-    <h1 style="font-size: 64px; margin-top: 16px;">ເກັບກໍາຂໍ້ມູນ.</h1>
-    <p class="lede" style="font-size: 22px; max-width: 1000px; margin-top: 16px;">
-      <b style="color: var(--yellow);"></b><b style="color: var(--yellow);">ຂໍຂອບໃຈ</b>
+    <span class="pill">12 · ຂັ້ນຕອນຕໍ່ໄປ</span>
+    <h1 style="font-size: 60px; margin-top: 16px;">ມາທົດລອງນຳກັນ.</h1>
+    <p class="lede" style="font-size: 21px; max-width: 1000px; margin-top: 14px;">
+      ເລືອກ <b style="color: var(--p-cyan);">2 ລົດ</b> ແລະ <b style="color: var(--p-cyan);">1 ໂຮງຮຽນ</b> ສຳລັບການທົດລອງ 30 ວັນ.
+      ພວກເຮົາຕິດຕັ້ງ PDA, ອອກບັດ NFC+QR ໃຫ້ນັກຮຽນ, ຝຶກອົບຮົມຄົນຂັບ ແລະ ແນະນຳຜູ້ປົກຄອງ.
+      ທ່ານນຳເອົາລົດ ແລະ ຄວາມສຳພັນກັບໂຮງຮຽນ. ຫຼັງ 30 ວັນ ທົບທວນຜົນຮ່ວມກັນ.
     </p>
-
-
-
-    <div style="margin-top: 60px; display: flex; align-items: center; gap: 14px;">
-      <span class="logo-mark" style="width: 38px; height: 38px; font-size: 20px;">S</span>
+    <div class="stat-row">
+      <div><div class="stat-big">30</div><div class="stat-label">ວັນ</div></div>
+      <div><div class="stat-big">2</div><div class="stat-label">ລົດ</div></div>
+      <div><div class="stat-big">1</div><div class="stat-label">ໂຮງຮຽນ</div></div>
+      <div><div class="stat-big">0</div><div class="stat-label">ອຸປະກອນທີ່ຕ້ອງຊື້ກ່ອນ</div></div>
+    </div>
+    <div style="margin-top: 50px; display: flex; align-items: center; gap: 14px;">
+      <div class="brand-block-card" style="padding: 6px 12px;"><img src="../shared/phetaloun-logo.svg" alt="Phetaloun" style="height: 40px;"></div>
       <div>
-        <div class="brand-name" style="font-weight: 800; font-size: 18px; font-family: 'Inter', sans-serif;">SafeRide</div>
-        <div style="font-size: 13px; opacity: 0.7;">ops@saferide.la · +856 21 555 0100 · phoudssp.github.io/schoolbus</div>
+        <div style="font-weight: 800; font-size: 16px; color: white;">Phetaloun SchoolBus</div>
+        <div style="font-size: 13px; opacity: 0.7;">ops@phetaloun.la · +856 84 555 0100 · phoudssp.github.io/schoolbus</div>
       </div>
     </div>
   </div>
-  <div class="slide-no">10 / 11</div>
+  <div class="slide-no">13 / 13</div>
 </section>
 
 <script>
-  // Capture mode: ?only=N shows just slide N at top-left, no shadow.
+  // Capture mode for screenshot generation: ?only=N shows just slide N
   (function () {
     const params = new URLSearchParams(location.search);
     const only = parseInt(params.get('only'));
     if (only > 0) {
-      document.body.classList.add('capture-mode');
+      document.body.style.padding = '0';
+      document.body.style.gap = '0';
+      document.body.style.background = 'white';
       document.querySelectorAll('.slide').forEach((el, i) => {
         if (i !== only - 1) el.style.display = 'none';
+        else el.style.boxShadow = 'none';
       });
+      const tb = document.querySelector('.toolbar');
+      if (tb) tb.style.display = 'none';
     }
+    if (window.lucide && window.lucide.createIcons) window.lucide.createIcons();
   })();
 </script>
 

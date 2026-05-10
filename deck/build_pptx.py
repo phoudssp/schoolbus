@@ -7,7 +7,7 @@ from pptx.util import Inches
 
 DECK_DIR = Path(__file__).resolve().parent
 SLIDES_DIR = DECK_DIR / "slides"
-OUT = DECK_DIR / "SafeRide-Lao.pptx"
+OUT = DECK_DIR / "Phetaloun-SchoolBus-Lao.pptx"
 
 # Standard PowerPoint widescreen 16:9: 13.333" × 7.5"
 SLIDE_W = Inches(13.333)
